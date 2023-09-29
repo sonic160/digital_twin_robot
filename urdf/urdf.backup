@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="armpi_fpv">
+  <link
+    name="base_link">
+   <!--
+    <inertial>
+      <origin
+        xyz="-4.934E-05 -0.068274 0.014557"
+        rpy="0 0 0" />
+      <mass
+        value="0.15937" />
+      <inertia
+        ixx="0.00050053"
+        ixy="-5.0613E-10"
+        ixz="7.3399E-11"
+        iyy="0.00019115"
+        iyz="1.8631E-06"
+        izz="0.0006778" />
+    </inertial>
+  -->
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="link1">
+    <inertial>
+      <origin
+        xyz="0.0010201 -0.0033151 0.022234"
+        rpy="0 0 0" />
+      <mass
+        value="0.063838" />
+      <inertia
+        ixx="2.8951E-05"
+        ixy="-3.0801E-09"
+        ixz="3.848E-11"
+        iyy="2.6473E-05"
+        iyz="1.3155E-07"
+        izz="5.2885E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint1"
+    type="revolute">
+    <origin
+      xyz="0 0 0.028505"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.09"
+      upper="2.09"
+      effort="1000"
+      velocity="10" />
+  </joint>
+  <link
+    name="link2">
+    <inertial>
+      <origin
+        xyz="0.00042427 1.9314E-05 0.051434"
+        rpy="0 0 0" />
+      <mass
+        value="0.026379" />
+      <inertia
+        ixx="5.7789E-06"
+        ixy="6.3159E-13"
+        ixz="5.846E-10"
+        iyy="1.1214E-05"
+        iyz="-5.5917E-09"
+        izz="8.3378E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint2"
+    type="revolute">
+    <origin
+      xyz="0 0 0.0361"
+      rpy="0 0 0" />
+    <parent
+      link="link1" />
+    <child
+      link="link2" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000"
+      velocity="10" />
+  </joint>
+  <link
+    name="link3">
+    <inertial>
+      <origin
+        xyz="-0.0016391 1.0246E-05 0.047357"
+        rpy="0 0 0" />
+      <mass
+        value="0.052902" />
+      <inertia
+        ixx="1.0264E-05"
+        ixy="1.3804E-10"
+        ixz="-1.1547E-11"
+        iyy="9.1582E-06"
+        iyz="4.1386E-10"
+        izz="3.5342E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint3"
+    type="revolute">
+    <origin
+      xyz="0 0 0.10048"
+      rpy="0 0 0" />
+    <parent
+      link="link2" />
+    <child
+      link="link3" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-2.09"
+      upper="2.09"
+      effort="1000"
+      velocity="10" />
+  </joint>
+  <link
+    name="link4">
+    <inertial>
+      <origin
+        xyz="0.00038729860496884 0.00907873818454272 0.0332283475103399"
+        rpy="0 0 0" />
+      <mass
+        value="0.0306426339078366" />
+      <inertia
+        ixx="7.38817192356533E-06"
+        ixy="-7.96585567054944E-10"
+        ixz="-8.04124799997983E-12"
+        iyy="5.91512249692476E-06"
+        iyz="-3.9489810607674E-07"
+        izz="7.78559091266955E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint4"
+    type="revolute">
+    <origin
+      xyz="0 0 0.094714"
+      rpy="0 0 0" />
+    <parent
+      link="link3" />
+    <child
+      link="link4" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-2.09"
+      upper="2.09"
+      effort="1000"
+      velocity="10" />
+  </joint>
+  <link
+    name="camera_link">
+    <inertial>
+      <origin
+        xyz="0.000331820290572122 0.00895390425891458 -0.00555358926723143"
+        rpy="0 0 0" />
+      <mass
+        value="0.013338478094918" />
+      <inertia
+        ixx="1.98496727909256E-06"
+        ixy="-1.22022751315402E-08"
+        ixz="4.41414348189008E-08"
+        iyy="2.36163896904187E-06"
+        iyz="1.54197231994083E-07"
+        izz="3.25714605613889E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/camera_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/camera_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_joint"
+    type="fixed">
+    <origin
+      xyz="0 -0.042169 0.046483"
+      rpy="0 0 0" />
+    <parent
+      link="link4" />
+    <child
+      link="camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="link5">
+    <inertial>
+      <origin
+        xyz="0.00324 0.01259 0.02876"
+        rpy="0 0 0" />
+      <mass
+        value="0.0198376144888064" />
+      <inertia
+        ixx="1.65350569991433E-06"
+        ixy="2.43052736980453E-08"
+        ixz="-2.21200681356087E-08"
+        iyy="4.22371338980749E-06"
+        iyz="1.14569679795359E-09"
+        izz="3.40724992328232E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint5"
+    type="revolute">
+    <origin
+      xyz="0 0 0.05071"
+      rpy="0 0 0" />
+    <parent
+      link="link4" />
+    <child
+      link="link5" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.09"
+      upper="2.09"
+      effort="1000"
+      velocity="5" />
+  </joint>
+  <link name="grasping_frame"/>
+
+  <joint name="grasping_frame_joint" type="fixed">
+    <parent link="link5"/>
+    <child link="grasping_frame"/>
+    <origin xyz="0 0 0.1126" rpy="0 0 0"/>
+  </joint>
+  <link
+    name="gripper_base">
+    <inertial>
+      <origin
+        xyz="0.00312 0.01432 0.03101"
+        rpy="0 0 0" />
+      <mass
+        value="0.0176105871345009" />
+      <inertia
+        ixx="1.5708815504179E-06"
+        ixy="2.51402116906045E-08"
+        ixz="-2.26426177315553E-08"
+        iyy="4.12752565554833E-06"
+        iyz="-5.90507564364135E-10"
+        izz="3.26180194932723E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/gripper_base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/gripper_base.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="gripper_base_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="link5" />
+    <child
+      link="gripper_base" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="r_link">
+    <inertial>
+      <origin
+        xyz="-0.00451 -0.00435 0.0015"
+        rpy="0 0 0" />
+      <mass
+        value="0.00206265425539028" />
+      <inertia
+        ixx="2.27206715089548E-07"
+        ixy="-1.19760468530682E-07"
+        ixz="-5.52626664650897E-14"
+        iyy="1.73118448241303E-07"
+        iyz="3.6212219660873E-14"
+        izz="3.97231131418846E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_joint"
+    type="revolute">
+    <origin
+      xyz="0.01399 -0.00748 0.03255"
+      rpy="-1.5725 0.81063 0" />
+    <parent
+      link="gripper_base" />
+    <child
+      link="r_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000"
+      velocity="5" />
+  </joint>
+  <link
+    name="r_in_link">
+    <inertial>
+      <origin
+        xyz="-0.00954 -0.01092 0.006"
+        rpy="0 0 0" />
+      <mass
+        value="0.000776872870583588" />
+      <inertia
+        ixx="5.63560750477043E-08"
+        ixy="-4.72744633557675E-08"
+        ixz="-3.79461916645956E-21"
+        iyy="4.3559232177442E-08"
+        iyz="-2.93774244679845E-21"
+        izz="9.8750019150699E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_in_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_in_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_in_joint"
+    type="continuous">
+    <origin
+      xyz="0.00499 -0.0075 0.05152"
+      rpy="-1.5725 0.81127 0" />
+    <parent
+      link="gripper_base" />
+    <child
+      link="r_in_link" />
+    <axis
+      xyz="0 0 -1" />
+    <mimic
+      joint="r_joint"
+      multiplier="1"
+      offset="0" />
+  </joint>
+  <link
+    name="r_out_link">
+    <inertial>
+      <origin
+        xyz="0.00921 -0.00318 -0.00148"
+        rpy="0 0 0" />
+      <mass
+        value="0.00384736745316057" />
+      <inertia
+        ixx="3.94300335300673E-08"
+        ixy="-7.61671057300203E-09"
+        ixz="-9.59541277441841E-12"
+        iyy="8.50841629381356E-07"
+        iyz="2.65061801639529E-13"
+        izz="8.77392844404812E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_out_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/r_out_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_out_joint"
+    type="continuous">
+    <origin
+      xyz="-0.01908 -0.02184 0.0045"
+      rpy="-3.1413 0 -2.5695" />
+    <parent
+      link="r_in_link" />
+    <child
+      link="r_out_link" />
+    <axis
+      xyz="0 0 -1" />
+    <mimic
+      joint="r_joint"
+      multiplier="1"
+      offset="0" />
+  </joint>
+  <link
+    name="l_link">
+    <inertial>
+      <origin
+        xyz="-0.00526 0.0025 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.00218927553366064" />
+      <inertia
+        ixx="1.46541548954489E-07"
+        ixy="1.1331545502853E-07"
+        ixz="1.86896328777135E-12"
+        iyy="2.6214517556132E-07"
+        iyz="-2.39207587891263E-13"
+        izz="4.05402978435981E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_joint"
+    type="revolute">
+    <origin
+      xyz="-0.01401 -0.00603 0.03253"
+      rpy="1.5692 1.149 3.1416" />
+    <parent
+      link="gripper_base" />
+    <child
+      link="l_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="1000"
+      velocity="10" />
+    <mimic
+      joint="r_joint"
+      multiplier="-1"
+      offset="0" />
+  </joint>
+  <link
+    name="l_in_link">
+    <inertial>
+      <origin
+        xyz="0.00135 0.01444 0.0045"
+        rpy="0 0 0" />
+      <mass
+        value="0.000776872871244906" />
+      <inertia
+        ixx="9.68377592048552E-08"
+        ixy="-8.83574513058366E-09"
+        ixz="-8.99736402977211E-22"
+        iyy="3.07754813125031E-09"
+        iyz="-1.3466692021387E-20"
+        izz="9.87500192610647E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_in_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_in_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_in_joint"
+    type="continuous">
+    <origin
+      xyz="-0.00502 -0.006 0.05152"
+      rpy="1.5719 0 3.1404" />
+    <parent
+      link="gripper_base" />
+    <child
+      link="l_in_link" />
+    <axis
+      xyz="0 0 -1" />
+    <mimic
+      joint="r_joint"
+      multiplier="-1"
+      offset="0" />
+  </joint>
+  <link
+    name="l_out_link">
+    <inertial>
+      <origin
+        xyz="0.00921 -0.00318 0.00148"
+        rpy="0 0 0" />
+      <mass
+        value="0.00384736003408795" />
+      <inertia
+        ixx="3.94299868139123E-08"
+        ixy="-7.61977962794645E-09"
+        ixz="8.28793192035387E-12"
+        iyy="8.50830170189603E-07"
+        iyz="3.37534642199275E-12"
+        izz="8.77381368600846E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_out_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://armpi_fpv/meshes/l_out_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_out_joint"
+    type="continuous">
+    <origin
+      xyz="0.0027 0.02888 0.003"
+      rpy="-0 0 1.7582" />
+    <parent
+      link="l_in_link" />
+    <child
+      link="l_out_link" />
+    <axis
+      xyz="0 0 -1" />
+    <mimic
+      joint="r_joint"
+      multiplier="1"
+      offset="0" />
+  </joint>
+</robot>
