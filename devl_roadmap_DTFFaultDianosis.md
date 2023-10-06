@@ -1,11 +1,14 @@
-This document summarizes the development roadmap in the pole project IA (2023-2024): Digital twin for diagnosis. Note: This looks very ambitious. But don't feel stressed. You don't have to do it all by yourself. There are some master students working on the same project and part of the work will be done by them. You just need to focus on the tasks assigned to you each week. This roadmap is just to give you a overall picture of the whole project.
+This document summarizes the development roadmap in the pole project IA (2023-2024): Digital twin for diagnosis. This project intends to develop a piloting use case of applying digital twin to simulate failure behavior and train AI-based fault diagnosis algorithms. The use cases will be implemented on a robot from LGI, Centralesupelec.
+
+Note: This looks very ambitious. But don't feel stressed. You don't have to do it all by yourself. Some master students are working on the same project as well, and they will do part of the work. You only need to focus on the tasks assigned to you each week. This roadmap is to give you an overall picture of the whole project.
 
 # WP1: Simscape model development
 
 In this WP, we aim to develop a multi-body simulation model for our robot in Simscape. The multi-body simulation model should include the controller of each joint and forward and inverse kinematics simulation blocks. The simulation model will be used in the subsequent WPs to generate simulated data for training the fault diagnosis model.
 
 - Task 1: Import the existing urdf file and create a multi-body model in Simscape.
-  1. Follow the tutorial here:
+  1. Follow this [tutorial](https://fr.mathworks.com/help/sm/ug/urdf-import.html#bvmwhdm-1![Uploading image.png…]()
+).
   2. The urdf file is located in the folder "urdf"
   3. Deliverable of this task:
      - The model.
@@ -35,16 +38,31 @@ In this WP, we aim to generate failure data from the digital twin model under di
   1. Check from the literature what kind of failure could happen to the model physically.
   2. Develop simulation models for the identified failure modes.
      
-- Task 2: Generate the training data for fault diagnosis algorithm.
+- Task 2: Generate the training data for the fault diagnosis algorithm.
 
 - Deliverable of this WP:
-  1. A report summarizing the key failure modes considered, how to generate the simulation data.
+  1. A report summarizing the critical failure modes considered how to generate the simulation data.
   2. The generated dataset.
   3. A document describing the generated dataset.
 
 # WP3: Develop AI-based fault diagnosis algorithms.
 
 In this WP, the aim is to develop and test the performance of AI-based diagnosis algorithm.
+
+- Deliverables:
+  1. The AI-based algorithm for fault diagnosis.
+  2. A notebook summarize all the model tried and their performance.
+     - You need to use cross-validation to evaluate and compare the performance of different algorithms.
+    
+# WP4: Model application on real systems
+
+In this WP, the objective is to test the developed algorithm in the physical system, i.e., the robot.
+
+- Task 1: Condition-monitoring of the robot:
+  1. Design a ROS node to broadcast the position, temperature, and voltage of each motor at a given frequency.
+  2. Design a ROS node in matlab to receive the message.
+  3. Design a GUI (dashboard) to visualize in realtime the collected condition-monitoring data.
+- Task 2: Implement the fault diagnosis algorithm based on the collected condition-monitoring data.
 
 
 
