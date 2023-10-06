@@ -1,6 +1,7 @@
 This document summarizes the development roadmap in the pole project IA (2023-2024): Digital twin for diagnosis. 
 
 # WP1: Simscape model development
+
 In this WP, we aim to develop a multi-body simulation model for our robot in Simscape. The multi-body simulation model should include the controller of each joint and forward and inverse kinematics simulation blocks. The simulation model will be used in the subsequent WPs to generate simulated data for training the fault diagnosis model.
 
 - Task 1: Import the existing urdf file and create a multi-body model in Simscape.
@@ -28,6 +29,9 @@ In this WP, we aim to develop a multi-body simulation model for our robot in Sim
 
 # WP2: Define typical failure scenarios and generate simulated failure data
 
+In this WP, we aim to generate failure data from the digital twin model under different failure scenarios. The generated data will be used in the next WP to train AI-based fault diagnosis algorithms.
+
+- Task 1: 
 
 # WP3: Develop AI-based fault diagnosis algorithms.
 
