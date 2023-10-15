@@ -1,0 +1,12 @@
+Considering you have gone through the tutorial and have all the dependencies installed, let's go ahead and spawn our model in the Gazebo.
+You need to install "urdf files for the robot" in your system from the main Github Repository.
+In the catkin_ws/src folder, you need to create a package as follows:
+                        catkin_ws/src$ catkin_create_pkg armpi_fpv rospy
+Move the "meshes" and "armpi_fpv.urdf" in the "armpi_fpc/src" folder.
+Move out of the "src" folder using "cd .."
+Now in the catkin_ws folder run "catkin_make" in the terminal. You will see some activity happening in the terminal.
+Source the file using "source devel/setup.bash" in the same folder.
+Now launch your robot using " roslaunch armpi_fpv spawn_urdf.launch"
+
+
+
