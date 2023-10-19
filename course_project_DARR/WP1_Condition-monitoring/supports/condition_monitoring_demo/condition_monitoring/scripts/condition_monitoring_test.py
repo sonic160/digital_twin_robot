@@ -5,8 +5,8 @@
 ## to the 'condition-monitoring' topic
 
 import rospy
-from sensor_msgs.msg import JointState as RosJointState
-import Board
+from condition_monitoring.msg import msg_cm as RosJointState
+import random
 
 
 class JointCMMessage:
@@ -63,9 +63,13 @@ class CMDataPublisher:
         for motor_idx in range(len(self.joints)):
             joint_name = self.joints[motor_idx]
 
-            pos = Board.getBusServoPulse(motor_idx+1) # Position
-            temp = Board.getBusServoTemp(motor_idx+1) # Temperature
-            voltage = Board.getBusServoVin(motor_idx+1) # Voltage
+            # pos = Board.getBusServoPulse(motor_idx+1) # Position
+            # temp = Board.getBusServoTemp(motor_idx+1) # Temperature
+            # voltage = Board.getBusServoVin(motor_idx+1) # Voltage
+
+            pos = 500 + 10*random.random() # Position
+            temp = 30 + random.random() # Temperature
+            voltage = 7000 + 10*random.random() # Voltage
 
             js = JointCMMessage(joint_name, pos, temp, voltage)
             self.joint_states[joint_name] = js
