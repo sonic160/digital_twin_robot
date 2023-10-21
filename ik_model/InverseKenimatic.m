@@ -20,7 +20,7 @@ outputIDs =["j1.Rz.q";"j2.Rz.q";"j3.Rz.q";"j4.Rz.q";"j5.Rz.q"];
 addOutputVariables(ik,outputIDs);
 
 guessesIDs = ["j1.Rz.q";"j2.Rz.q";"j3.Rz.q";"j4.Rz.q";"j5.Rz.q"];
-guesses = [0,0,0,0,0];
+guesses = [3,3,3,3,3];
 addInitialGuessVariables(ik,guessesIDs);
 
 
@@ -37,6 +37,7 @@ spline = zeros(1000,3);
 
 for i = 1:1000
     targets = [0+0.1*cos(i/100*(2*pi/T)),0+0.1*sin(i/100*(2*pi/T)),0.15+0.1*(i/100/T)];
+
     spline(i,:) = targets;
     if i>1 
         guesses = [j1(i-1,1),j2(i-1,1),j3(i-1,1),j4(i-1,1),j5(i-1,1)];
