@@ -11,7 +11,9 @@ To test it, you should follow the following steps:
 4. Click the *stop* button to save the collected data.
 
 The program will visualize the collected data in realtime:
+
 ![Alt text](screen_shots/result_3.gif)
 
 The collected data will be saved in the currect dictionary as a csv file as the following:
+
 ![](screen_shots/result_4.png)
