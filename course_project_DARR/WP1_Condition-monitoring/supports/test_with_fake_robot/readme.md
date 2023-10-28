@@ -2,7 +2,9 @@
 
 **Course** : Data Analysis for Risk and Reliability
 **Project** : Digital Twin Robot
+**Members of the group** : Antonis Kostopoulos, Firas Ben Nasr, Thomas Watteau
 **Jalon** : WP1 - Collect, save and plot the position, temperature and voltage of the 6 motors.
+
 
 ## What changed in the updated app prototype
 
