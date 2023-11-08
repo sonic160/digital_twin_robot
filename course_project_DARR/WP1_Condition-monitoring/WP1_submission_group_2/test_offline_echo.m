@@ -6,7 +6,7 @@ clear; clc; rosshutdown;
 
 % Get the broadcast data here:
 % Make sure the ip address is the one of the robot.
-rosinit('192.168.1.14', 11311) 
+rosinit('10.152.100.6', 11311) 
 msg = rostopic("echo", "/condition_monitoring");
 
 % Retrieve info from the message
