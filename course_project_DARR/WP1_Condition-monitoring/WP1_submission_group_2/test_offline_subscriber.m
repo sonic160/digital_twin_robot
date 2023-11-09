@@ -6,7 +6,7 @@ clear; clc; rosshutdown;
 
 % Get the broadcast data here:
 % Make sure the ip address is correct.
-rosinit('10.152.100.6', 11311)
+rosinit('192.168.0.103', 11311)
 
 % Create a subscriber to the 'condition_monitoring' topic
 sub = rossubscriber('/condition_monitoring', @callback);
