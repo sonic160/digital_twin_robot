@@ -1,6 +1,7 @@
 joint1_damping = 0;
 joint2_damping = 0;
 damp_pince = 1000; % damping coefficient for joints of the pince
+p_base = 'C:\study\projet_mt\digital_twin_robot\meshes\base_link.STL';
 
 mdl = "robot_model";
 
@@ -31,7 +32,8 @@ j4 = zeros(1000,1);
 j5 = zeros(1000,1);
 T = 10; % period
 spline = zeros(1000,3);
-% range for end effector space is aprroximately [-0.3,0.3] [-0.3,0.3] [0,0.3]
+% range for end ef
+% fector space is aprroximately [-0.3,0.3] [-0.3,0.3] [0,0.3]
 % here the trajectory we choose for the end effector is 
 % x = 0.1*cos( t * 2*pi/T  ) y = 0.1*sin( t * 2*pi/T) z = 0.15 + 0.1 * t/10
 
