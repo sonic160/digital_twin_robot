@@ -58,4 +58,49 @@ joint3_ts = timeseries(j3/180*pi,0:0.01:9.99);
 joint4_ts = timeseries(j4/180*pi,0:0.01:9.99);
 joint5_ts = timeseries(j5/180*pi,0:0.01:9.99);
 
+% pic_num = 1;
+% for i = 1:100
+%     subplot(5,1,1)
+%     plot(1:1000,j1);
+%     hold on
+%     plot(10*i,j1(10*i),'o');
+%     hold off
+%     title('angle joint1')
+%     subplot(5,1,2)
+%     plot(1:1000,j2);
+%     hold on
+%     plot(10*i,j2(10*i),'o');
+%     hold off
+%     title('angle joint2')
+%     subplot(5,1,3)
+%     plot(1:1000,j3);
+%     hold on
+%     plot(10*i,j3(10*i),'o');
+%     hold off
+%     title('angle joint3')
+%     subplot(5,1,4)
+%     plot(1:1000,j4);
+%     hold on
+%     plot(10*i,j4(10*i),'o');
+%     hold off
+%     title('angle joint4')
+%     subplot(5,1,5)
+%     plot(1:1000,j5);
+%     hold on
+%     plot(10*i,j5(10*i),'o');
+%     hold off
+%     title('angle joint5')
+%     F=getframe(gcf);
+%     I=frame2im(F);
+%     [I,map]=rgb2ind(I,256);
+%     if pic_num == 1
+%     imwrite(I,map,'test.gif','gif','Loopcount',inf,'DelayTime',0.1);
+%     else
+%     imwrite(I,map,'test.gif','gif','WriteMode','append','DelayTime',0.1);
+% 
+%     end
+% 
+%     pic_num = pic_num + 1;
+%     hold off
+% end
 
