@@ -165,3 +165,6 @@ def serial_servo_get_rmsg(cmd):
     else:
         serialHandle.flushInput()  # 清空接收缓存
         return None
+
+
+
