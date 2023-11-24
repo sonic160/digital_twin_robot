@@ -42,6 +42,9 @@ for i = 1:1000
     if i>1 
         guesses = [j1(i-1,1),j2(i-1,1),j3(i-1,1),j4(i-1,1),j5(i-1,1)];
     end
+    
+    disp(targets)
+    disp(class(targets))
     [outputVec,statusFlag] = solve(ik,targets,guesses);
     j1(i,1) = outputVec(1);
     j2(i,1) = outputVec(2);
