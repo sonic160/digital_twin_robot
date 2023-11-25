@@ -2,14 +2,14 @@
 disp("It has begun")
 %Creating shape set
 
- adapted_circle_set=CreateCircleList(0.28, 0.28);
+ %adapted_circle_set=CreateCircleList(0.28, 0.28);
 % adapted_line_set=CreateLineList(0.28, 0.28);
 % adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
- reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
+% reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
 % reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
 % reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 500);
 % disp(reduced_adapted_shape_set)
@@ -81,11 +81,11 @@ numberofshapes=numel(shapelist);
 fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
 %for k = 1:numberofshapes
-for k = 1:1
+for k = 1:400
     sign=1;
     shape=shapelist{k};
     fprintf('Shape name:%s\n',shape);     
-    disp("Equations de la forme");
+    %disp("Equations de la forme");
     %disp(shapes_dict.(shape));
     targets = zeros(len_time_series,3);
 
@@ -119,7 +119,7 @@ for k = 1:1
     joint4_ts = timeseries(j4/180*pi,0:0.01:9.99);
     joint5_ts = timeseries(j5/180*pi,0:0.01:9.99);
     %dataset=[dataset,datapoint];
-    for j=0:2   %on mettra 64 plus tard si on le veut
+    for j=0:6   %on mettra 64 plus tard si on le veut
         fprintf('Motor off is:%d\n',j);
         error1=m1;
         error2=m1;
@@ -141,11 +141,16 @@ for k = 1:1
             case 6
                 error6=m0;
         end
-        dataset = [dataset, targets] %on ajoute déjà les trajectoires cibles
+        dataset = [dataset, targets];
+        %on ajoute déjà les trajectoires cibles
+        disp("----------------")
+        disp("----------------")
         simOut = sim(model_name);%je sais pas si error est vraiment pris en entrée ici ou non
         [x, y, z] = ForwardKinematic(j1, j2, j3, j4, j5);%inch ca dep vraiment de simOut
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
-        dataset=[dataset,jdatapoint];%on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
+        dataset=[dataset,jdatapoint];
+        disp(jdatapoint)
+        %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
     end
     %datapoint de labélisation j (pour une k ième forme donnée)
     %sera donnée par la mise bout a bout de 7*k i ème ligne de dataset
@@ -153,19 +158,20 @@ for k = 1:1
     %et la 7*k+j ième ligne, chaque ligne étant x,y,z étudiés sur la
     %timeseries pour l'erreure moteur selecio
     %pour avoir une entrée de l'IA qui regarder l'effet  il faudra prendre
-    fprintf("The current size of the dataset is %s", mat2str(size(dataset)));
+    %fprintf("The current size of the dataset is %s", mat2str(size(dataset)));
 end
     
-fprintf("The final size of the dataset is %s", mat2str(size(dataset)));
-disp(dataset);
+%fprintf("The final size of the dataset is %s", mat2str(size(dataset)));
+disp("line 157 end has been passed");
 
 %%experimental - mat2cell conversion %%%
 
 
 % Specify the size of each submatrix (6x1000)
 
-dataset = dataset'
-sized = size(dataset)
+dataset = dataset';
+clear size
+sized = size(dataset);
 
 rowDist = 6 * ones(1, sized(1)/6);
 % Use mat2cell to convert the dataset into a cell array
@@ -180,7 +186,7 @@ disp(size(cellArray))
 
 
 
-function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5);
+function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5)
     joint1_damping = 0;
     joint2_damping = 0;
     damp_pince = 1000; % damping coefficient for joints of the pince
@@ -271,12 +277,7 @@ function newCell = multiplyandsum(r,matrix1,Cell,matrix2)
 newCell = cell(size(Cell));
    for i=1:numel(Cell)
       
-      % for i =1:5
-           % disp("cell for")
-           % disp(i)
-           % disp(Cell{1})
-           % disp(Cell{1}(i))
-       %end
+
        scaledfunction= @(x) r*(matrix1(i, 1) *Cell{1}(x) + matrix1(i, 2) * Cell{2}(x) + matrix1(i, 3) * Cell{3}(x))+matrix2(i);
        newCell{i}= scaledfunction;
    end
