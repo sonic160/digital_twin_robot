@@ -81,7 +81,7 @@ numberofshapes=numel(shapelist);
 fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
 %for k = 1:numberofshapes
-for k = 1:400
+for k = 1:200
     sign=1;
     shape=shapelist{k};
     fprintf('Shape name:%s\n',shape);     
@@ -145,8 +145,15 @@ for k = 1:400
         %on ajoute déjà les trajectoires cibles
         disp("----------------")
         disp("----------------")
-        simOut = sim(model_name);%je sais pas si error est vraiment pris en entrée ici ou non
-        [x, y, z] = ForwardKinematic(j1, j2, j3, j4, j5);%inch ca dep vraiment de simOut
+        simOut = sim(model_name);
+        
+        j1o = simOut.j1.Data;
+        j2o = simOut.j2.Data;
+        j3o = simOut.j3.Data;
+        j4o = simOut.j4.Data;
+        j5o = simOut.j5.Data;
+        disp(size(j1o))
+        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);%inch ca dep vraiment de simOut
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
         dataset=[dataset,jdatapoint];
         disp(jdatapoint)
@@ -214,11 +221,11 @@ function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5)
     T = 10; % period
     spline = zeros(1000,5);
     
-    
+    len = size(j1);
     for i = 1:1000
         targets = [j1(i),j2(i),j3(i),j4(i),j5(i)];
     
-        spline(i,:) = targets;
+
     
         [outputVec,statusFlag] = solve(ik,targets);
         x(i,1) = outputVec(1);
