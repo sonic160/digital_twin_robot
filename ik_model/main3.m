@@ -2,14 +2,14 @@
 disp("It has begun")
 %Creating shape set
 
- %adapted_circle_set=CreateCircleList(0.28, 0.28);
+ adapted_circle_set=CreateCircleList(0.28, 0.28);
 % adapted_line_set=CreateLineList(0.28, 0.28);
 % adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
-% reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
+ reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
 % reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
 % reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 500);
 % disp(reduced_adapted_shape_set)
@@ -156,7 +156,9 @@ for k = 1:200
         [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);%inch ca dep vraiment de simOut
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
         dataset=[dataset,jdatapoint];
-        disp(jdatapoint)
+        aa= [j1,j1o]
+        disp(aa)
+        
         %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
     end
     %datapoint de labélisation j (pour une k ième forme donnée)
