@@ -152,11 +152,18 @@ for k = 1:200
         j3o = simOut.j3.Data;
         j4o = simOut.j4.Data;
         j5o = simOut.j5.Data;
+        j1o = j1o*180/pi
+        j2o = j2o*180/pi
+        j3o = j3o*180/pi
+        j4o = j4o*180/pi
+        j5o = j5o*180/pi
+
         disp(size(j1o))
-        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);%inch ca dep vraiment de simOut
+        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);
+        [xf, yf, zf] = ForwardKinematic(j1, j2, j3, j4, j5); 
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
         dataset=[dataset,jdatapoint];
-        aa= [j1,j1o]
+        aa= [x,xf,y,yf,z,zf]
         disp(aa)
         
         %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
