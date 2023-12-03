@@ -3,14 +3,14 @@ disp("It has begun")
 %Creating shape set
 
  adapted_circle_set=CreateCircleList(0.28, 0.28);
-% adapted_line_set=CreateLineList(0.28, 0.28);
+ adapted_line_set=CreateLineList(0.28, 0.28);
 % adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
  reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
-% reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
+ reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
 % reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 500);
 % disp(reduced_adapted_shape_set)
 % fieldnumbers=numel(fieldnames(reduced_adapted_shape_set));
@@ -18,7 +18,7 @@ disp("It has begun")
 
 %Clearing the trash
  clear adapted_circle_set;
-% clear adapted_line_set;
+ clear adapted_line_set;
 % clear adapted_shape_set;
 
 %Testing Shape_dict
@@ -82,6 +82,22 @@ fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
 %for k = 1:numberofshapes
 for k = 1:200
+    if k==50
+        disp("------------------------")
+        disp("K =50 HAS BEEN REACHED")
+        disp("------------------------")
+    end
+      if k==100
+          disp("------------------------")
+        disp("K =100 HAS BEEN REACHED")
+        disp("------------------------")
+      end
+         if k==150
+          disp("------------------------")
+        disp("K =150 HAS BEEN REACHED")
+        disp("------------------------")
+    end
+
     sign=1;
     shape=shapelist{k};
     fprintf('Shape name:%s\n',shape);     
@@ -119,7 +135,7 @@ for k = 1:200
     joint4_ts = timeseries(j4/180*pi,0:0.01:9.99);
     joint5_ts = timeseries(j5/180*pi,0:0.01:9.99);
     %dataset=[dataset,datapoint];
-    for j=0:6   %on mettra 64 plus tard si on le veut
+    for j=0:3   %on mettra 64 plus tard si on le veut
         fprintf('Motor off is:%d\n',j);
         error1=m1;
         error2=m1;
@@ -152,19 +168,18 @@ for k = 1:200
         j3o = simOut.j3.Data;
         j4o = simOut.j4.Data;
         j5o = simOut.j5.Data;
-        j1o = j1o*180/pi
-        j2o = j2o*180/pi
-        j3o = j3o*180/pi
-        j4o = j4o*180/pi
-        j5o = j5o*180/pi
+        j1o = j1o*180/pi;
+        j2o = j2o*180/pi;
+        j3o = j3o*180/pi;
+        j4o = j4o*180/pi;
+        j5o = j5o*180/pi;
 
         disp(size(j1o))
         [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);
         [xf, yf, zf] = ForwardKinematic(j1, j2, j3, j4, j5); 
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
         dataset=[dataset,jdatapoint];
-        aa= [x,xf,y,yf,z,zf]
-        disp(aa)
+ 
         
         %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
     end
