@@ -4,22 +4,22 @@ disp("It has begun")
 
  adapted_circle_set=CreateCircleList(0.28, 0.28);
  adapted_line_set=CreateLineList(0.28, 0.28);
-% adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
+ adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
- reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
- reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
-% reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 500);
+% reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
+% reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
+ reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 1000);
 % disp(reduced_adapted_shape_set)
 % fieldnumbers=numel(fieldnames(reduced_adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
 %Clearing the trash
- clear adapted_circle_set;
- clear adapted_line_set;
-% clear adapted_shape_set;
+% clear adapted_circle_set;
+% clear adapted_line_set;
+clear adapted_shape_set;
 
 %Testing Shape_dict
 % shapes_dict = struct(...
@@ -68,9 +68,9 @@ spline = zeros(1000,3);
 
 %Selected shape_dict
 
-shapes_dict=reduced_adapted_circle_set;
+%shapes_dict=reduced_adapted_circle_set;
 %shapes_dict=adapted_line_set;
-%shapes_dict=reduced_adapted_shape_set;
+shapes_dict=reduced_adapted_shape_set;
 
 len_time_series=1000;
 m0=[zeros(1000, 1), zeros(1000, 1)];
@@ -80,19 +80,19 @@ shapelist=fieldnames(shapes_dict);
 numberofshapes=numel(shapelist);
 fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
-%for k = 1:numberofshapes
-for k = 1:200
-    if k==50
+for k = 1:numberofshapes
+%for k = 1:200
+    if k==250
         disp("------------------------")
         disp("K =50 HAS BEEN REACHED")
         disp("------------------------")
     end
-      if k==100
+      if k==500
           disp("------------------------")
         disp("K =100 HAS BEEN REACHED")
         disp("------------------------")
       end
-         if k==150
+         if k==750
           disp("------------------------")
         disp("K =150 HAS BEEN REACHED")
         disp("------------------------")
@@ -208,8 +208,10 @@ rowDist = 6 * ones(1, sized(1)/6);
 % Use mat2cell to convert the dataset into a cell array
 cellArray = mat2cell(dataset, rowDist);
 disp(size(cellArray))
+save('cellArray1000.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
-
+%Running the rain_predict_file
+run('rain_predict_lstm.m');
 
 
 %%% end of experimental section %%%
@@ -351,12 +353,12 @@ function [circlelist] = CreateCircleList(max_rayon,max_eloignement_centre)
                 if (abs(e-r)<min_eloignement) || (e+r<min_eloignement) || (e+r>max_eloignement) || (abs(e-r)>max_eloignement)
                     continue
                 end
-                for anglexy=0:180:360                         %on explore les plans possibles en effectuant des rotations du plan xy autour de z
-                    for anglexz=0:180:360                     %on explore les plans possibles en effectuant des rotations du plan xz autour de y
-                        for angleyz=0:180:360                 %on explore les plans possibles en effectuant des rotations du plan yz autour de x          
-                            for anglez=0:180:360              %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan z
-                                for anglex=0:180:360          %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan x
-                                    for angley=0:180:360      %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan y
+                for anglexy=0:120:360                         %on explore les plans possibles en effectuant des rotations du plan xy autour de z
+                    for anglexz=0:120:360                     %on explore les plans possibles en effectuant des rotations du plan xz autour de y
+                        for angleyz=0:120:360                 %on explore les plans possibles en effectuant des rotations du plan yz autour de x          
+                            for anglez=0:120:360              %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan z
+                                for anglex=0:120:360          %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan x
+                                    for angley=0:120:360      %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan y
                                         %coordonnées du centre du cercle
                                         %tracé
                                         ecoord=e*calculateRotationMatrix(anglez, angley, anglex)*[1;1;1];
@@ -400,12 +402,12 @@ function [linelist] = CreateLineList(max_eloignement_centre,max_longueur)
                 if (abs(e-r)<min_eloignement) || (e+r<min_eloignement) || (e+r>max_eloignement) || (abs(e-r)>max_eloignement)
                     continue
                 end
-                for anglexy=0:180:360                       %on explore les plans possibles en effectuant des rotations du plan xy autour de z
-                    for anglexz=0:180:360                   %on explore les plans possibles en effectuant des rotations du plan xz autour de y
-                        for angleyz=0:180:0%fait rien ici 0 %on explore les plans possibles en effectuant des rotations du plan yz autour de x          
-                            for anglez=0:180:360            %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan z
-                                for anglex=0:180:360        %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan x
-                                    for angley=0:180:360    %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan y
+                for anglexy=0:120:360                       %on explore les plans possibles en effectuant des rotations du plan xy autour de z
+                    for anglexz=0:120:360                   %on explore les plans possibles en effectuant des rotations du plan xz autour de y
+                        for angleyz=0:120:0%fait rien ici 0 %on explore les plans possibles en effectuant des rotations du plan yz autour de x          
+                            for anglez=0:120:360            %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan z
+                                for anglex=0:120:360        %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan x
+                                    for angley=0:120:360    %on génère par incrément de 1 degré un "cercle" formé des centre des cercles que l'on va tracer à la distance voulue sur le plan y
                                         %coordonnées du centre du cercle
                                         %tracé
                                         ecoord=e*calculateRotationMatrix(anglez, angley, anglex)*[1;1;1];
