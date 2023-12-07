@@ -2,23 +2,23 @@
 disp("It has begun")
 %Creating shape set
 
- adapted_circle_set=CreateCircleList(0.28, 0.28);
- adapted_line_set=CreateLineList(0.28, 0.28);
+% adapted_circle_set=CreateCircleList(0.28, 0.28);
+% adapted_line_set=CreateLineList(0.28, 0.28);
 % adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
- reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
- reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
+ %reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
+% reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
 % reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 500);
 % disp(reduced_adapted_shape_set)
 % fieldnumbers=numel(fieldnames(reduced_adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
 %Clearing the trash
- clear adapted_circle_set;
- clear adapted_line_set;
+% clear adapted_circle_set;
+% clear adapted_line_set;
 % clear adapted_shape_set;
 
 %Testing Shape_dict
@@ -81,7 +81,7 @@ numberofshapes=numel(shapelist);
 fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
 %for k = 1:numberofshapes
-for k = 1:200
+for k = 1:10
     if k==50
         disp("------------------------")
         disp("K =50 HAS BEEN REACHED")
@@ -103,11 +103,15 @@ for k = 1:200
     fprintf('Shape name:%s\n',shape);     
     %disp("Equations de la forme");
     %disp(shapes_dict.(shape));
+    len_time_series = 1000
     targets = zeros(len_time_series,3);
-
-    for t = 1:len_time_series
+ 
+    for t = 1: len_time_series
         sign=1;
         t_echantillon=t/500;
+     
+        %datapoint =[xcs(t), ycs(t),zcs(t)];
+
         datapoint =[shapes_dict.(shape).xequation(t_echantillon), shapes_dict.(shape).yequation(t_echantillon), shapes_dict.(shape).zequation(t_echantillon)];
          %datapoint = [0+k*0.1*cos(t/100*(2*pi/T)),0+k*0.1*sin(t/100*(2*pi/T)),0.15+k*0.1*(t/100/T)];
             spline(t,:)  = datapoint;
@@ -143,6 +147,88 @@ for k = 1:200
         error4=m1;
         error5=m1;
         error6=m1;
+
+
+
+
+
+
+%%%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
+
+
+
+X = randi([400, 800]);
+
+% Step 2: Randomly select numbers greater than 50 that add up to X
+remainingX = X;
+selectedNumbers = [];
+
+while remainingX > 50
+    % Randomly select a number greater than 50
+    randomNumber = randi([51, remainingX]);
+
+    % Add the selected number to the list
+    selectedNumbers = [selectedNumbers, randomNumber];
+
+    % Update the remainingX
+    remainingX = remainingX - randomNumber;
+end
+
+% Specify the range
+lowerBound = 100;
+upperBound = 900;
+
+% Number of points to randomly select
+numPoints = numel(selectedNumbers);
+
+% Generate random points following the constraint
+randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
+
+
+% Generate the list of 1000 points
+totalPoints = 1000;
+
+% Initialize the array with all points worth 1
+pointsList = ones(1, totalPoints);
+
+% Assign a different value to the randomly selected points
+pointsList(randomPoints) = 0;
+
+% Set the values of points around each random point and its corresponding selected number to 0
+for i = 1:numPoints
+    startRange = randomPoints(i);
+    endRange = randomPoints(i) + selectedNumbers(i);
+
+    % Ensure the endRange does not exceed the total number of points
+    endRange = min(endRange, totalPoints);
+
+    % Set values to 0 in the specified range
+    pointsList(startRange:endRange) = 0;
+end
+
+% Assuming pointsList is already generated (as per the previous code)
+
+% Create a 1000x2 vector
+vectorMatrix = zeros(1000, 2);
+
+% Populate the first column with linear values from 1 to 1000
+vectorMatrix(:, 1) = (1:1000)';
+
+% Populate the second column with the values from pointsList
+vectorMatrix(:, 2) = pointsList;
+
+% Display the resulting vector matrix
+%disp(vectorMatrix);
+% Display the list of points
+m0 = vectorMatrix;
+disp("number of zeroes")
+numZeros = sum(vectorMatrix(:, 2) == 0)
+
+
+
+%%%%%%
+
+
         switch j
             case 1
                 error1=m0;
