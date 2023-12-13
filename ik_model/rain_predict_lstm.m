@@ -4,8 +4,7 @@ time_series_length = 1000;
 num_classes = 4;
 
 % Parameters
-cload('.\cellArray1000.mat');
-cellArray=cellArray1000;
+cellArray=load('.\cellArray500interpolatesshapes.mat');
 sizearray = size(cellArray);
 numSeq = sizearray(1);      % Number of sequences
 numFeatures = 4;   % Number of features
@@ -42,20 +41,20 @@ YVal =categoricalSequence(indexToKeep:totalElements);
 %legend("Feature " + string(1:numFeatures),Location="northeastoutside")
 % Display the generated data
 
-miniBatchSize = 64;%UTILITE
+miniBatchSize = 128;%UTILITE
 % Step 2: Define the neural network
 
 inputSize = 6;
 numHiddenUnits = 150;
 numClasses = 4;
 
-layers = [
+layers =[
     sequenceInputLayer(inputSize) 
     % Bidirectional LSTM layers
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-    lstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+    bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     fullyConnectedLayer(numHiddenUnits,'last')
-    dropoutLayer(0.2))
+    dropoutLayer(0.2)
     fullyConnectedLayer(numClasses)
     softmaxLayer
     classificationLayer
@@ -87,17 +86,18 @@ options = trainingOptions("sgdm", ...
 %     Plots="training-progress");
 
 
-net2 = trainNetwork(XTrain,YTrain,layers,options);
-save('lstmv2layers1000b200dp0_2alrb64.mat','net2')
+net3 = trainNetwork(XTrain,YTrain,layers,options);
+save('lstmv3_2bilayers_500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','net3')
 % Make predictions on the validation set
-YPred = predict(net2, XVal);
-%YPred(numdelaligne,:)
+YPred = predict(net3, XVal);
+
 % Find the column index of the maximum probability for each row
 [~, predictedClass] = max(YPred, [], 2);
 
 % Create a categorical array from the predicted class indices
 categoryNames = cellstr(num2str((0:max(predictedClass))'));  % Assuming classes are 0-based
 categoricalPred = categorical(predictedClass - 1, 0:max(predictedClass), categoryNames);
+
 % Compute confusion matrix
 C = confusionmat(YVal, categoricalPred);
 
@@ -105,22 +105,28 @@ C = confusionmat(YVal, categoricalPred);
 figure
 confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
 
-metrics = confusionmatStats(trueLabels, predictedLabels);
-precision = metrics.precision;
-recall = metrics.recall;
-f1Score = metrics.F1;
-% Identify misclassified samples
-misclassifiedIndices = find(YVal ~= categoricalPred);
+precision = diag(C) ./ sum(C, 1)';
+recall = diag(C) ./ sum(C, 2);
+f1Score = 2 * (precision .* recall) ./ (precision + recall);
 
-% Analyze misclassifications
-for i = 1:length(misclassifiedIndices)
-    index = misclassifiedIndices(i);
-    disp(['Misclassified sample at index ', num2str(index)]);
-    % Further analysis of misclassified samples, e.g., plot the sequence:
-    figure
-    plot(XVal{index}')
-    xlabel("Time Step")
-    title(['Misclassified Sample ', num2str(index)])
+% Display the results
+disp('Class   Precision   Recall   F1 Score');
+disp([transpose(1:size(C, 1)), precision, recall, f1Score]);
+
+for i = 0:numClasses-1
+    % Convert true labels to binary
+    YTruBinary = ismember(YVal, num2str(i));
+    
+    % Extract predicted scores for the current class
+    %YPredBinary =ismember(categoricalPred, num2str(i));
+    YpredROC=YPred(:,i+1);
+    
+    % Compute ROC curve
+    [X, Y, ~, AUC] = perfcurve(YTruBinary, YpredROC, 1);
+    
+    % Plot ROC curve for the current class
+    plot(X, Y, 'DisplayName', ['Class ' num2str(i) ' (AUC = ' num2str(AUC) ')']);
+    
+    hold on;
 end
-
 
