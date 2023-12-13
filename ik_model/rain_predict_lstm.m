@@ -4,7 +4,8 @@ time_series_length = 1000;
 num_classes = 4;
 
 % Parameters
-load('.\cellArray1000.mat')
+cload('.\cellArray1000.mat');
+cellArray=cellArray1000;
 sizearray = size(cellArray);
 numSeq = sizearray(1);      % Number of sequences
 numFeatures = 4;   % Number of features
@@ -36,10 +37,7 @@ XTrain = cellArray(1:index);
 XVal = cellArray(index:totalCells);
 YTrain = categoricalSequence(1:indexToKeep);
 YVal =categoricalSequence(indexToKeep:totalElements);
-figure
-plot(XTrain{1}')
-xlabel("Time Step")
-title("Training Observation 1")
+
 %numFeatures = size(XTrain{1},1);
 %legend("Feature " + string(1:numFeatures),Location="northeastoutside")
 % Display the generated data
@@ -105,8 +103,12 @@ C = confusionmat(YVal, categoricalPred);
 
 % Display confusion chart
 figure
-confusionchart(YVal, categoricalPred);
+confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
 
+metrics = confusionmatStats(trueLabels, predictedLabels);
+precision = metrics.precision;
+recall = metrics.recall;
+f1Score = metrics.F1;
 % Identify misclassified samples
 misclassifiedIndices = find(YVal ~= categoricalPred);
 

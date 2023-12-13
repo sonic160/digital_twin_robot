@@ -1,28 +1,41 @@
 
 disp("It has begun")
+
+len_time_series=1000;
+% sample_time=10/len_time_series;
+% disp(sample_time)
+
+
 %Creating shape set
 
- adapted_circle_set=CreateCircleList(0.28, 0.28);
- adapted_line_set=CreateLineList(0.28, 0.28);
- adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
+
+ % adapted_circle_set=CreateCircleList(0.28, 0.28);
+ % adapted_line_set=CreateLineList(0.28, 0.28);
+ % adapted_shape_set=mergeStructures(adapted_circle_set,adapted_line_set);
+ % len_adapted_shape_set=numel(len_adapted_shape_set)
+
 % disp(adapted_shape_set)
 % fieldnumbers=numel(fieldnames(adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
 % reduced_adapted_circle_set= reduceStructureSize(adapted_circle_set, 500);
 % reduced_adapted_line_set= reduceStructureSize(adapted_line_set, 500);
- reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 1000);
+% reduced_adapted_shape_set= reduceStructureSize(adapted_shape_set, 2000);
+reduced_adapted_interpolate_set= createInterpolate(500, 1000);
 % disp(reduced_adapted_shape_set)
 % fieldnumbers=numel(fieldnames(reduced_adapted_shape_set));
 % fprintf('The number of fields is:%d\n',fieldnumbers);
 
 %Clearing the trash
+
 % clear adapted_circle_set;
 % clear adapted_line_set;
-clear adapted_shape_set;
+% clear adapted_shape_set;
+% save('reduced_adapted_shape_set1000.mat', 'reduced_adapted_shape_set');
 
-%Testing Shape_dict
-% shapes_dict = struct(...
+%Choosing the wanted shape
+%1 Small shape dict
+% small_shapes_dict = struct(...
 %     'xyCircle', struct('xequation', @(t) cos(t), 'yequation', @(t) sin(t), 'zequation', @(t) 0), ...
 %     'xzCircle', struct('xequation', @(t) cos(t), 'yequation', @(t) 0, 'zequation', @(t) sin(t)), ...
 %     'yzCircle', struct('xequation', @(t) 0, 'yequation', @(t) cos(t), 'zequation', @(t) sin(t)), ...
@@ -30,6 +43,16 @@ clear adapted_shape_set;
 %     'yline', struct('xequation', @(t) 0, 'yequation', @(t) t, 'zequation', @(t) 0), ...
 %     'zline', struct('xequation', @(t) 0, 'yequation', @(t) 0, 'zequation', @(t) t) ...
 % );
+
+
+%Selected shape_dict
+
+%shapes_dict=reduced_adapted_circle_set;
+%shapes_dict=adapted_line_set;
+%shapes_dict=reduced_adapted_shape_set;
+%shapes_dict=small_shapes_dict;
+shapes_dict=reduced_adapted_interpolate_set;
+
 
 %Loading Model
 
@@ -54,64 +77,65 @@ guessesIDs = ["j1.Rz.q";"j2.Rz.q";"j3.Rz.q";"j4.Rz.q";"j5.Rz.q"];
 guesses = [3,3,3,3,3];
 addInitialGuessVariables(ik,guessesIDs);
 
-
-j1 = zeros(1000,1);
-j2 = zeros(1000,1);
-j3 = zeros(1000,1);
-j4 = zeros(1000,1);
-j5 = zeros(1000,1);
+%simul length: len_time_series/100= legnth of simulation in seconds
+len_time_series=1000;
+j1 = zeros(len_time_series,1);
+j2 = zeros(len_time_series,1);
+j3 = zeros(len_time_series,1);
+j4 = zeros(len_time_series,1);
+j5 = zeros(len_time_series,1);
 T = 10; % period
-spline = zeros(1000,3);
-
+spline = zeros(len_time_series,3);
+targets = zeros(len_time_series,3);
 
 %Creating dataset
 
-%Selected shape_dict
 
-%shapes_dict=reduced_adapted_circle_set;
-%shapes_dict=adapted_line_set;
-shapes_dict=reduced_adapted_shape_set;
-
-len_time_series=1000;
-m0=[zeros(1000, 1), zeros(1000, 1)];
-m1=[transpose(1:1000), ones(1000, 1)];
+m0=[transpose(1:len_time_series), zeros(len_time_series, 1)];
+%m0(1:501,2) = 1;
+m1=[transpose(1:len_time_series), ones(len_time_series, 1)];
 
 shapelist=fieldnames(shapes_dict);
 numberofshapes=numel(shapelist);
 fprintf('The number of fields is:%d\n',numberofshapes);
 dataset=[];
 for k = 1:numberofshapes
-%for k = 1:200
-    if k==250
+    if k==floor(numberofshapes/4)
         disp("------------------------")
-        disp("K =50 HAS BEEN REACHED")
+        disp("K =1/4 HAS BEEN REACHED")
         disp("------------------------")
     end
-      if k==500
+      if k==floor(numberofshapes/2)
           disp("------------------------")
-        disp("K =100 HAS BEEN REACHED")
+        disp("K =1/2 HAS BEEN REACHED")
         disp("------------------------")
       end
-         if k==750
+         if k==floor(numberofshapes*3/4)
           disp("------------------------")
-        disp("K =150 HAS BEEN REACHED")
+        disp("K =3/4 HAS BEEN REACHED")
         disp("------------------------")
     end
+    
 
-    sign=1;
     shape=shapelist{k};
-    fprintf('Shape name:%s\n',shape);     
+    disp("------------------------")
+    fprintf('Shape name:%s\n',shape);
+    disp("------------------------")
+
     %disp("Equations de la forme");
     %disp(shapes_dict.(shape));
-    targets = zeros(len_time_series,3);
+    x=shapes_dict.(shape).xcoords;
+    y=shapes_dict.(shape).ycoords;
+    z=shapes_dict.(shape).zcoords;
+
 
     for t = 1:len_time_series
-        sign=1;
         t_echantillon=t/500;
-        datapoint =[shapes_dict.(shape).xequation(t_echantillon), shapes_dict.(shape).yequation(t_echantillon), shapes_dict.(shape).zequation(t_echantillon)];
-         %datapoint = [0+k*0.1*cos(t/100*(2*pi/T)),0+k*0.1*sin(t/100*(2*pi/T)),0.15+k*0.1*(t/100/T)];
-            spline(t,:)  = datapoint;
-            targets(t,:) = datapoint;
+        datapoint =[x(t), y(t),z(t)];
+        %datapoint =[shapes_dict.(shape).xequation(t_echantillon), shapes_dict.(shape).yequation(t_echantillon), shapes_dict.(shape).zequation(t_echantillon)];
+        %datapoint = [0+k*0.1*cos(t/100*(2*pi/T)),0+k*0.1*sin(t/100*(2*pi/T)),0.15+k*0.1*(t/100/T)];
+        spline(t,:)  = datapoint;
+        targets(t,:) = datapoint;
 
         
         
@@ -128,14 +152,15 @@ for k = 1:numberofshapes
         j5(t,1) = outputVec(5);
     end
         
-    
-    joint1_ts = timeseries(j1/180*pi,0:0.01:9.99);
-    joint2_ts = timeseries(j2/180*pi,0:0.01:9.99);
-    joint3_ts = timeseries(j3/180*pi,0:0.01:9.99);
-    joint4_ts = timeseries(j4/180*pi,0:0.01:9.99);
-    joint5_ts = timeseries(j5/180*pi,0:0.01:9.99);
-    %dataset=[dataset,datapoint];
-    for j=0:3   %on mettra 64 plus tard si on le veut
+    end_time_value_in_seconds= (len_time_series-1)*0.01;
+
+    joint1_ts = timeseries(j1/180*pi,0:0.01:end_time_value_in_seconds);
+    joint2_ts = timeseries(j2/180*pi,0:0.01:end_time_value_in_seconds);
+    joint3_ts = timeseries(j3/180*pi,0:0.01:end_time_value_in_seconds);
+    joint4_ts = timeseries(j4/180*pi,0:0.01:end_time_value_in_seconds);
+    joint5_ts = timeseries(j5/180*pi,0:0.01:end_time_value_in_seconds);
+
+    for j=0:3   %il faut réparer les moteurs 4/5/6
         fprintf('Motor off is:%d\n',j);
         error1=m1;
         error2=m1;
@@ -143,6 +168,64 @@ for k = 1:numberofshapes
         error4=m1;
         error5=m1;
         error6=m1;
+
+        %%%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
+
+        % X = randi([1000, 1000]);
+        % 
+        % % Step 2: Randomly select numbers greater than 50 that add up to X
+        % remainingX = X;
+        % selectedNumbers = [];
+        % 
+        % while remainingX > 50
+        %     % Randomly select a number greater than 50
+        %     randomNumber = randi([51, remainingX]);
+        % 
+        %     % Add the selected number to the list
+        %     selectedNumbers = [selectedNumbers, randomNumber];
+        % 
+        %     % Update the remainingX
+        %     remainingX = remainingX - randomNumber;
+        % end
+        % 
+        % % Specify the range
+        % lowerBound = 25;
+        % upperBound = 800;
+        % numPoints = numel(selectedNumbers);
+        % randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
+        % totalPoints = 1000;
+        % pointsList = ones(1, totalPoints);
+        % pointsList(randomPoints) = 0;
+        % 
+        % for i = 1:numPoints
+        %     startRange = randomPoints(i);
+        %     endRange = randomPoints(i) + selectedNumbers(i);
+        % 
+        %     % Ensure the endRange does not exceed the total number of points
+        %     endRange = min(endRange, totalPoints);
+        % 
+        %     % Set values to 0 in the specified range
+        %     pointsList(startRange:endRange) = 0;
+        % end
+        % 
+        % % Assuming pointsList is already generated (as per the previous code)
+        % 
+        % % Create a 1000x2 vector
+        % vectorMatrix = zeros(1000, 2);
+        % 
+        % % Populate the first column with linear values from 1 to 1000
+        % vectorMatrix(:, 1) = (1:1000)';
+        % 
+        % % Populate the second column with the values from pointsList
+        % vectorMatrix(:, 2) = pointsList;
+        % % Display the resulting vector matrix
+        % %disp(vectorMatrix);
+        % % Display the list of points
+        % m0 = vectorMatrix;
+        % disp("number of zeroes")
+        % numZeros = sum(vectorMatrix(:, 2) == 0)
+        %%%
+
         switch j
             case 1
                 error1=m0;
@@ -158,11 +241,14 @@ for k = 1:numberofshapes
                 error6=m0;
         end
         dataset = [dataset, targets];
+
         %on ajoute déjà les trajectoires cibles
         disp("----------------")
         disp("----------------")
         simOut = sim(model_name);
-        
+        disp("----------------")
+        disp("----------------")
+
         j1o = simOut.j1.Data;
         j2o = simOut.j2.Data;
         j3o = simOut.j3.Data;
@@ -175,8 +261,7 @@ for k = 1:numberofshapes
         j5o = j5o*180/pi;
 
         disp(size(j1o))
-        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o);
-        [xf, yf, zf] = ForwardKinematic(j1, j2, j3, j4, j5); 
+        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
         jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
         dataset=[dataset,jdatapoint];
  
@@ -193,7 +278,6 @@ for k = 1:numberofshapes
 end
     
 %fprintf("The final size of the dataset is %s", mat2str(size(dataset)));
-disp("line 157 end has been passed");
 
 %%experimental - mat2cell conversion %%%
 
@@ -208,10 +292,11 @@ rowDist = 6 * ones(1, sized(1)/6);
 % Use mat2cell to convert the dataset into a cell array
 cellArray = mat2cell(dataset, rowDist);
 disp(size(cellArray))
-save('cellArray1000.mat', 'cellArray');
+save('cellArray500interpolatesshapes.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
+
 %Running the rain_predict_file
-run('rain_predict_lstm.m');
+%run('rain_predict_lstm.m');
 
 
 %%% end of experimental section %%%
@@ -219,7 +304,7 @@ run('rain_predict_lstm.m');
 
 
 
-function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5)
+function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5,len_time_series)
     joint1_damping = 0;
     joint2_damping = 0;
     damp_pince = 1000; % damping coefficient for joints of the pince
@@ -241,14 +326,14 @@ function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5)
         "gripper_base.Translation.z"];
     addOutputVariables(ik,outputIDs);
     
-    x = zeros(1000,1);
-    y = zeros(1000,1);
-    z = zeros(1000,1);
+    x = zeros(len_time_series,1);
+    y = zeros(len_time_series,1);
+    z = zeros(len_time_series,1);
     T = 10; % period
-    spline = zeros(1000,5);
+    %spline = zeros(len_time_series,5);
     
     len = size(j1);
-    for i = 1:1000
+    for i = 1:len_time_series
         targets = [j1(i),j2(i),j3(i),j4(i),j5(i)];
     
 
@@ -344,7 +429,7 @@ function [circlelist] = CreateCircleList(max_rayon,max_eloignement_centre)
         max_eloignement=0.28;
         circlelist=struct();
         x_prime_z_prime_y_prime_coords={@(t) cos(2*pi*t);@(t) sin(2*pi*t);@(t) 0};
-        for e_h=0:1:max_eloignement_centre*100                      %on itère sur les rayons possibles#changer incrémentation
+        for e_h=10:1:max_eloignement_centre*100                      %on itère sur les rayons possibles#changer incrémentation
             e=e_h*0.01;
             for r_h =1:1:max_rayon*100                             %on itère sur l'éloignement au centre possible #changer incrémentation?
                 r=r_h*0.01;
@@ -393,7 +478,7 @@ function [linelist] = CreateLineList(max_eloignement_centre,max_longueur)
         min_eloignement=0.02;
         max_eloignement=0.28;
         x_prime_z_prime_y_prime_coords={@(t) (t<=max_longueur)*t;@(t) 0;@(t) 0};
-        for e_h=0:1:max_eloignement_centre*100         %on itère sur l'éloignement au centre possible #changer incrémentation?
+        for e_h=10:1:max_eloignement_centre*100         %on itère sur l'éloignement au centre possible #changer incrémentation?
             e=e_h*0.01;
             for r_h =1:1:max_longueur*100
                 r=r_h*0.01;
@@ -469,3 +554,58 @@ function [rectanglelist] = Create_rectangle_List(max_eloignement_centre,max_long
             end
         end
 end
+
+%function7
+function [interpolated_set] = createInterpolate(numberofinterpolatedshapes,len_time_series)
+    %Interpolation set creation
+    interpolated_set = struct();
+    min_eloignement_point=0.02;
+    max_eloignement_point=0.28;
+    
+    for p = 1:numberofinterpolatedshapes
+        thisshape=struct();
+        num_point = randi([3, 10]); % number of point for interpolation
+        m = (max_eloignement_point - min_eloignement_point) * rand(3, num_point) + min_eloignement_point;
+    
+        %verification of sufficient Z value
+        for i = 1:num_point
+            if m(3,i)<0.1
+                m(3,i)=0.1+(max_eloignement_point-0.1)*m(3,i);
+            end
+        end
+    
+        shapename = sprintf('ishape_p%d_num_point%d', p, num_point);
+        X = m(1,:);Y = m(2,:);Z = m(3,:);
+        values = spcrv([X(1) X X(end);Y(1) Y Y(end);Z(1) Z Z(end)],4);
+        plot3(X,Y,Z)
+    
+        plot3(values(1,:),values(2,:),values(3,:))
+        
+        ts_x = timeseries(values(1,:),linspace(0,10,size(values,2)));
+        ts_y = timeseries(values(2,:),linspace(0,10,size(values,2)));
+        ts_z = timeseries(values(3,:),linspace(0,10,size(values,2)));
+        
+        end_time_value_in_seconds= (len_time_series-1)*0.01;
+
+        ts_x = resample(ts_x, 0.01:0.01:end_time_value_in_seconds);
+        ts_y = resample(ts_y, 0.01:0.01:end_time_value_in_seconds);
+        ts_z = resample(ts_z, 0.01:0.01:end_time_value_in_seconds);
+
+        % ts_x = resample(ts_x, 0.01:0.01:10);
+        % ts_y = resample(ts_y, 0.01:0.01:10);
+        % ts_z = resample(ts_z, 0.01:0.01:10);
+        % 
+        
+        x = ts_x.Data(:);
+        y = ts_y.Data(:);
+        z = ts_z.Data(:);
+        fieldName = sprintf('xcoords');
+        thisshape.(fieldName)=x;
+        fieldName = sprintf('ycoords');
+        thisshape.(fieldName)=y;
+        fieldName = sprintf('zcoords');
+        thisshape.(fieldName)=z;
+        interpolated_set.(shapename) = thisshape;
+    end
+end
+ 
