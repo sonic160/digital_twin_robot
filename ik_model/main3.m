@@ -56,7 +56,7 @@ shapes_dict=reduced_adapted_interpolate_set;
 
 %Loading Model
 
-model_name = 'main3_armpi_fpv';
+model_name = 'ik_model\main3_armpi_fpv';
 load_system(model_name);
 joint1_damping = 0;
 joint2_damping = 0;
@@ -577,9 +577,9 @@ function [interpolated_set] = createInterpolate(numberofinterpolatedshapes,len_t
         shapename = sprintf('ishape_p%d_num_point%d', p, num_point);
         X = m(1,:);Y = m(2,:);Z = m(3,:);
         values = spcrv([X(1) X X(end);Y(1) Y Y(end);Z(1) Z Z(end)],4);
-        plot3(X,Y,Z)
-    
-        plot3(values(1,:),values(2,:),values(3,:))
+        % plot3(X,Y,Z)
+        % 
+        % plot3(values(1,:),values(2,:),values(3,:))
         
         ts_x = timeseries(values(1,:),linspace(0,10,size(values,2)));
         ts_y = timeseries(values(2,:),linspace(0,10,size(values,2)));
@@ -587,9 +587,9 @@ function [interpolated_set] = createInterpolate(numberofinterpolatedshapes,len_t
         
         end_time_value_in_seconds= (len_time_series-1)*0.01;
 
-        ts_x = resample(ts_x, 0.01:0.01:end_time_value_in_seconds);
-        ts_y = resample(ts_y, 0.01:0.01:end_time_value_in_seconds);
-        ts_z = resample(ts_z, 0.01:0.01:end_time_value_in_seconds);
+        ts_x = resample(ts_x, 0:0.01:end_time_value_in_seconds);
+        ts_y = resample(ts_y, 0:0.01:end_time_value_in_seconds);
+        ts_z = resample(ts_z, 0:0.01:end_time_value_in_seconds);
 
         % ts_x = resample(ts_x, 0.01:0.01:10);
         % ts_y = resample(ts_y, 0.01:0.01:10);
