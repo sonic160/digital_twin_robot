@@ -4,8 +4,10 @@ time_series_length = 1000;
 num_classes = 4;
 
 % Parameters
-cellArray=load('.\cellArray500interpolatesshapes.mat');
-sizearray = size(cellArray);
+struc=load('cellArray500interpolatesshapes.mat');
+%cArray=struc.cellArray;
+cArray=struc;
+sizearray = size(cArray);
 numSeq = sizearray(1);      % Number of sequences
 numFeatures = 4;   % Number of features
 maxSeqLength = 1000; % Maximum sequence length
@@ -30,10 +32,10 @@ categoricalSequence = categorical(pattern, 0:numClasses-1);
 totalElements = numel(categoricalSequence);
 indexToKeep = round(0.8 * totalElements);
 
-totalCells = numel(cellArray);
+totalCells = numel(cArray);
 index = round(0.8 * totalCells);
-XTrain = cellArray(1:index);
-XVal = cellArray(index:totalCells);
+XTrain = cArray(1:index);
+XVal = cArray(index:totalCells);
 YTrain = categoricalSequence(1:indexToKeep);
 YVal =categoricalSequence(indexToKeep:totalElements);
 
@@ -41,7 +43,7 @@ YVal =categoricalSequence(indexToKeep:totalElements);
 %legend("Feature " + string(1:numFeatures),Location="northeastoutside")
 % Display the generated data
 
-miniBatchSize = 128;%UTILITE
+miniBatchSize = 64;%UTILITE
 % Step 2: Define the neural network
 
 inputSize = 6;
@@ -53,22 +55,23 @@ layers =[
     % Bidirectional LSTM layers
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-    fullyConnectedLayer(numHiddenUnits,'last')
+    fullyConnectedLayer(numHiddenUnits,'Name', 'fc_last')
     dropoutLayer(0.2)
-    fullyConnectedLayer(numClasses)
+    fullyConnectedLayer(numClasses,'Name', 'fc_final')
     softmaxLayer
     classificationLayer
 ];
 options = trainingOptions("sgdm", ...
+    ExecutionEnvironment="cpu", ...  % Specify CPU execution
     LearnRateSchedule="piecewise", ...
     LearnRateDropFactor=0.2, ...
     LearnRateDropPeriod=5, ...
     MaxEpochs=200, ...
     MiniBatchSize=128, ...
-    ValidationData={XVal,YVal}, ... %new
-    ValidationFrequency=20, ...     %new
+    ValidationData={XVal,YVal}, ...
+    ValidationFrequency=20, ...
     SequenceLength="longest", ...
-    L2Regularization = 0.0001, ...  %new
+    L2Regularization = 0.0001, ...
     Shuffle="once", ...
     Verbose=0, ...
     Plots="training-progress");

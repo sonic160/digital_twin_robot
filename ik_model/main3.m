@@ -296,7 +296,7 @@ save('cellArray500interpolatesshapes.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
 
 %Running the rain_predict_file
-%run('rain_predict_lstm.m');
+run('rain_predict_lstm.m');
 
 
 %%% end of experimental section %%%
