@@ -1,16 +1,15 @@
-% Step 1: Generate the dataset
-num_time_series = 4000;
+% Step 1num_time_series: Generate the dataset
 time_series_length = 1000;
 num_classes = 4;
 
 % Parameters
-struc=load('cellArray500interpolatesshapes.mat');
-%cArray=struc.cellArray;
-cArray=struc;
+%struc=load('cellArray1000.mat');
+cArray=CC.cellArray;
+% cArray=struc;
 sizearray = size(cArray);
+
 numSeq = sizearray(1);      % Number of sequences
-numFeatures = 4;   % Number of features
-maxSeqLength = 1000; % Maximum sequence length
+
 
 % Generate random sequences
 %XTrain = cell(numSeq, 1);
@@ -23,76 +22,77 @@ maxSeqLength = 1000; % Maximum sequence length
 %     end
 %     %}
 
-numClasses = 4;  % Number of classes
-
-% Generate categorical sequence
 pattern = mod(0:numSeq-1, numClasses);
 categoricalSequence = categorical(pattern, 0:numClasses-1);
-%disp(categoricalSequence);
 totalElements = numel(categoricalSequence);
 indexToKeep = round(0.8 * totalElements);
 
-totalCells = numel(cArray);
+totalCells = numel(cellArray);
 index = round(0.8 * totalCells);
-XTrain = cArray(1:index);
-XVal = cArray(index:totalCells);
+XTrain = cellArray(1:index);
+XVal = cellArray(index:totalCells);
 YTrain = categoricalSequence(1:indexToKeep);
 YVal =categoricalSequence(indexToKeep:totalElements);
 
-%numFeatures = size(XTrain{1},1);
-%legend("Feature " + string(1:numFeatures),Location="northeastoutside")
-% Display the generated data
 
-miniBatchSize = 64;%UTILITE
+miniBatchSize = 64;
 % Step 2: Define the neural network
 
 inputSize = 6;
 numHiddenUnits = 150;
 numClasses = 4;
 
-layers =[
-    sequenceInputLayer(inputSize) 
+
+layers = [
+    sequenceInputLayer(inputSize)
+    
     % Bidirectional LSTM layers
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-    fullyConnectedLayer(numHiddenUnits,'Name', 'fc_last')
+    fullyConnectedLayer(numHiddenUnits)
     dropoutLayer(0.2)
-    fullyConnectedLayer(numClasses,'Name', 'fc_final')
+    lstmLayer(numHiddenUnits, 'OutputMode', 'last')
+    fullyConnectedLayer(numClasses)
     softmaxLayer
     classificationLayer
 ];
-options = trainingOptions("sgdm", ...
-    ExecutionEnvironment="cpu", ...  % Specify CPU execution
-    LearnRateSchedule="piecewise", ...
-    LearnRateDropFactor=0.2, ...
-    LearnRateDropPeriod=5, ...
+
+options = trainingOptions("adam", ...
+    ExecutionEnvironment="cpu", ...
+    GradientThreshold=1, ...
     MaxEpochs=200, ...
-    MiniBatchSize=128, ...
-    ValidationData={XVal,YVal}, ...
-    ValidationFrequency=20, ...
+    MiniBatchSize=miniBatchSize, ...
+    ValidationData={XVal,YVal}, ... %new
+    ValidationFrequency=20, ...     %new
     SequenceLength="longest", ...
-    L2Regularization = 0.0001, ...
+    L2Regularization = 0.0001, ...  %new
     Shuffle="once", ...
     Verbose=0, ...
     Plots="training-progress");
-% options = trainingOptions("adam", ...
-%     ExecutionEnvironment="cpu", ...
-%     GradientThreshold=1, ...
+
+% options = trainingOptions("sgdm", ...
+%     ExecutionEnvironment="cpu", ...  % Specify CPU execution
+%     LearnRateSchedule="piecewise", ...
+%     LearnRateDropFactor=0.2, ...
+%     LearnRateDropPeriod=5, ...
 %     MaxEpochs=200, ...
-%     MiniBatchSize=miniBatchSize, ...
-%     ValidationData={XVal,YVal}, ... %new
-%     ValidationFrequency=20, ...     %new
+%     MiniBatchSize=128, ...
+%     ValidationData={XVal,YVal}, ...
+%     ValidationFrequency=20, ...
 %     SequenceLength="longest", ...
-%     L2Regularization = 0.0001, ...  %new
+%     L2Regularization = 0.0001, ...
 %     Shuffle="once", ...
 %     Verbose=0, ...
 %     Plots="training-progress");
 
 
-net3 = trainNetwork(XTrain,YTrain,layers,options);
-save('lstmv3_2bilayers_500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','net3')
+netv2 = trainNetwork(XTrain,YTrain,layers,options);
+
+
+
+save('lstmv3_2bilayers_2500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','netv2')
 % Make predictions on the validation set
-YPred = predict(net3, XVal);
+YPred = predict(netv2, XVal);
 
 % Find the column index of the maximum probability for each row
 [~, predictedClass] = max(YPred, [], 2);
