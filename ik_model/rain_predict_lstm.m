@@ -4,7 +4,7 @@ num_classes = 4;
 
 % Parameters
 %struc=load('cellArray1000.mat');
-cArray=CC.cellArray;
+cArray=CD.cellArray;
 % cArray=struc;
 sizearray = size(cArray);
 
