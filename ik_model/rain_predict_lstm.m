@@ -1,6 +1,6 @@
 % Step 1num_time_series: Generate the dataset
 time_series_length = 1000;
-num_classes = 4;
+num_classes = 13;
 
 % Parameters
 %struc=load('cellArray1000.mat');
@@ -40,7 +40,7 @@ miniBatchSize = 64;
 
 inputSize = 6;
 numHiddenUnits = 150;
-numClasses = 4;
+numClasses = num_classes;
 
 
 layers = [
@@ -86,13 +86,13 @@ options = trainingOptions("adam", ...
 %     Plots="training-progress");
 
 
-netv2 = trainNetwork(XTrain,YTrain,layers,options);
+net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 
-save('lstmv3_2bilayers_2500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','netv2')
+save('lstmv3_2bilayers_2500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','net')
 % Make predictions on the validation set
-YPred = predict(netv2, XVal);
+YPred = predict(net, XVal);
 
 % Find the column index of the maximum probability for each row
 [~, predictedClass] = max(YPred, [], 2);
@@ -102,19 +102,25 @@ categoryNames = cellstr(num2str((0:max(predictedClass))'));  % Assuming classes 
 categoricalPred = categorical(predictedClass - 1, 0:max(predictedClass), categoryNames);
 
 % Compute confusion matrix
-C = confusionmat(YVal, categoricalPred);
+C = confusionmat(YVal, categoricalPred)
 
 % Display confusion chart
 figure
 confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
+title('Confusion Matrix');
+
 
 precision = diag(C) ./ sum(C, 1)';
 recall = diag(C) ./ sum(C, 2);
 f1Score = 2 * (precision .* recall) ./ (precision + recall);
 
+
 % Display the results
 disp('Class   Precision   Recall   F1 Score');
 disp([transpose(1:size(C, 1)), precision, recall, f1Score]);
+
+% Create a new figure for ROC curves
+figure
 
 for i = 0:numClasses-1
     % Convert true labels to binary
@@ -132,4 +138,35 @@ for i = 0:numClasses-1
     
     hold on;
 end
+
+% Add labels and legend
+xlabel('False Positive Rate');
+ylabel('True Positive Rate');
+title('ROC Curves for Multi-Class Classification');
+legend('show');
+
+% Create a new figure for Precision-Recall curves
+figure
+
+for i = 0:numClasses-1
+    % Convert true labels to binary
+    YTruBinary = ismember(YVal, num2str(i));
+    
+    % Extract predicted scores for the current class
+    YpredROC = YPred(:, i+1);
+    
+    % Compute Precision-Recall curve
+    [precision, recall, ~, AUC] = perfcurve(YTruBinary, YpredROC, 1, 'xCrit', 'reca', 'yCrit', 'prec');
+    
+    % Plot Precision-Recall curve for the current class
+    plot(recall, precision, 'DisplayName', ['Class ' num2str(i) ' (AUC = ' num2str(AUC) ')']);
+    
+    hold on;
+end
+% Add labels and legend
+xlabel('Recall');
+ylabel('Precision');
+title('Precision-Recall Curves for Multi-Class Classification');
+legend('Location', 'Best');
+hold off; % Stop holding onto the current plot
 

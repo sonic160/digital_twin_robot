@@ -169,63 +169,6 @@ for k = 1:numberofshapes
         error5=m1;
         error6=m1;
 
-        %%%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
-
-        % X = randi([1000, 1000]);
-        % 
-        % % Step 2: Randomly select numbers greater than 50 that add up to X
-        % remainingX = X;
-        % selectedNumbers = [];
-        % 
-        % while remainingX > 50
-        %     % Randomly select a number greater than 50
-        %     randomNumber = randi([51, remainingX]);
-        % 
-        %     % Add the selected number to the list
-        %     selectedNumbers = [selectedNumbers, randomNumber];
-        % 
-        %     % Update the remainingX
-        %     remainingX = remainingX - randomNumber;
-        % end
-        % 
-        % % Specify the range
-        % lowerBound = 25;
-        % upperBound = 800;
-        % numPoints = numel(selectedNumbers);
-        % randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
-        % totalPoints = 1000;
-        % pointsList = ones(1, totalPoints);
-        % pointsList(randomPoints) = 0;
-        % 
-        % for i = 1:numPoints
-        %     startRange = randomPoints(i);
-        %     endRange = randomPoints(i) + selectedNumbers(i);
-        % 
-        %     % Ensure the endRange does not exceed the total number of points
-        %     endRange = min(endRange, totalPoints);
-        % 
-        %     % Set values to 0 in the specified range
-        %     pointsList(startRange:endRange) = 0;
-        % end
-        % 
-        % % Assuming pointsList is already generated (as per the previous code)
-        % 
-        % % Create a 1000x2 vector
-        % vectorMatrix = zeros(1000, 2);
-        % 
-        % % Populate the first column with linear values from 1 to 1000
-        % vectorMatrix(:, 1) = (1:1000)';
-        % 
-        % % Populate the second column with the values from pointsList
-        % vectorMatrix(:, 2) = pointsList;
-        % % Display the resulting vector matrix
-        % %disp(vectorMatrix);
-        % % Display the list of points
-        % m0 = vectorMatrix;
-        % disp("number of zeroes")
-        % numZeros = sum(vectorMatrix(:, 2) == 0)
-        %%%
-
         switch j
             case 1
                 error1=m0;
