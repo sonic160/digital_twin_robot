@@ -1,10 +1,10 @@
 % Step 1num_time_series: Generate the dataset
-time_series_length = 1000;
-num_classes = 13;
+num_classes = 4;
+numClasses = num_classes;
 
 % Parameters
-%struc=load('cellArray1000.mat');
-cArray=CD.cellArray;
+struc=load('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6*500.mat');
+cArray=struc.cellArray;
 % cArray=struc;
 sizearray = size(cArray);
 
@@ -40,7 +40,7 @@ miniBatchSize = 64;
 
 inputSize = 6;
 numHiddenUnits = 150;
-numClasses = num_classes;
+
 
 
 layers = [
@@ -58,9 +58,9 @@ layers = [
 ];
 
 options = trainingOptions("adam", ...
-    ExecutionEnvironment="cpu", ...
+    ExecutionEnvironment="gpu", ...
     GradientThreshold=1, ...
-    MaxEpochs=200, ...
+    MaxEpochs=50, ...
     MiniBatchSize=miniBatchSize, ...
     ValidationData={XVal,YVal}, ... %new
     ValidationFrequency=20, ...     %new
@@ -90,7 +90,7 @@ net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 
-save('lstmv3_2bilayers_2500interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat','net')
+save('lstmv3_2bilayers_150_line_circle_interpolate_motorerror00_0123_reduced6*500_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
 % Make predictions on the validation set
 YPred = predict(net, XVal);
 
