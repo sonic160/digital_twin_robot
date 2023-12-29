@@ -3,8 +3,9 @@ num_classes = 4;
 numClasses = num_classes;
 
 % Parameters
-struc=load('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6*500.mat');
-cArray=struc.cellArray;
+struc=load('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6_500.mat');
+%cArray=struc.cellArray;
+cArray=struc.newCell;
 % cArray=struc;
 sizearray = size(cArray);
 
@@ -60,7 +61,7 @@ layers = [
 options = trainingOptions("adam", ...
     ExecutionEnvironment="gpu", ...
     GradientThreshold=1, ...
-    MaxEpochs=50, ...
+    MaxEpochs=100, ...
     MiniBatchSize=miniBatchSize, ...
     ValidationData={XVal,YVal}, ... %new
     ValidationFrequency=20, ...     %new
@@ -90,7 +91,7 @@ net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 
-save('lstmv3_2bilayers_150_line_circle_interpolate_motorerror00_0123_reduced6*500_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
+save('lstmv3_2bilayers_150_line_circle_interpolate_motorerror00_0123_reduced6_500_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
 % Make predictions on the validation set
 YPred = predict(net, XVal);
 

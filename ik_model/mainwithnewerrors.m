@@ -530,10 +530,10 @@ newCell = cell(size(cellArray));
 
 for i = 1:numel(cellArray)
     % Keep the first 500 columns of each matrix
-    newCell{i} = cellArray{i}(:, 1:500);
+    newCell{i} = XTrain{i}(:, 1:500);
 end
  
-save('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6*500.mat', 'newCell');
+save('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6_500.mat', 'newCell');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
 
 %Running the rain_predict_file
