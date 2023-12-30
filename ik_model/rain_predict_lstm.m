@@ -3,13 +3,73 @@ num_classes = 4;
 numClasses = num_classes;
 
 % Parameters
-struc=load('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6_500.mat');
+struc=load('../cellArray500interpolatesshapes.mat');
 %cArray=struc.cellArray;
-cArray=struc.newCell;
+cArray=struc.cellArray;
 % cArray=struc;
 sizearray = size(cArray);
+numSeq = sizearray(1); % Number of sequences
+disp(numSeq)
+%length of the testingdata
+test_len=100;
 
-numSeq = sizearray(1);      % Number of sequences
+% Size treatment
+numberofcells=numel(cArray);
+maxsize = size(cArray{1}, 2);
+multfactor = maxsize / test_len;
+
+% Create a new cell array to store modified data
+ modifiedCellArray = cArray;
+
+% Process each cell in the original array
+if multfactor ~= 1
+    modifiedCellArray = cell(1, multfactor * maxsize);
+    for k = 1:numberofcells
+        % Get the data from the original cell
+        originalCell = cArray{k};
+        for i = 1:multfactor
+            acell = originalCell(:, (i - 1) * test_len + 1 : i * test_len);
+            % Assign the cells to the modified cell array
+            modifiedCellArray{(k - 1) * multfactor + i} = acell;
+        end
+    end
+end
+
+% %size treatment
+% maxsize=numel(cArray);
+% modifiedCellArray = cell(size(cArray));
+% temp_len=100;
+% for k = 1:maxsize
+%     % Get the data from the original cell
+%     originalCell = cArray{k};
+% 
+%     % Truncate the data to have dimensions of 6-by-temp_len
+%     truncatedData = originalCell(:, 1:temp_len);
+% 
+%     % Assign the truncated data to the corresponding cell in the new array
+%     modifiedCellArray{k} = truncatedData;
+% end
+
+
+% % Create a new cell array to store modified data
+% modifiedCellArray = cell(1, maxsise/temp_len * maxsize);
+% 
+% % Process each cell in the original array
+% for k = 1:maxsize
+%     % Get the data from the original cell
+%     originalCell = cArray{k};
+% 
+%     % Create the first cell with the first temp_len columns
+%     firstCell = originalCell(:, 1:temp_len);
+% 
+%     % Create the second cell with the remaining columns
+%     secondCell = originalCell(:, temp_len+1:end);
+% 
+%     % Assign the cells to the modified cell array
+%     modifiedCellArray{2*k-1} = firstCell;
+%     modifiedCellArray{2*k} = secondCell;
+% end
+
 
 
 % Generate random sequences
@@ -23,17 +83,27 @@ numSeq = sizearray(1);      % Number of sequences
 %     end
 %     %}
 
+
+
+
+
+% Generate the pattern
 pattern = mod(0:numSeq-1, numClasses);
+% Create the categorical sequence
 categoricalSequence = categorical(pattern, 0:numClasses-1);
-totalElements = numel(categoricalSequence);
+% Repeat each category in categoricalSequence by multfactor times
+repeatedSequence = repelem(categoricalSequence, multfactor);
+
+totalElements = numel(repeatedSequence);
 indexToKeep = round(0.8 * totalElements);
 
-totalCells = numel(cellArray);
+totalCells = numel(modifiedCellArray);
 index = round(0.8 * totalCells);
-XTrain = cellArray(1:index);
-XVal = cellArray(index:totalCells);
-YTrain = categoricalSequence(1:indexToKeep);
-YVal =categoricalSequence(indexToKeep:totalElements);
+
+XTrain = modifiedCellArray(1:index);
+XVal = modifiedCellArray(index+1:totalCells);
+YTrain = repeatedSequence(1:indexToKeep);
+YVal =repeatedSequence(indexToKeep+1:totalElements);
 
 
 miniBatchSize = 64;
@@ -61,7 +131,7 @@ layers = [
 options = trainingOptions("adam", ...
     ExecutionEnvironment="gpu", ...
     GradientThreshold=1, ...
-    MaxEpochs=100, ...
+    MaxEpochs=50, ...
     MiniBatchSize=miniBatchSize, ...
     ValidationData={XVal,YVal}, ... %new
     ValidationFrequency=20, ...     %new
@@ -91,7 +161,7 @@ net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 
-save('lstmv3_2bilayers_150_line_circle_interpolate_motorerror00_0123_reduced6_500_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
+save('lstmv3_2bilayers_500_interpolation_motorerror00_0123_reduced_10_6_100_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
 % Make predictions on the validation set
 YPred = predict(net, XVal);
 

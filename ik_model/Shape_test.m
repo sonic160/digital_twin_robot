@@ -1,51 +1,84 @@
-
+%load stuff here
+loadedstructure=load("../cellArray1000.mat");
+loadedCellArray = loadedstructure.cellArray;
+k=201;
+chosencell=loadedCellArray{k};
 %load('trajCS.mat')
 %longeur de la time series
 
-len_time_series=10000;
-sample_time=10/len_time_series;
-%trajectoire CS
+len_time_series=1000;
 
-x = trajCS.x;
-y = trajCS.y;
-z = trajCS.z;
-scaleFactorX = 3;
-scaleFactorY = 3;
-
-% Scaling the vectors
-x_scaled = x * scaleFactorX;
-y_scaled = y * scaleFactorY;
-
+datapoints= [chosencell(1,:)',chosencell(2,:)',chosencell(3,:)'];
+x= chosencell(1,:)';
+y= chosencell(2,:)';
+z= chosencell(3,:)';
+% sample_time=10/len_time_series;
+% %trajectoire CS
+% 
+% x = trajCS.x;
+% y = trajCS.y;
+% z = trajCS.z;
+% scaleFactorX = 3;
+% scaleFactorY = 3;
+% 
+% % Scaling the vectors
+% x_scaled = x * scaleFactorX;
+% y_scaled = y * scaleFactorY;
 % Plotting in 3D
-% figure;
-% plot3(x_scaled, y_scaled, z, 'o-');
-% grid on;
-% xlabel('X-axis');
-% ylabel('Y-axis');
-% zlabel('Z-axis');
-% title('3D Plot Example');
-
-% Desired number of points
-desiredPoints = len_time_series;
-
-% Create indices for downsampling
-indices = round(linspace(1, length(x), desiredPoints));
-
-% Downsample the vectors
-x_downsampled = x_scaled(indices);
-y_downsampled = y_scaled(indices);
-z_downsampled = z(indices)+0.05;
-
-% Plotting downsampled in 3D
 figure;
-plot3(x_downsampled, y_downsampled, z_downsampled, 'o-');
+% plot3(x_scaled, y_scaled, z, 'o-');
+plot3(x, y, z, 'o-');
 grid on;
 xlabel('X-axis');
 ylabel('Y-axis');
 zlabel('Z-axis');
-title('3D Plot downsampleed');
+title('3D Plot Example, what should be done');
+x= chosencell(4,:)';
+y= chosencell(5,:)';
+z= chosencell(6,:)';
+% sample_time=10/len_time_series;
+% %trajectoire CS
+% 
+% x = trajCS.x;
+% y = trajCS.y;
+% z = trajCS.z;
+% scaleFactorX = 3;
+% scaleFactorY = 3;
+% 
+% % Scaling the vectors
+% x_scaled = x * scaleFactorX;
+% y_scaled = y * scaleFactorY;
+% Plotting in 3D
+figure;
+% plot3(x_scaled, y_scaled, z, 'o-');
+plot3(x, y, z, 'o-');
+grid on;
+xlabel('X-axis');
+ylabel('Y-axis');
+zlabel('Z-axis');
+title('3D Plot Example, what was done');
 
-datapoints =[x_downsampled, y_downsampled,z_downsampled];
+% % Desired number of points
+% desiredPoints = len_time_series;
+% 
+% % Create indices for downsampling
+% indices = round(linspace(1, length(x), desiredPoints));
+% 
+% % Downsample the vectors
+% x_downsampled = x_scaled(indices);
+% y_downsampled = y_scaled(indices);
+% z_downsampled = z(indices)+0.05;
+% 
+% % Plotting downsampled in 3D
+% figure;
+% plot3(x_downsampled, y_downsampled, z_downsampled, 'o-');
+% grid on;
+% xlabel('X-axis');
+% ylabel('Y-axis');
+% zlabel('Z-axis');
+% title('3D Plot downsampleed');
+% 
+% datapoints =[x_downsampled, y_downsampled,z_downsampled];
 
 disp(size(datapoints))
 
@@ -169,7 +202,7 @@ for j=0:0   %il faut réparer les moteurs 4/5/6
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
-    title('3D Plot downsampleed');
+    title('3D Plot what has just been done');
 
 end
 

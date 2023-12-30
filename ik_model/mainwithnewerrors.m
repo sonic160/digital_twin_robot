@@ -3,7 +3,7 @@ disp("It has begun")
 len_time_series=1000;
 
 %load
-
+firsttype=0;
 secondtype=0;
 motorerrorselection=[0,1,2,3];
 % sample_time=10/len_time_series;
@@ -13,12 +13,13 @@ motorerrorselection=[0,1,2,3];
 %Creating shape set
 
 %Most used options
-reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,167);
-reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,167);
-reduced_adapted_interpolate_set= createInterpolate(166, 1000);
+%reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,5);
+%reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,5);
+%firsttype=1;
+reduced_adapted_interpolate_set= createInterpolate(5, 1000);
 %secondtype=True
 secondtype=1;
-reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_adapted_line_set);
+%reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_adapted_line_set);
 
  % adapted_circle_set=CreateCircleList(0.28, 0.28);
  % adapted_line_set=CreateLineList(0.28, 0.28);
@@ -59,8 +60,8 @@ reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_ada
 %Selected shape_dict
 
 %shapes_dict=reduced_adapted_circle_set;
-%shapes_dict=adapted_line_set;
-shapes_dict=reduced_adapted_shape_set;
+%shapes_dict=reduced_adapted_line_set;
+%shapes_dict=reduced_adapted_shape_set;
 %shapes_dict=small_shapes_dict;
 %shapes_dict=reduced_adapted_interpolate_set;
 
@@ -107,206 +108,211 @@ targets = zeros(len_time_series,3);
 m0=[transpose(1:len_time_series), zeros(len_time_series, 1)];
 m1=[transpose(1:len_time_series), ones(len_time_series, 1)];
 
-shapelist=fieldnames(shapes_dict);
-numberofshapes=numel(shapelist);
-fprintf('The number of fields is:%d\n',numberofshapes);
-dataset=[];
-for k = 1:numberofshapes
-    if k==floor(numberofshapes/4)
-        disp("------------------------")
-        disp("K =1/4 HAS BEEN REACHED")
-        disp("------------------------")
-    end
-      if k==floor(numberofshapes/2)
-          disp("------------------------")
-        disp("K =1/2 HAS BEEN REACHED")
-        disp("------------------------")
-      end
-         if k==floor(numberofshapes*3/4)
-          disp("------------------------")
-        disp("K =3/4 HAS BEEN REACHED")
-        disp("------------------------")
-    end
-    
-
-    shape=shapelist{k};
-    disp("------------------------")
-    fprintf('Shape name:%s\n',shape);
-    disp("------------------------")
-
-    %disp("Equations de la forme");
-    %disp(shapes_dict.(shape));
-    % x=shapes_dict.(shape).xcoords;
-    % y=shapes_dict.(shape).ycoords;
-    % z=shapes_dict.(shape).zcoords;
-
-
-    for t = 1:len_time_series
-        t_echantillon=t/500;
-        % datapoint =[x(t), y(t),z(t)];
-        datapoint =[shapes_dict.(shape).xequation(t_echantillon), shapes_dict.(shape).yequation(t_echantillon), shapes_dict.(shape).zequation(t_echantillon)];
-        %datapoint = [0+k*0.1*cos(t/100*(2*pi/T)),0+k*0.1*sin(t/100*(2*pi/T)),0.15+k*0.1*(t/100/T)];
-        spline(t,:)  = datapoint;
-        targets(t,:) = datapoint;
-
-        
-        
-        if t>1 
-            guesses = [j1(t-1,1),j2(t-1,1),j3(t-1,1),j4(t-1,1),j5(t-1,1)];
-        end
-    
-
-        [outputVec,statusFlag] = solve(ik,datapoint,guesses);
-        j1(t,1) = outputVec(1);
-        j2(t,1) = outputVec(2);
-        j3(t,1) = outputVec(3);
-        j4(t,1) = outputVec(4);
-        j5(t,1) = outputVec(5);
-    end
-        
-    end_time_value_in_seconds= (len_time_series-1)*0.01;
-
-    joint1_ts = timeseries(j1/180*pi,0:0.01:end_time_value_in_seconds);
-    joint2_ts = timeseries(j2/180*pi,0:0.01:end_time_value_in_seconds);
-    joint3_ts = timeseries(j3/180*pi,0:0.01:end_time_value_in_seconds);
-    joint4_ts = timeseries(j4/180*pi,0:0.01:end_time_value_in_seconds);
-    joint5_ts = timeseries(j5/180*pi,0:0.01:end_time_value_in_seconds);
-
-    for j=motorerrorselection   %il faut réparer les moteurs 4/5/6
-        fprintf('Motor off is:%d\n',j);
-        error1=m1;
-        error2=m1;
-        error3=m1;
-        error4=m1;
-        error5=m1;
-        error6=m1;
-
-        %%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
-
-        X = randi([1000, 1000]);
-
-        % Step 2: Randomly select numbers greater than 50 that add up to X
-        remainingX = X;
-        selectedNumbers = [];
-
-        while remainingX > 50
-            % Randomly select a number greater than 50
-            randomNumber = randi([51, remainingX]);
-
-            % Add the selected number to the list
-            selectedNumbers = [selectedNumbers, randomNumber];
-
-            % Update the remainingX
-            remainingX = remainingX - randomNumber;
-        end
-
-        % Specify the range
-        lowerBound = 25;
-        upperBound = 800;
-        numPoints = numel(selectedNumbers);
-        randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
-        totalPoints = 1000;
-        pointsList = ones(1, totalPoints);
-        pointsList(randomPoints) = 0;
-
-        for i = 1:numPoints
-            startRange = randomPoints(i);
-            endRange = randomPoints(i) + selectedNumbers(i);
-
-            % Ensure the endRange does not exceed the total number of points
-            endRange = min(endRange, totalPoints);
-
-            % Set values to 0 in the specified range
-            pointsList(startRange:endRange) = 0;
-        end
-
-        % Assuming pointsList is already generated (as per the previous code)
-
-        % Create a 1000x2 vector
-        vectorMatrix = zeros(1000, 2);
-
-        % Populate the first column with linear values from 1 to 1000
-        vectorMatrix(:, 1) = (1:1000)';
-
-        % Populate the second column with the values from pointsList
-        vectorMatrix(:, 2) = pointsList;
-
-
-
-        %%
-        %pointsList  = [ones(1, 500), zeros(1, 500)];
-        %pointsList = ones(1,1000)
-        
-
-        switch j
-            case 1
-                error1=m0;
-            case 2
-                error2=m0;
-            case 3
-                error3=m0;
-            case 4
-                joint1_ts.Data = process_points(pointsList, joint1_ts.Data);
-            case 5 
-                joint2_ts.Data = process_points(pointsList, joint2_ts.Data);
-            case 6
-                joint3_ts.Data = process_points(pointsList, joint3_ts.Data);
-            case 7  
-                joint1_ts.Data = extend_trajectory(joint1_ts.Data, scale_factor);
-            case 8
-                joint2_ts.Data = extend_trajectory(joint2_ts.Data, scale_factor);
-            case 9
-                joint3_ts.Data = extend_trajectory(joint3_ts.Data, scale_factor);
-            case 10
-                joint1_ts.Data = process_points_capped_speed(joint1_ts.Data, speedcap, timescale);
-            case 11
-                joint2_ts.Data = process_points_capped_speed(joint2_ts.Data, speedcap, timescale);
-            case 12
-                joint3_ts.Data = process_points_capped_speed(joint3_ts.Data, speedcap, timescale);
-            case 13
-                error4=m0;
-            case 14
-                error5=m0;
-            case 15
-                error6=m0;
-        end
-        dataset = [dataset, targets];
-
-        %on ajoute déjà les trajectoires cibles
-        disp("----------------")
-        disp("----------------")
-        simOut = sim(model_name);
-        disp("----------------")
-        disp("----------------")
-
-        j1o = simOut.j1.Data;
-        j2o = simOut.j2.Data;
-        j3o = simOut.j3.Data;
-        j4o = simOut.j4.Data;
-        j5o = simOut.j5.Data;
-        j1o = j1o*180/pi;
-        j2o = j2o*180/pi;
-        j3o = j3o*180/pi;
-        j4o = j4o*180/pi;
-        j5o = j5o*180/pi;
-
-        disp(size(j1o))
-        [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
-        jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
-        dataset=[dataset,jdatapoint];
-        %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
-    end
-    %datapoint de labélisation j (pour une k ième forme donnée)
-    %sera donnée par la mise bout a bout de 7*k i ème ligne de dataset
-    %(cas pas d'erreure moteur)
-    %et la 7*k+j ième ligne, chaque ligne étant x,y,z étudiés sur la
-    %timeseries pour l'erreure moteur selecio
-    %pour avoir une entrée de l'IA qui regarder l'effet  il faudra prendre
-    %fprintf("The current size of the dataset is %s", mat2str(size(dataset)));
+if firsttype ~= 1 && secondtype ~= 1
+    error('Please set either firsttype or secondtype to 1.');
 end
+dataset=[];
+if firsttype
+    shapelist=fieldnames(shapes_dict);
+    numberofshapes=numel(shapelist);
+    fprintf('The number of fields is:%d\n',numberofshapes);
+    for k = 1:numberofshapes
+        if k==floor(numberofshapes/4)
+            disp("------------------------")
+            disp("K =1/4 HAS BEEN REACHED")
+            disp("------------------------")
+        end
+        if k==floor(numberofshapes/2)
+            disp("------------------------")
+            disp("K =1/2 HAS BEEN REACHED")
+            disp("------------------------")
+        end
+        if k==floor(numberofshapes*3/4)
+             disp("------------------------")
+            disp("K =3/4 HAS BEEN REACHED")
+            disp("------------------------")
+        end
+        
     
-fprintf("The final size of the dataset1 is %s", mat2str(size(dataset)));
-v1=mat2str(size(dataset));
+        shape=shapelist{k};
+        disp("------------------------")
+        fprintf('Shape name:%s\n',shape);
+        disp("------------------------")
+    
+        %disp("Equations de la forme");
+        %disp(shapes_dict.(shape));
+        % x=shapes_dict.(shape).xcoords;
+        % y=shapes_dict.(shape).ycoords;
+        % z=shapes_dict.(shape).zcoords;
+    
+    
+        for t = 1:len_time_series
+            t_echantillon=t/500;
+            % datapoint =[x(t), y(t),z(t)];
+            datapoint =[shapes_dict.(shape).xequation(t_echantillon), shapes_dict.(shape).yequation(t_echantillon), shapes_dict.(shape).zequation(t_echantillon)];
+            %datapoint = [0+k*0.1*cos(t/100*(2*pi/T)),0+k*0.1*sin(t/100*(2*pi/T)),0.15+k*0.1*(t/100/T)];
+            spline(t,:)  = datapoint;
+            targets(t,:) = datapoint;
+    
+            
+            
+            if t>1 
+                guesses = [j1(t-1,1),j2(t-1,1),j3(t-1,1),j4(t-1,1),j5(t-1,1)];
+            end
+        
+    
+            [outputVec,statusFlag] = solve(ik,datapoint,guesses);
+            j1(t,1) = outputVec(1);
+            j2(t,1) = outputVec(2);
+            j3(t,1) = outputVec(3);
+            j4(t,1) = outputVec(4);
+            j5(t,1) = outputVec(5);
+        end
+            
+        end_time_value_in_seconds= (len_time_series-1)*0.01;
+    
+        joint1_ts = timeseries(j1/180*pi,0:0.01:end_time_value_in_seconds);
+        joint2_ts = timeseries(j2/180*pi,0:0.01:end_time_value_in_seconds);
+        joint3_ts = timeseries(j3/180*pi,0:0.01:end_time_value_in_seconds);
+        joint4_ts = timeseries(j4/180*pi,0:0.01:end_time_value_in_seconds);
+        joint5_ts = timeseries(j5/180*pi,0:0.01:end_time_value_in_seconds);
+    
+        for j=motorerrorselection   %il faut réparer les moteurs 4/5/6
+            fprintf('Motor off is:%d\n',j);
+            error1=m1;
+            error2=m1;
+            error3=m1;
+            error4=m1;
+            error5=m1;
+            error6=m1;
+    
+            %%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
+    
+            X = randi([1000, 1000]);
+    
+            % Step 2: Randomly select numbers greater than 50 that add up to X
+            remainingX = X;
+            selectedNumbers = [];
+    
+            while remainingX > 50
+                % Randomly select a number greater than 50
+                randomNumber = randi([51, remainingX]);
+    
+                % Add the selected number to the list
+                selectedNumbers = [selectedNumbers, randomNumber];
+    
+                % Update the remainingX
+                remainingX = remainingX - randomNumber;
+            end
+    
+            % Specify the range
+            lowerBound = 25;
+            upperBound = 800;
+            numPoints = numel(selectedNumbers);
+            randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
+            totalPoints = 1000;
+            pointsList = ones(1, totalPoints);
+            pointsList(randomPoints) = 0;
+    
+            for i = 1:numPoints
+                startRange = randomPoints(i);
+                endRange = randomPoints(i) + selectedNumbers(i);
+    
+                % Ensure the endRange does not exceed the total number of points
+                endRange = min(endRange, totalPoints);
+    
+                % Set values to 0 in the specified range
+                pointsList(startRange:endRange) = 0;
+            end
+    
+            % Assuming pointsList is already generated (as per the previous code)
+    
+            % Create a 1000x2 vector
+            vectorMatrix = zeros(1000, 2);
+    
+            % Populate the first column with linear values from 1 to 1000
+            vectorMatrix(:, 1) = (1:1000)';
+    
+            % Populate the second column with the values from pointsList
+            vectorMatrix(:, 2) = pointsList;
+    
+    
+    
+            %%
+            %pointsList  = [ones(1, 500), zeros(1, 500)];
+            %pointsList = ones(1,1000)
+            
+    
+            switch j
+                case 1
+                    error1=m0;
+                case 2
+                    error2=m0;
+                case 3
+                    error3=m0;
+                case 4
+                    joint1_ts.Data = process_points(pointsList, joint1_ts.Data);
+                case 5 
+                    joint2_ts.Data = process_points(pointsList, joint2_ts.Data);
+                case 6
+                    joint3_ts.Data = process_points(pointsList, joint3_ts.Data);
+                case 7  
+                    joint1_ts.Data = extend_trajectory(joint1_ts.Data, scale_factor);
+                case 8
+                    joint2_ts.Data = extend_trajectory(joint2_ts.Data, scale_factor);
+                case 9
+                    joint3_ts.Data = extend_trajectory(joint3_ts.Data, scale_factor);
+                case 10
+                    joint1_ts.Data = process_points_capped_speed(joint1_ts.Data, speedcap, timescale);
+                case 11
+                    joint2_ts.Data = process_points_capped_speed(joint2_ts.Data, speedcap, timescale);
+                case 12
+                    joint3_ts.Data = process_points_capped_speed(joint3_ts.Data, speedcap, timescale);
+                case 13
+                    error4=m0;
+                case 14
+                    error5=m0;
+                case 15
+                    error6=m0;
+            end
+            dataset = [dataset, targets];
+    
+            %on ajoute déjà les trajectoires cibles
+            disp("----------------")
+            disp("----------------")
+            simOut = sim(model_name);
+            disp("----------------")
+            disp("----------------")
+    
+            j1o = simOut.j1.Data;
+            j2o = simOut.j2.Data;
+            j3o = simOut.j3.Data;
+            j4o = simOut.j4.Data;
+            j5o = simOut.j5.Data;
+            j1o = j1o*180/pi;
+            j2o = j2o*180/pi;
+            j3o = j3o*180/pi;
+            j4o = j4o*180/pi;
+            j5o = j5o*180/pi;
+    
+            disp(size(j1o))
+            [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
+            jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
+            dataset=[dataset,jdatapoint];
+            %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
+        end
+        %datapoint de labélisation j (pour une k ième forme donnée)
+        %sera donnée par la mise bout a bout de 7*k i ème ligne de dataset
+        %(cas pas d'erreure moteur)
+        %et la 7*k+j ième ligne, chaque ligne étant x,y,z étudiés sur la
+        %timeseries pour l'erreure moteur selecio
+        %pour avoir une entrée de l'IA qui regarder l'effet  il faudra prendre
+        %fprintf("The current size of the dataset is %s", mat2str(size(dataset)));
+    end
+        
+    fprintf("The final size of the dataset1 is %s", mat2str(size(dataset)));
+    v1=mat2str(size(dataset));
+end 
 if secondtype
     shapes_dict=reduced_adapted_interpolate_set;
     shapelist=fieldnames(shapes_dict);
@@ -525,19 +531,21 @@ rowDist = 6 * ones(1, sized(1)/6);
 % Use mat2cell to convert the dataset into a cell array
 cellArray = mat2cell(dataset, rowDist);
 disp(size(cellArray))
-% Size reduction
-newCell = cell(size(cellArray));
-
-for i = 1:numel(cellArray)
-    % Keep the first 500 columns of each matrix
-    newCell{i} = XTrain{i}(:, 1:500);
-end
+% Size reduction, this has been deported into the model training and
+% modeltest function but code is kept commented here in case
+% newCell = cell(size(cellArray));
+% 
+% for i = 1:numel(cellArray)
+%     % Keep the first 500 columns of each matrix
+%     newCell{i} = XTrain{i}(:, 1:500);
+% end
+% cellArray = newCell;
  
-save('cellArray500_circle_line_interpolates_shapes_motor123error00_reducedsize6_500.mat', 'newCell');
+save('cellArray5_interpolation_motor123error00.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
 
 %Running the rain_predict_file
-run('rain_predict_lstm.m');
+%run('rain_predict_lstm.m');
 
 
 %%% end of experimental section %%%

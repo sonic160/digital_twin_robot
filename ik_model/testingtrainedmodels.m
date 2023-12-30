@@ -1,4 +1,4 @@
-CB=load('cellArray500interpolatesshapes.mat');
+loadedcell=load('../cellArray2000_circle_line_interpolatesshapes.mat');
 
 % Get the current directory
 currentDir = pwd;
@@ -8,24 +8,63 @@ currentDir = pwd;
 
 % Load the file
 %net = load(filePathInParent);
-strucnet=load('lstmv3_2bilayers_153_line_circle_interpolate_200hiddenunnit_dropout0_2_alr_128batch.mat');
+strucnet=load('lstmv3_2bilayers_500_interpolation_motorerror00_0123_reduced_10_6_100_150hiddenunnit_dropout0_2_alr_128batch.mat');
 net=strucnet.net;
-cellArray=CB.cellArray;
+%cellArray=loadedcell.cellArray;
+cellArray=loadedcell.CD.cellArray;
 sizearray = size(cellArray);
 numSeq = sizearray(1); % Number of sequences
 disp(numSeq)
 
-numClasses = 13;  % Number of classes
+%length of the testingdata
+test_len=100;
 
-% Generate categorical sequence
+% Size treatment
+numberofcells=numel(cellArray);
+maxsize = size(cellArray{1}, 2);
+multfactor = maxsize / test_len;
 
+% Create a new cell array to store modified data
+ modifiedCellArray = cellArray;
+
+% Process each cell in the original array
+if multfactor ~= 1
+    modifiedCellArray = cell(1, multfactor * maxsize);
+    for k = 1:numberofcells
+        % Get the data from the original cell
+        originalCell = cellArray{k};
+        for i = 1:multfactor
+            acell = originalCell(:, (i - 1) * test_len + 1 : i * test_len);
+            % Assign the cells to the modified cell array
+            modifiedCellArray{(k - 1) * multfactor + i} = acell;
+        end
+    end
+end
+
+
+numClasses = 4;  % Number of classes
+
+% Generate the pattern
 pattern = mod(0:numSeq-1, numClasses);
+
+% Create the categorical sequence
 categoricalSequence = categorical(pattern, 0:numClasses-1);
+
+% Repeat each category in categoricalSequence by multfactor times
+repeatedSequence = repelem(categoricalSequence, multfactor);
+
+% Display the result
+%disp(repeatedSequence);
+% 
+% % Generate categorical sequence
+% 
+% pattern = mod(0:numSeq-1, numClasses);
+% categoricalSequence = categorical(pattern, 0:numClasses-1);
 %disp(categoricalSequence);
 
 
-XVal = cellArray;
-YVal =categoricalSequence;
+XVal = modifiedCellArray;
+YVal = repeatedSequence;
 
 YPred = predict(net, XVal);
 
@@ -36,6 +75,8 @@ YPred = predict(net, XVal);
 categoryNames = cellstr(num2str((0:max(predictedClass))'));  % Assuming classes are 0-based
 categoricalPred = categorical(predictedClass - 1, 0:max(predictedClass), categoryNames);
 % Compute confusion matrix
+size(YVal)
+size(categoricalPred)
 C = confusionmat(YVal, categoricalPred)
 
 % Display confusion chart
@@ -105,17 +146,4 @@ legend('Location', 'Best');
 hold off; % Stop holding onto the current plot
 % ne pas uncomment le demon des plots svp
 
-% % Identify misclassified samples
-% misclassifiedIndices = find(YVal ~= categoricalPred);
-% 
-% % Analyze misclassifications
-% for i = 1:length(misclassifiedIndices)
-%     index = misclassifiedIndices(i);
-%     disp(['Misclassified sample at index ', num2str(index)]);
-%     % Further analysis of misclassified samples, e.g., plot the sequence:
-%     figure
-%     plot(XVal{index}')
-%     xlabel("Time Step")
-%     title(['Misclassified Sample ', num2str(index)])
-% end
 
