@@ -3,13 +3,11 @@ num_classes = 4;
 numClasses = num_classes;
 
 % Parameters
-struc=load('../cellArray1000.mat');
+struc=load('../cellArray2000_circle_line_interpolatesshapes.mat');
+cArray=struc.CD.cellArray;;
 %cArray=struc.cellArray;
-cArray=struc.cellArray;
 % cArray=struc;
-sizearray = size(cArray);
-numSeq = sizearray(1); % Number of sequences
-disp(numSeq)
+
 
 
 % Initialize variables to store results
@@ -37,7 +35,7 @@ modelsdataset3meanF1matrix = zeros(10, 10);
 allF1scoresdataset3 = zeros(10, 40);
 
 % Specify the directory for saving gathered data
-gatheredDataDir = 'GatheredData/training_1000_line_circles';
+gatheredDataDir = 'GatheredData/2000_circle_line_interpolation';
 
 % Create directories if they don't exist
 if ~exist(gatheredDataDir, 'dir')
@@ -45,6 +43,9 @@ if ~exist(gatheredDataDir, 'dir')
 end
 %should be named time factor
 for index0=1:10
+    sizearray = size(cArray);
+    numSeq = sizearray(1); % Number of sequences
+    disp(numSeq)
     disp("---------------------------------------------------------")
     disp("---------------------------------------------------------")
     disp("---------------------------------------------------------")
@@ -140,7 +141,7 @@ for index0=1:10
      %Directory where the saves will happen 
     
     
-    save(sprintf('lstmv3_2bilayers_1000_line_circle_motorerror00_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_128batch.mat', index0, test_len), 'net');
+    save(sprintf('lstmv3_2bilayers_2000_circle_line__interpolation_motorerror00_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_128batch.mat', index0, test_len), 'net');
     
 
     % Make predictions on the validation set
@@ -157,7 +158,7 @@ for index0=1:10
     C = confusionmat(YVal, categoricalPred)
     
     % Display confusion chart
-    figure
+    figure('Visible', 'off');
     confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
     title('Confusion Matrix');
     
@@ -280,7 +281,7 @@ for index0=1:10
         C = confusionmat(YVal, categoricalPred)
         
         % Display confusion chart
-        figure
+        figure('Visible', 'off');
         confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
         title('Confusion Matrix');
         
@@ -396,7 +397,7 @@ for index0=1:10
         C = confusionmat(YVal, categoricalPred)
         
         % Display confusion chart
-        figure
+        figure('Visible', 'off');
         confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
         title('Confusion Matrix');
         
@@ -508,7 +509,7 @@ for index0=1:10
         C = confusionmat(YVal, categoricalPred)
         
         % Display confusion chart
-        figure
+        figure('Visible', 'off');
         confusionchart(YVal, categoricalPred,'RowSummary','row-normalized');
         title('Confusion Matrix');
         
@@ -540,6 +541,46 @@ for index0=1:10
     end
 end
 
+% Save validation
+allF1ScoresperclassDir = fullfile(gatheredDataDir, 'allF1Scoresperclass.mat');
+save(allF1ScoresperclassDir, 'allF1Scoresperclass');
+allF1ScoresDir = fullfile(gatheredDataDir, 'allF1Scores.mat');
+save(allF1ScoresDir, 'allF1Scores');
+
+% Save for dataset 1
+allF1ScoresperclassDirdataset1 = fullfile(gatheredDataDir, 'allF1scoresdataset1.mat');
+save(allF1ScoresperclassDirdataset1, 'allF1scoresdataset1');
+allF1ScoresDirdataset1 = fullfile(gatheredDataDir, 'modelsdataset1meanF1matrix.mat');
+save(allF1ScoresDirdataset1, 'modelsdataset1meanF1matrix');
+
+% Save for dataset2
+allF1ScoresperclassDirdataset2 = fullfile(gatheredDataDir, 'allF1scoresdataset2.mat');
+save(allF1ScoresperclassDirdataset2, 'allF1scoresdataset2');
+allF1ScoresDirdataset2 = fullfile(gatheredDataDir, 'modelsdataset2meanF1matrix.mat');
+save(allF1ScoresDirdataset2, 'modelsdataset2meanF1matrix');
+
+% Save for dataset3
+allF1ScoresperclassDirdataset3 = fullfile(gatheredDataDir, 'allF1scoresdataset3.mat');
+save(allF1ScoresperclassDirdataset3, 'allF1scoresdataset3');
+allF1ScoresDirdataset3 = fullfile(gatheredDataDir, 'modelsdataset3meanF1matrix.mat');
+save(allF1ScoresDirdataset3, 'modelsdataset3meanF1matrix');
+
+%Display the best model 
+myMatrix =  (modelsdataset1meanF1matrix + modelsdataset2meanF1matrix + modelsdataset3meanF1matrix) / 3;
+bestModelF1overall= max(myMatrix(:));
+[bestModeloverall, bestModelMultfactoroverall] = find(modelsdataset1meanF1matrix == bestModelF1overall);
+disp(['Best combination overall: Best Model: ' num2str(bestModeloverall),'Best Index:' num2str(bestModelMultfactoroverall)]);
+disp(['Best F1 Score overall: ' num2str(bestModelF1overall)]);
+disp("---------------------------------------------------------")   
+
+
+% Save the best overall model information
+bestModelInfoDir = fullfile(gatheredDataDir, 'bestModelInfo.mat');
+save(bestModelInfoDir, 'bestModeloverall', 'bestModelMultfactoroverall', 'bestModelF1overall');
+
+% Save the overall mean F1 matrix
+overallMeanF1Dir = fullfile(gatheredDataDir, 'overallMeanF1matrix.mat');
+save(overallMeanF1Dir, 'myMatrix');  
 
 % Display the best model information
 disp(['Best Model valperf: ' num2str(bestModelIdx)]);
@@ -567,21 +608,6 @@ disp(['Best F1 Score on dataset1: ' num2str(bestModelF1dataset1)]);
 disp("---------------------------------------------------------")   
 disp('Best Model-Index combination for Each Class on dataset1:');
 
-for classIdx = 1:numClasses
-    selectedColumns = mod(1:size(allF1scoresdataset1, 2), 4) == classIdx;
-    subsetMatrix = allF1scoresdataset1(:, selectedColumns);
-    maxValue = max(subsetMatrix(:));
-    [rowIdx, colIdx] = find(subsetMatrix == maxValue);
-    colIdx = find(selectedColumns, colIdx);
-    disp(['Class ' num2str(classIdx) ':']);
-    disp(['Best combination on dataset1: Best Model ' num2str(rowIdx),'Best Index:' num2str(colIdx)]);
-    disp(['Best class F1 Score on dataset1: ' num2str(maxValue)]);
-end
-
-disp("---------------------------------------------------------")
-disp("---------------------------------------------------------")
-disp("---------------------------------------------------------")
-
 % Find the maximum for dataset2
 bestModelF1dataset2 = max(modelsdataset2meanF1matrix(:));
 [bestModelIdxdataset2, bestModelMultfactordataset2] = find(modelsdataset2meanF1matrix == bestModelF1dataset2);
@@ -591,21 +617,6 @@ disp(['Best combination on dataset2: Best Model: ' num2str(bestModelIdxdataset2)
 disp(['Best F1 Score on dataset2: ' num2str(bestModelF1dataset2)]);
 disp("---------------------------------------------------------")   
 disp('Best Model-Index combination for Each Class on dataset2:');
-
-for classIdx = 1:numClasses
-    selectedColumns = mod(1:size(allF1scoresdataset2, 2), 4) == classIdx;
-    subsetMatrix = allF1scoresdataset2(:, selectedColumns);
-    maxValue = max(subsetMatrix(:));
-    [rowIdx, colIdx] = find(subsetMatrix == maxValue);
-    colIdx = find(selectedColumns, colIdx);
-    disp(['Class ' num2str(classIdx) ':']);
-    disp(['Best combination on dataset2: Best Model ' num2str(rowIdx), ' Best Index: ' num2str(colIdx)]);
-    disp(['Best class F1 Score on dataset2: ' num2str(maxValue)]);
-end
-
-disp("---------------------------------------------------------")
-disp("---------------------------------------------------------")
-disp("---------------------------------------------------------")
 
 % Find the maximum for dataset3
 bestModelF1dataset3 = max(modelsdataset3meanF1matrix(:));
@@ -618,38 +629,46 @@ disp("---------------------------------------------------------")
 disp('Best Model-Index combination for Each Class on dataset3:');
 
 for classIdx = 1:numClasses
+    selectedColumns = mod(1:size(allF1scoresdataset1, 2), 4) == classIdx;
+    subsetMatrix = allF1scoresdataset1(:, selectedColumns);
+    maxValue = max(subsetMatrix(:));
+    [rowIdx, colIdx] = find(subsetMatrix == maxValue);
+    disp(['Class ' num2str(classIdx) ':']);
+    disp(['Best combination on dataset1: Best Model ' num2str(rowIdx) 'Best Index:' num2str(colIdx)]);
+    disp(['Best class F1 Score on dataset1: ' num2str(maxValue)]);
+end
+
+disp("---------------------------------------------------------")
+disp("---------------------------------------------------------")
+disp("---------------------------------------------------------")
+
+
+
+for classIdx = 1:numClasses
+    selectedColumns = mod(1:size(allF1scoresdataset2, 2), 4) == classIdx;
+    subsetMatrix = allF1scoresdataset2(:, selectedColumns);
+    maxValue = max(subsetMatrix(:));
+    [rowIdx, colIdx] = find(subsetMatrix == maxValue);
+    disp(['Class ' num2str(classIdx) ':']);
+    disp(['Best combination on dataset2: Best Model ' num2str(rowIdx)  ' Best Index: ' num2str(colIdx)]);
+    disp(['Best class F1 Score on dataset2: ' num2str(maxValue)]);
+end
+
+disp("---------------------------------------------------------")
+disp("---------------------------------------------------------")
+disp("---------------------------------------------------------")
+
+
+
+for classIdx = 1:numClasses
     selectedColumns = mod(1:size(allF1scoresdataset3, 2), 4) == classIdx;
     subsetMatrix = allF1scoresdataset3(:, selectedColumns);
     maxValue = max(subsetMatrix(:));
     [rowIdx, colIdx] = find(subsetMatrix == maxValue);
-    colIdx = find(selectedColumns, colIdx);
     disp(['Class ' num2str(classIdx) ':']);
-    disp(['Best combination on dataset3: Best Model ' num2str(rowIdx), ' Best Index: ' num2str(colIdx)]);
+    disp(['Best combination on dataset3: Best Model ' num2str(rowIdx) ' Best Index: ' num2str(colIdx)]);
     disp(['Best class F1 Score on dataset3: ' num2str(maxValue)]);
 end
 
 
 
-% Save validation
-allF1ScoresperclassDir = fullfile(gatheredDataDir, 'allF1Scoresperclass.mat');
-save(allF1ScoresperclassDir, 'allF1Scoresperclass');
-allF1ScoresDir = fullfile(gatheredDataDir, 'allF1Scores.mat');
-save(allF1ScoresDir, 'allF1Scores');
-
-% Save for dataset 1
-allF1ScoresperclassDirdataset1 = fullfile(gatheredDataDir, 'allF1scoresdataset1.mat');
-save(allF1ScoresperclassDirdataset1, 'allF1scoresdataset1');
-allF1ScoresDirdataset1 = fullfile(gatheredDataDir, 'modelsdataset1meanF1matrix.mat');
-save(allF1ScoresDirdataset1, 'modelsdataset1meanF1matrix');
-
-% Save for dataset2
-allF1ScoresperclassDirdataset2 = fullfile(gatheredDataDir, 'allF1scoresdataset2.mat');
-save(allF1ScoresperclassDirdataset2, 'allF1scoresdataset2');
-allF1ScoresDirdataset2 = fullfile(gatheredDataDir, 'modelsdataset2meanF1matrix.mat');
-save(allF1ScoresDirdataset2, 'modelsdataset2meanF1matrix');
-
-% Save for dataset3
-allF1ScoresperclassDirdataset3 = fullfile(gatheredDataDir, 'allF1scoresdataset3.mat');
-save(allF1ScoresperclassDirdataset3, 'allF1scoresdataset3');
-allF1ScoresDirdataset3 = fullfile(gatheredDataDir, 'modelsdataset3meanF1matrix.mat');
-save(allF1ScoresDirdataset3, 'modelsdataset3meanF1matrix');
