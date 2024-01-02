@@ -5,7 +5,7 @@
 ## to the 'condition-monitoring' topic
 
 import rospy
-from sensor_msgs.msg import JointState as RosJointState
+from cm.msg import msg_cm as RosJointState
 import Board
 
 
@@ -77,3 +77,4 @@ if __name__ == '__main__':
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
+
