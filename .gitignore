@@ -1,0 +1,30 @@
+# Logs
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/logs
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/*.log
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/npm-debug.log*
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/yarn-debug.log*
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/yarn-error.log*
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/pnpm-debug.log*
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/lerna-debug.log*
+
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/node_modules
+.DS_Store
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/dist
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/dist-ssr
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/coverage
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard/*.local
+
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard//cypress/videos/
+/course_project_DARR/WP1_Condition-monitoring/WP1_submission_group_3/monitor dashboard//cypress/screenshots/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+course_project_DARR/WP2_Data-driven fault detection/supports/WP2_TD_Lect_5_with_solution.ipynb
+course_project_DARR/WP2_Data-driven fault detection/TD_6/__pycache__/utility.cpython-38.pyc
