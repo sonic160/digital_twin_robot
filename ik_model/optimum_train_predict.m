@@ -4,7 +4,7 @@ numClasses = num_classes;
 
 % Parameters
 struc=load('../cellArray2000_circle_line_interpolatesshapes.mat');
-cArray=struc.CD.cellArray;;
+cArray=struc.CD.cellArray;
 %cArray=struc.cellArray;
 % cArray=struc;
 
@@ -35,7 +35,7 @@ modelsdataset3meanF1matrix = zeros(10, 10);
 allF1scoresdataset3 = zeros(10, 40);
 
 % Specify the directory for saving gathered data
-gatheredDataDir = 'GatheredData/2000_circle_line_interpolation';
+gatheredDataDir = 'GatheredData/V2_2000_circle_line_interpolation';
 
 % Create directories if they don't exist
 if ~exist(gatheredDataDir, 'dir')
@@ -55,12 +55,12 @@ for index0=1:10
     disp("---------------------------------------------------------")
     %length of the testingdata
     test_len=index0*100;
-    multfactor=floor(maxsize/test_len);
+    
     
     % Size treatment
     numberofcells=numel(cArray);
     maxsize = size(cArray{1}, 2);
-
+    multfactor=floor(maxsize/test_len);
    % Create a new cell array to store modified data
    modifiedCellArray = cell(1, numberofcells * multfactor);
     
@@ -105,22 +105,35 @@ for index0=1:10
     inputSize = 6;
     numHiddenUnits = 150;
     
+   layers = [
+    sequenceInputLayer(inputSize)
     
+    % Bidirectional LSTM layers
+    bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+    bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+    convolution1dLayer(2,5,'Stride',2,'Padding',1)
+    maxPooling1dLayer(2,'Stride',3,'Padding',1)
+    convolution1dLayer(5, 32, 'Padding', 'same', 'Stride', 2)
+    globalAveragePooling1dLayer('Name', 'GlobalAveragePoolingfcn')
+    fullyConnectedLayer(numClasses)
+    softmaxLayer
+    classificationLayer
+    ]; 
     
-    layers = [
-        sequenceInputLayer(inputSize)
-        
-        % Bidirectional LSTM layers
-        bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-        bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-        fullyConnectedLayer(numHiddenUnits)
-        dropoutLayer(0.2)
-        lstmLayer(numHiddenUnits, 'OutputMode', 'last')
-        fullyConnectedLayer(numClasses)
-        softmaxLayer
-        classificationLayer
-    ];
-   
+    % layers = [
+    %     sequenceInputLayer(inputSize)
+    % 
+    %     % Bidirectional LSTM layers
+    %     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+    %     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+    %     fullyConnectedLayer(numHiddenUnits)
+    %     dropoutLayer(0.2)
+    %     lstmLayer(numHiddenUnits, 'OutputMode', 'last')
+    %     fullyConnectedLayer(numClasses)
+    %     softmaxLayer
+    %     classificationLayer
+    % ];
+    % 
     %option initalisation
 
     options = trainingOptions("adam", ...
@@ -141,7 +154,7 @@ for index0=1:10
      %Directory where the saves will happen 
     
     
-    save(sprintf('lstmv3_2bilayers_2000_circle_line__interpolation_motorerror00_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_128batch.mat', index0, test_len), 'net');
+    save(sprintf('lstmv3_2bilayers_V2_2000_circle_line__interpolation_motorerror00_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_128batch.mat', index0, test_len), 'net');
     
 
     % Make predictions on the validation set
