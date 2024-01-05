@@ -28,3 +28,5 @@
 *.sw?
 course_project_DARR/WP2_Data-driven fault detection/supports/WP2_TD_Lect_5_with_solution.ipynb
 course_project_DARR/WP2_Data-driven fault detection/TD_6/__pycache__/utility.cpython-38.pyc
+
+reference_model_development/condition_monitoring_demo/matlab_msg_gen_ros1/
