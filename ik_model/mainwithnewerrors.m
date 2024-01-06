@@ -5,7 +5,7 @@ len_time_series=1000;
 %load
 firsttype=0;
 secondtype=0;
-motorerrorselection=[0,1,2,3];
+motorerrorselection=[0,10,11,12];
 % sample_time=10/len_time_series;
 % disp(sample_time)
 
@@ -91,7 +91,7 @@ addInitialGuessVariables(ik,guessesIDs);
 
 %simul length: len_time_series/100= legnth of simulation in seconds
 scale_factor = randi([2, 4]);
-speedcap=0.5;
+speedcap=0.2;
 timescale=10/len_time_series;
 j1 = zeros(len_time_series,1);
 j2 = zeros(len_time_series,1);
@@ -297,7 +297,8 @@ if firsttype
     
             disp(size(j1o))
             [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
-            jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
+            jdatapoint = [x, y, z];
+
             dataset=[dataset,jdatapoint];
             %on ajoute jdatapoin au dataset, on a ainsi formé un bloc de six lignes associées à un point
         end
@@ -371,7 +372,28 @@ if secondtype
             j4(t,1) = outputVec(4);
             j5(t,1) = outputVec(5);
         end
-            
+%%%%% new code for drawing command graph
+     figure;
+    plot3(x, y, z, 'LineWidth', 2);
+    hold on;
+
+    % Scatter plot with color gradient based on point index
+    scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
+    
+    title(['Trajectory ', j]);
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
+    grid on;
+    
+    % Force MATLAB to update the figure window
+    drawnow;
+   
+
+%%%%%%
+
+
+
         end_time_value_in_seconds= (len_time_series-1)*0.01;
     
         joint1_ts = timeseries(j1/180*pi,0:0.01:end_time_value_in_seconds);
@@ -444,31 +466,56 @@ if secondtype
             %%
             %pointsList  = [ones(1, 500), zeros(1, 500)];
             %pointsList = ones(1,1000)
-    
+            %pointsList = [ones(200, 1); zeros(800, 1)];
+            pointsList = [ones(100, 1); zeros(100, 1);ones(100, 1); zeros(100, 1); zeros(200, 1);ones(400, 1)];
             switch j
                 case 1
+                    temp = error1;
                     error1=m0;
                 case 2
+                    error1 = temp;
+                    temp = error2;
                     error2=m0;
                 case 3
+                    error2 = temp;
+                    temp = error3;                    
                     error3=m0;
                 case 4
+                    temp = error3;  %disgusting short term solution
+                    error3 = temp;
+                    temp = joint1_ts.Data;                       
                     joint1_ts.Data = process_points(pointsList, joint1_ts.Data);
                 case 5 
+                    joint1_ts.Data = temp;
+                    temp =  joint2_ts.Data;                       
                     joint2_ts.Data = process_points(pointsList, joint2_ts.Data);
                 case 6
+                    joint2_ts.Data = temp;
+                    temp =  joint3_ts.Data;                       
                     joint3_ts.Data = process_points(pointsList, joint3_ts.Data);
                 case 7  
+                    joint3_ts.Data = temp
+                    temp =  joint1_ts.Data;                    
                     joint1_ts.Data = extend_trajectory(joint1_ts.Data, scale_factor);
                 case 8
+                    joint1_ts.Data = temp;
+                    temp = joint2_ts.Data;
                     joint2_ts.Data = extend_trajectory(joint2_ts.Data, scale_factor);
                 case 9
+                    joint2_ts.Data = temp;
+                    temp = joint3_ts.Data;
                     joint3_ts.Data = extend_trajectory(joint3_ts.Data, scale_factor);
                 case 10
+                    
+                    temp = joint1_ts.Data;                    
                     joint1_ts.Data = process_points_capped_speed(joint1_ts.Data, speedcap, timescale);
                 case 11
+                    joint1_ts.Data = temp;
+                    temp = joint2_ts.Data;                    
                     joint2_ts.Data = process_points_capped_speed(joint2_ts.Data, speedcap, timescale);
                 case 12
+                    joint2_ts.Data = temp;
+                    temp = joint3_ts.Data;                    
                     joint3_ts.Data = process_points_capped_speed(joint3_ts.Data, speedcap, timescale);
                 case 13
                     error4=m0;
@@ -500,6 +547,53 @@ if secondtype
             disp(size(j1o))
             [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
             jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
+ figure;
+    
+    % Plot the trajectory using a line
+    plot3(x, y, z, 'LineWidth', 2);
+    hold on;
+
+    % Scatter plot with color gradient based on point index
+    scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
+    
+    title(['Trajectory ', j]);
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
+    grid on;
+    
+    % Force MATLAB to update the figure window
+    drawnow;
+    figure;
+    indexes = 1:length(j1o);
+
+% Deawing j10, j20, j30
+
+plot(indexes, j1, 'b-.', 'LineWidth', 2); % Blue line
+hold on; % Hold the current graph
+plot(indexes, j1o, 'b-', 'LineWidth', 2); % Blue line
+hold on; % Hold the current graph
+
+plot(indexes, j2, 'r-.', 'LineWidth', 2); % Blue line
+plot(indexes, j2o, 'r-', 'LineWidth', 2); % Red dashed line
+
+plot(indexes, j3, 'g-.', 'LineWidth', 2); % Blue line
+plot(indexes, j3o, 'g-', 'LineWidth', 2); % Green dash-dot line
+
+% Add labels and legend
+xlabel('Index');
+ylabel('Values');
+title('Curve Graph');
+legend('j1o', 'j2o', 'j3o');
+
+% Display the grid
+grid on;
+
+% Release the hold on the current graph
+hold off;
+            
+
+            
             dataset2=[dataset2,jdatapoint];
      
             
