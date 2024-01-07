@@ -1,9 +1,9 @@
 % Step 1num_time_series: Generate the dataset
-num_classes = 4;
+num_classes = 13;
 numClasses = num_classes;
 
 % Parameters
-struc=load('../cellArray500interpolatesshapes.mat');
+struc=load('../cellArray201_circle_line_interpolation_motor123error00010203.mat');
 %cArray=struc.cellArray;
 cArray=struc.cellArray;
 % cArray=struc;
@@ -11,7 +11,7 @@ sizearray = size(cArray);
 numSeq = sizearray(1); % Number of sequences
 disp(numSeq)
 %length of the testingdata
-test_len=100;
+test_len=1000;
 
 % Size treatment
 numberofcells=numel(cArray);
@@ -115,14 +115,13 @@ numHiddenUnits = 150;
 
 
 layers = [
-    sequenceInputLayer(inputSize)
-    
-    % Bidirectional LSTM layers
+    sequenceInputLayer(inputSize, 'Name', 'inputFEN')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
-    fullyConnectedLayer(numHiddenUnits)
-    dropoutLayer(0.2)
-    lstmLayer(numHiddenUnits, 'OutputMode', 'last')
+    convolution1dLayer(2,5,'Stride',2,'Padding',1)
+    maxPooling1dLayer(2,'Stride',3,'Padding',1)
+    convolution1dLayer(5, 32, 'Padding', 'same', 'Stride', 2)
+    globalAveragePooling1dLayer('Name', 'GlobalAveragePoolingfcn')
     fullyConnectedLayer(numClasses)
     softmaxLayer
     classificationLayer
@@ -131,7 +130,7 @@ layers = [
 options = trainingOptions("adam", ...
     ExecutionEnvironment="gpu", ...
     GradientThreshold=1, ...
-    MaxEpochs=50, ...
+    MaxEpochs=400, ...
     MiniBatchSize=miniBatchSize, ...
     ValidationData={XVal,YVal}, ... %new
     ValidationFrequency=20, ...     %new
@@ -157,11 +156,11 @@ options = trainingOptions("adam", ...
 %     Plots="training-progress");
 
 
-net = trainNetwork(XTrain,YTrain,layers,options);
+net = trainNetwork(XTrain,YTrain,net.Layers,options);
 
 
 
-save('lstmv3_2bilayers_500_interpolation_motorerror00_0123_reduced_10_6_100_150hiddenunnit_dropout0_2_alr_128batch.mat','net')
+save('lstmv3_2bilayers_201_interpolation_motorerror00010203_0123_full_1000_150hiddenunnit_dropout0_2_alr_64_batch.mat','net')
 % Make predictions on the validation set
 YPred = predict(net, XVal);
 

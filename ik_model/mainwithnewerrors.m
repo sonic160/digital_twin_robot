@@ -5,7 +5,7 @@ len_time_series=1000;
 %load
 firsttype=0;
 secondtype=0;
-motorerrorselection=[0,10,11,12];
+motorerrorselection=[0,1,2,3,4,5,6,7,8,9,10,11,12];
 % sample_time=10/len_time_series;
 % disp(sample_time)
 
@@ -13,10 +13,10 @@ motorerrorselection=[0,10,11,12];
 %Creating shape set
 
 %Most used options
-%reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,5);
-%reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,5);
+%reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,67);
+%reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,67);
 %firsttype=1;
-reduced_adapted_interpolate_set= createInterpolate(5, 1000);
+reduced_adapted_interpolate_set= createInterpolate(67, 1000);
 %secondtype=True
 secondtype=1;
 %reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_adapted_line_set);
@@ -56,14 +56,6 @@ secondtype=1;
 %     'zline', struct('xequation', @(t) 0, 'yequation', @(t) 0, 'zequation', @(t) t) ...
 % );
 
-
-%Selected shape_dict
-
-%shapes_dict=reduced_adapted_circle_set;
-%shapes_dict=reduced_adapted_line_set;
-%shapes_dict=reduced_adapted_shape_set;
-%shapes_dict=small_shapes_dict;
-%shapes_dict=reduced_adapted_interpolate_set;
 
 
 %Loading Model
@@ -113,6 +105,10 @@ if firsttype ~= 1 && secondtype ~= 1
 end
 dataset=[];
 if firsttype
+    %shapes_dict=reduced_adapted_circle_set;
+    %shapes_dict=reduced_adapted_line_set;
+    shapes_dict=reduced_adapted_shape_set;
+    %shapes_dict=small_shapes_dict;
     shapelist=fieldnames(shapes_dict);
     numberofshapes=numel(shapelist);
     fprintf('The number of fields is:%d\n',numberofshapes);
@@ -245,28 +241,51 @@ if firsttype
     
             switch j
                 case 1
+                    temp = error1;
                     error1=m0;
                 case 2
+                    error1 = temp;
+                    temp = error2;
                     error2=m0;
                 case 3
+                    error2 = temp;
+                    temp = error3;                    
                     error3=m0;
                 case 4
+                    error3 = temp;
+                    temp = joint1_ts.Data;                       
                     joint1_ts.Data = process_points(pointsList, joint1_ts.Data);
                 case 5 
+                    joint1_ts.Data = temp;
+                    temp =  joint2_ts.Data;                       
                     joint2_ts.Data = process_points(pointsList, joint2_ts.Data);
                 case 6
+                    joint2_ts.Data = temp;
+                    temp =  joint3_ts.Data;                       
                     joint3_ts.Data = process_points(pointsList, joint3_ts.Data);
                 case 7  
+                    joint3_ts.Data = temp;
+                    temp =  joint1_ts.Data;                    
                     joint1_ts.Data = extend_trajectory(joint1_ts.Data, scale_factor);
                 case 8
+                    joint1_ts.Data = temp;
+                    temp = joint2_ts.Data;
                     joint2_ts.Data = extend_trajectory(joint2_ts.Data, scale_factor);
                 case 9
+                    joint2_ts.Data = temp;
+                    temp = joint3_ts.Data;
                     joint3_ts.Data = extend_trajectory(joint3_ts.Data, scale_factor);
                 case 10
+                    joint3_ts.Data = temp;
+                    temp = joint1_ts.Data;                    
                     joint1_ts.Data = process_points_capped_speed(joint1_ts.Data, speedcap, timescale);
                 case 11
+                    joint1_ts.Data = temp;
+                    temp = joint2_ts.Data;                    
                     joint2_ts.Data = process_points_capped_speed(joint2_ts.Data, speedcap, timescale);
                 case 12
+                    joint2_ts.Data = temp;
+                    temp = joint3_ts.Data;                    
                     joint3_ts.Data = process_points_capped_speed(joint3_ts.Data, speedcap, timescale);
                 case 13
                     error4=m0;
@@ -274,6 +293,7 @@ if firsttype
                     error5=m0;
                 case 15
                     error6=m0;
+          
             end
             dataset = [dataset, targets];
     
@@ -372,25 +392,25 @@ if secondtype
             j4(t,1) = outputVec(4);
             j5(t,1) = outputVec(5);
         end
-%%%%% new code for drawing command graph
-     figure;
-    plot3(x, y, z, 'LineWidth', 2);
-    hold on;
-
-    % Scatter plot with color gradient based on point index
-    scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
-    
-    title(['Reference Trajectory ']);
-    xlabel('X-axis');
-    ylabel('Y-axis');
-    zlabel('Z-axis');
-    grid on;
-    
-    % Force MATLAB to update the figure window
-    drawnow;
-   
-
-%%%%%%
+% %%%% new code for drawing command graph
+%      figure;
+%     plot3(x, y, z, 'LineWidth', 2);
+%     hold on;
+% 
+%     % Scatter plot with color gradient based on point index
+%     scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
+% 
+%     title(['Reference Trajectory ']);
+%     xlabel('X-axis');
+%     ylabel('Y-axis');
+%     zlabel('Z-axis');
+%     grid on;
+% 
+%     % Force MATLAB to update the figure window
+%     drawnow;
+% 
+% 
+% %%%%%
 
 
 
@@ -413,7 +433,7 @@ if secondtype
     
             %%%% FOR RANDOM STOP-START BEHAVIOUR SIMULATION
     
-            X = randi([1000, 1000]);
+            X = randi([400, 800]);
     
             % Step 2: Randomly select numbers greater than 50 that add up to X
             remainingX = X;
@@ -432,7 +452,7 @@ if secondtype
     
             % Specify the range
             lowerBound = 25;
-            upperBound = 800;
+            upperBound = 900;
             numPoints = numel(selectedNumbers);
             randomPoints = sort(randi([lowerBound, upperBound], 1, numPoints));
             totalPoints = 1000;
@@ -464,10 +484,8 @@ if secondtype
     
     
             %%
-            %pointsList  = [ones(1, 500), zeros(1, 500)];
-            %pointsList = ones(1,1000)
-            %pointsList = [ones(200, 1); zeros(800, 1)];
-            pointsList = [ones(100, 1); zeros(100, 1);ones(100, 1); zeros(100, 1); zeros(200, 1);ones(400, 1)];
+
+            %pointsList = [ones(100, 1); zeros(500, 1);ones(400, 1)];
             switch j
                 case 1
                     temp = error1;
@@ -481,7 +499,6 @@ if secondtype
                     temp = error3;                    
                     error3=m0;
                 case 4
-                    temp = error3;  %disgusting short term solution
                     error3 = temp;
                     temp = joint1_ts.Data;                       
                     joint1_ts.Data = process_points(pointsList, joint1_ts.Data);
@@ -494,7 +511,7 @@ if secondtype
                     temp =  joint3_ts.Data;                       
                     joint3_ts.Data = process_points(pointsList, joint3_ts.Data);
                 case 7  
-                    joint3_ts.Data = temp
+                    joint3_ts.Data = temp;
                     temp =  joint1_ts.Data;                    
                     joint1_ts.Data = extend_trajectory(joint1_ts.Data, scale_factor);
                 case 8
@@ -506,7 +523,7 @@ if secondtype
                     temp = joint3_ts.Data;
                     joint3_ts.Data = extend_trajectory(joint3_ts.Data, scale_factor);
                 case 10
-                    
+                    joint3_ts.Data = temp;
                     temp = joint1_ts.Data;                    
                     joint1_ts.Data = process_points_capped_speed(joint1_ts.Data, speedcap, timescale);
                 case 11
@@ -544,54 +561,54 @@ if secondtype
             j4o = j4o*180/pi;
             j5o = j5o*180/pi;
     
-            disp(size(j1o))
+           
             [x, y, z] = ForwardKinematic(j1o, j2o, j3o, j4o, j5o,len_time_series); 
             jdatapoint = [x, y, z];%pour un j donné on met à la suite les len_time_series prédit  et les réels en prenant en compte le défault moteur, c'est ce qu'on donnera à manger à l'IA;
- figure;
-    
-    % Plot the trajectory using a line
-    plot3(x, y, z, 'LineWidth', 2);
-    hold on;
+%  figure;
+% 
+%     % Plot the trajectory using a line
+%     plot3(x, y, z, 'LineWidth', 2);
+%     hold on;
+% 
+%     % Scatter plot with color gradient based on point index
+%     scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
+% 
+%     title(['Trajectory ', j]);
+%     xlabel('X-axis');
+%     ylabel('Y-axis');
+%     zlabel('Z-axis');
+%     grid on;
+% 
+%     % Force MATLAB to update the figure window
+%     drawnow;
+%     figure;
+%     indexes = 1:length(j1o);
+% 
+% % Deawing j10, j20, j30
+% 
+% plot(indexes, j1, 'b-.', 'LineWidth', 2); % Blue line
+% hold on; % Hold the current graph
+% plot(indexes, j1o, 'b-', 'LineWidth', 2); % Blue line
+% hold on; % Hold the current graph
+% 
+% plot(indexes, j2, 'r-.', 'LineWidth', 2); % Blue line
+% plot(indexes, j2o, 'r-', 'LineWidth', 2); % Red dashed line
+% 
+% plot(indexes, j3, 'g-.', 'LineWidth', 2); % Blue line
+% plot(indexes, j3o, 'g-', 'LineWidth', 2); % Green dash-dot line
+% 
+% % Add labels and legend
+% xlabel('Index');
+% ylabel('Values');
+% title('Curve Graph');
+% legend('j1o', 'j2o', 'j3o');
+% 
+% % Display the grid
+% grid on;
+% 
+% % Release the hold on the current graph
+% hold off;
 
-    % Scatter plot with color gradient based on point index
-    scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
-    
-    title(['Trajectory ', j]);
-    xlabel('X-axis');
-    ylabel('Y-axis');
-    zlabel('Z-axis');
-    grid on;
-    
-    % Force MATLAB to update the figure window
-    drawnow;
-    figure;
-    indexes = 1:length(j1o);
-
-% Deawing j10, j20, j30
-
-plot(indexes, j1, 'b-.', 'LineWidth', 2); % Blue line
-hold on; % Hold the current graph
-plot(indexes, j1o, 'b-', 'LineWidth', 2); % Blue line
-hold on; % Hold the current graph
-
-plot(indexes, j2, 'r-.', 'LineWidth', 2); % Blue line
-plot(indexes, j2o, 'r-', 'LineWidth', 2); % Red dashed line
-
-plot(indexes, j3, 'g-.', 'LineWidth', 2); % Blue line
-plot(indexes, j3o, 'g-', 'LineWidth', 2); % Green dash-dot line
-
-% Add labels and legend
-xlabel('Index');
-ylabel('Values');
-title('Curve Graph');
-legend('j1o', 'j2o', 'j3o');
-
-% Display the grid
-grid on;
-
-% Release the hold on the current graph
-hold off;
-            
 
             
             dataset2=[dataset2,jdatapoint];
@@ -635,7 +652,7 @@ disp(size(cellArray))
 % end
 % cellArray = newCell;
  
-save('cellArray5_interpolation_motor123error00.mat', 'cellArray');
+save('cellArray201_circle_line_interpolation_motor123error00010203.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
 
 %Running the rain_predict_file

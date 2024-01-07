@@ -4,12 +4,12 @@
 
 
 time_series_length = 1000;
-num_classes = 4;
+num_classes = 13;
 numClasses = num_classes;
 numHiddenUnits = 64;
 
 % Parameters
-struc=load('cellArray1000.mat');
+struc=load('cellArray201_circle_line_interpolation_motor123error00010203.mat');
 %CD = struc.CD;
 
 cellArray = struc.cellArray;
@@ -49,7 +49,7 @@ YVal = YVal(shuffledIndicesVal);
 
 %%%%%Network definitions
 
-%{
+
 
 featureExtractionNetwork = [
     sequenceInputLayer(6, 'Name', 'inputFEN')
@@ -111,7 +111,7 @@ ClassificationNetwork = dlnetwork(faultClassificationNetwork);
 
 %%%%%Training Options
 numIterations = 8995;
-miniBatchSize = 150;
+miniBatchSize = 50;
 learningRate = 2e-4;
 gradDecay = 0.9;
 gradDecaySq = 0.99;
@@ -208,7 +208,7 @@ if monitor.Stop && saved == 0  %bloc pour savegarder en cas d'interruption manue
     save('ClassificationNetworkCheckpointmes.mat', 'ClassificationNetwork', 'trailingAvgSubnetclas', 'trailingAvgSqSubnetclas');
 end
 
-%}
+
 %%%%%% The following lines serve to evaluate accuracy -could be called
 %%%%%% during training loop to compute validation and implement auto-cutoff
 
@@ -216,7 +216,7 @@ end
 accuracymes = zeros(1,5);
 accuracyclas1 = zeros(1,5);
 accuracyclas2 = zeros(1,5);
-accuracyBatchSize = 150;
+accuracyBatchSize = 150; %the more different classes there are, the more important it is for this to be large
 
 for i = 1:5
     % Extract mini-batch of image pairs and pair labels
@@ -251,6 +251,9 @@ categoricalseries2 = categorical(pairLabelsAcc(2,:));
 categoricalseries1 = onehotencode(categoricalseries1',2);
 categoricalseries2 = onehotencode(categoricalseries2',2);
 
+
+disp(size(categoricalseries1))
+disp(size(categoricalseries2))
 Y1 = Y1';
 Y2 = Y2';
 
@@ -404,7 +407,8 @@ categoricalseries1 = categorical(pairLabels(1,:));
 categoricalseries2 = categorical(pairLabels(2,:));
 categoricalseries1 = onehotencode(categoricalseries1',2);
 categoricalseries2 = onehotencode(categoricalseries2',2);
-
+disp(size(categoricalseries1))
+disp(size(categoricalseries2))
 
 
 %weights to penalise worst class confusions
@@ -443,12 +447,11 @@ end
 
 
 
-
 function [X1, X2, pairLabels] = getTwinBatch(X, Y, miniBatchSize)
     % Initialize the output.
     pairLabels = zeros(3, miniBatchSize);
-    %[numSamples, sampleSize] = size(X);
     imgSize = [size(X{1}, 1), size(X{1}, 2)]; 
+    usedClasses = categorical([]);
 
     X1 = zeros([imgSize, miniBatchSize], 'single');
     X2 = zeros([imgSize, miniBatchSize], 'single');
@@ -459,24 +462,33 @@ function [X1, X2, pairLabels] = getTwinBatch(X, Y, miniBatchSize)
 
         % Randomly select a similar or dissimilar pair of images.
         if choice < 0.5
-            [pairIdx1, pairIdx2, pairLabels(3,i)] = getSimilarPair(Y);
+            [pairIdx1, pairIdx2, pairLabels(3,i)] = getSimilarPair(Y, usedClasses);
         else
-            [pairIdx1, pairIdx2, pairLabels(3,i)] = getDissimilarPair(Y);
+            [pairIdx1, pairIdx2, pairLabels(3,i)] = getDissimilarPair(Y, usedClasses);
         end
 
-    X1(:, :, i) = X{pairIdx1}; 
-    X2(:, :, i) = X{pairIdx2}; 
-    pairLabels(1,i) = Y(pairIdx1);
-    pairLabels(2,i) = Y(pairIdx2);
+        X1(:, :, i) = X{pairIdx1}; 
+        X2(:, :, i) = X{pairIdx2}; 
+        pairLabels(1,i) = Y(pairIdx1);
+        pairLabels(2,i) = Y(pairIdx2);
     end
 end
 
-function [pairIdx1, pairIdx2, pairLabel] = getSimilarPair(classLabel)
-    % Find all unique classes.
-    classes = unique(classLabel);
+function [pairIdx1, pairIdx2, pairLabel, usedClasses] = getSimilarPair(classLabel, usedClasses)
+    % Find all unique classes not in usedClasses.
+    classes = setdiff(categories(classLabel), usedClasses);
 
-    % Choose a class randomly which will be used to get a similar pair.
+    % If all classes have been used at least once, reset the list.
+    if isempty(classes)
+        usedClasses = categorical([]);
+        classes = categories(classLabel);
+    end
+
+    % Choose a class randomly from the remaining classes.
     classChoice = randi(numel(classes));
+
+    % Add the chosen class to the list.
+    usedClasses = vertcat(usedClasses, classes(classChoice));
 
     % Find the indices of all the observations from the chosen class.
     idxs = find(classLabel == classes(classChoice));
@@ -488,13 +500,21 @@ function [pairIdx1, pairIdx2, pairLabel] = getSimilarPair(classLabel)
     pairLabel = 1;
 end
 
-function [pairIdx1, pairIdx2, label] = getDissimilarPair(classLabel)
-    % Find all unique classes.
-    classes = unique(classLabel);
+function [pairIdx1, pairIdx2, label, usedClasses] = getDissimilarPair(classLabel, usedClasses)
+    % Find all unique classes not in usedClasses.
+    classes = setdiff(categories(classLabel), usedClasses);
 
-    % Choose two different classes randomly which will be used to get a
-    % dissimilar pair.
+    % If all classes have been used at least once, reset the list.
+    if isempty(classes)
+        usedClasses = categorical([]);
+        classes = categories(classLabel);
+    end
+
+    % Choose two different classes randomly from the remaining classes.
     classesChoice = randperm(numel(classes), 2);
+
+    % Add the chosen classes to the list.
+    usedClasses = vertcat(usedClasses, classes(classesChoice(1)), classes(classesChoice(2)));
 
     % Find the indices of all the observations from the first and second
     % classes.
