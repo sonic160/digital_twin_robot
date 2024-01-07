@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # Software License Agreement (BSD License)
 #
-## Simple talker demo that published std_msgs/Strings messages
-## to the 'condition-monitoring' topic
+# Control a motor to turn following a unit-pulse signal. And monitor the response.
 
 import rospy
 from cm.msg import msg_cm as RosJointState
-import Board
+import Board, time
 
 
 class CMDataPublisher:
@@ -37,15 +36,15 @@ class CMDataPublisher:
         # Get CM data.
         for motor_idx in range(6):
             self.msg.position[motor_idx] = Board.getBusServoPulse(motor_idx+1) # Position
-            self.msg.temperature[motor_idx] = Board.getBusServoTemp(motor_idx+1) # Temperature
-            self.msg.voltage[motor_idx] = Board.getBusServoVin(motor_idx+1) # Voltage
+            # self.msg.temperature[motor_idx] = Board.getBusServoTemp(motor_idx+1) # Temperature
+            # self.msg.voltage[motor_idx] = Board.getBusServoVin(motor_idx+1) # Voltage
         # Publish the data.
         self.joint_states_pub.publish(self.msg)
 
 
 if __name__ == '__main__':
     try:
-        s = CMDataPublisher(10)
+        s = CMDataPublisher(100)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass

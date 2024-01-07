@@ -137,7 +137,8 @@ def serial_servo_get_rmsg(cmd):
     '''
     serialHandle.flushInput()  # 清空接收缓存
     portRead()  # 将单线串口配置为输入
-    time.sleep(0.005)  # 稍作延时，等待接收完毕
+    # The default value is .005. Here I reduce it to get larger monitoring frequency.
+    time.sleep(0.002)  # 稍作延时，等待接收完毕
     count = serialHandle.inWaiting()    # 获取接收缓存中的字节数
     if count != 0:  # 如果接收到的数据不空
         recv_data = serialHandle.read(count)  # 读取接收到的数据
