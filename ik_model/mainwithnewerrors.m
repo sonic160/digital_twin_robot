@@ -380,7 +380,7 @@ if secondtype
     % Scatter plot with color gradient based on point index
     scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
     
-    title(['Trajectory ', j]);
+    title(['Reference Trajectory ']);
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
