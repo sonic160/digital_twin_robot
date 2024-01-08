@@ -10,7 +10,7 @@ import Board, time
 time.sleep(0.5) # Sleep for .5 second.
 Board.setBusServoPulse(6, 0, 1000) # Turn motor 6 to 0 degree, using 1s.
         
-time.sleep(1.5) # 延时0.5s
+time.sleep(2) # 延时0.5s
 # Run testing.
 Board.setBusServoPulse(6, 500, 1000)
-time.sleep(1.5)
+time.sleep(2)

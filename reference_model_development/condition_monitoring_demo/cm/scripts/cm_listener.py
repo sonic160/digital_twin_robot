@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+# Might need to change to cm.msg, depending on the package name.
 from condition_monitoring.msg import msg_cm as RosJointState
 
 def callback(data):
