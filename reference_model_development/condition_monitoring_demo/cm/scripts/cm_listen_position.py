@@ -19,13 +19,15 @@ class DataCollector:
         # Add data to the list
         self.data.append({'timestamp': timestamp, 'position': position_data})
 
-        print(msg)
+        if msg.name[0] == 'Target value':
+            print(msg)
 
     def run(self):
         rospy.init_node('data_collector_node', anonymous=True)
         
         # Replace 'your_topic' with the actual topic you want to subscribe to
-        rospy.Subscriber('condition_monitoring', RosJointState, self.callback)
+        s_1 = rospy.Subscriber('condition_monitoring', RosJointState, self.callback)
+        s_2 = rospy.Subscriber('position_monitoring', RosJointState, self.callback)
 
         try:
             rospy.spin()

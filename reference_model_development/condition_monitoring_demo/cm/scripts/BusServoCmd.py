@@ -110,7 +110,9 @@ def serial_serro_wirte_cmd(id=None, w_cmd=None, dat1=None, dat2=None):
     buf.append(checksum(buf))
     # for i in buf:
     #     print('%x' %i)
-    serialHandle.write(buf)  # 发送
+    serialHandle.write(buf)
+    time.sleep(.00034)
+
 
 def serial_servo_read_cmd(id=None, r_cmd=None):
     '''
