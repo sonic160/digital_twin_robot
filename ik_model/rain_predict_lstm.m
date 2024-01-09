@@ -156,7 +156,7 @@ options = trainingOptions("adam", ...
 %     Plots="training-progress");
 
 
-net = trainNetwork(XTrain,YTrain,net.Layers,options);
+net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 

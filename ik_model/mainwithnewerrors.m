@@ -13,13 +13,13 @@ motorerrorselection=[0,1,2,3,4,5,6,7,8,9,10,11,12];
 %Creating shape set
 
 %Most used options
-%reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,67);
-%reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,67);
-%firsttype=1;
-reduced_adapted_interpolate_set= createInterpolate(67, 1000);
+reduced_adapted_circle_set=CreateRandomCircleList(0.28, 0.28,134);
+reduced_adapted_line_set=CreateRandomLineList(0.28, 0.28,134);
+firsttype=1;
+reduced_adapted_interpolate_set= createInterpolate(134, 1000);
 %secondtype=True
 secondtype=1;
-%reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_adapted_line_set);
+reduced_adapted_shape_set=mergeStructures(reduced_adapted_circle_set,reduced_adapted_line_set);
 
  % adapted_circle_set=CreateCircleList(0.28, 0.28);
  % adapted_line_set=CreateLineList(0.28, 0.28);
@@ -652,12 +652,12 @@ disp(size(cellArray))
 % end
 % cellArray = newCell;
  
-save('cellArray201_circle_line_interpolation_motor123error00010203.mat', 'cellArray');
+save('cellArray402_circle_line_interpolation_motor123error0001_moy_600_0203.mat', 'cellArray');
 % Now, cellArray is a cell array where each cell is a 6x1000 matrix
 
 %Running the rain_predict_file
 %run('rain_predict_lstm.m');
-
+run("optimum_train_predict.m")
 
 %%% end of experimental section %%%
 

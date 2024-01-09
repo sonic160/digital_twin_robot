@@ -1,11 +1,11 @@
 % Step 1num_time_series: Generate the dataset
-num_classes = 4;
+num_classes = 13;
 numClasses = num_classes;
 
 % Parameters
-struc=load('../cellArray2000_circle_line_interpolatesshapes.mat');
-cArray=struc.CD.cellArray;
-%cArray=struc.cellArray;
+struc=load('./cellArray402_circle_line_interpolation_motor123error0001_moy_600_0203.mat');
+%cArray=struc.CD.cellArray;
+cArray=struc.cellArray;
 % cArray=struc;
 
 
@@ -35,7 +35,7 @@ modelsdataset3meanF1matrix = zeros(10, 10);
 allF1scoresdataset3 = zeros(10, 40);
 
 % Specify the directory for saving gathered data
-gatheredDataDir = 'GatheredData/V2_2000_circle_line_interpolation';
+gatheredDataDir = 'GatheredData/cellArray402_circle_line_interpolation_motor123error0001_moy_600_0203';
 
 % Create directories if they don't exist
 if ~exist(gatheredDataDir, 'dir')
@@ -104,11 +104,9 @@ for index0=1:10
     
     inputSize = 6;
     numHiddenUnits = 150;
-    
-   layers = [
-    sequenceInputLayer(inputSize)
-    
-    % Bidirectional LSTM layers
+
+    layers = [
+    sequenceInputLayer(inputSize, 'Name', 'inputFEN')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
     convolution1dLayer(2,5,'Stride',2,'Padding',1)
@@ -118,7 +116,22 @@ for index0=1:10
     fullyConnectedLayer(numClasses)
     softmaxLayer
     classificationLayer
-    ]; 
+    ];
+    
+   % layers = [
+   %  sequenceInputLayer(inputSize)
+   % 
+   %  % Bidirectional LSTM layers
+   %  bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+   %  bilstmLayer(numHiddenUnits, 'OutputMode', 'sequence')
+   %  convolution1dLayer(2,5,'Stride',2,'Padding',1)
+   %  maxPooling1dLayer(2,'Stride',3,'Padding',1)
+   %  convolution1dLayer(5, 32, 'Padding', 'same', 'Stride', 2)
+   %  globalAveragePooling1dLayer('Name', 'GlobalAveragePoolingfcn')
+   %  fullyConnectedLayer(numClasses)
+   %  softmaxLayer
+   %  classificationLayer
+   %  ]; 
     
     % layers = [
     %     sequenceInputLayer(inputSize)
@@ -139,7 +152,7 @@ for index0=1:10
     options = trainingOptions("adam", ...
     ExecutionEnvironment="gpu", ...
     GradientThreshold=1, ...
-    MaxEpochs=50, ...
+    MaxEpochs=300, ...
     MiniBatchSize=miniBatchSize, ...
     ValidationData={XVal,YVal}, ... %new
     ValidationFrequency=20, ...     %new
@@ -153,8 +166,20 @@ for index0=1:10
     net = trainNetwork(XTrain,YTrain,layers,options);
      %Directory where the saves will happen 
     
-    
-    save(sprintf('lstmv3_2bilayers_V2_2000_circle_line__interpolation_motorerror00_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_128batch.mat', index0, test_len), 'net');
+    modelDir = fullfile(gatheredDataDir, sprintf('model_%d', index0));
+    if ~exist(modelDir, 'dir')
+        mkdir(modelDir);
+    end
+    model_name=sprintf('stmv3_2bilayers_201_interpolation_motorerror00010203_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_64batch.mat', index0, test_len);
+
+    save(fullfile(modelDir, model_name), 'net');
+
+    %  lstmv3_2bilayers_201_interpolation_motorerror00010203_0123_full_1000_150hiddenunnit_dropout0_2_alr_64_batch
+    % cellArray402_circle_line_interpolation_motor123error0001_moy_600_0203
+    % bestModelInfoDir = fullfile(gatheredDataDir, 'bestModelInfo.mat');
+    % save(bestModelInfoDir, 'bestModeloverall', 'bestModelMultfactoroverall', 'bestModelF1overall');
+    % modelDir = fullfile(gatheredDataDir, sprintf('model_%d', index0));
+    % save( modelDir, sprintf('stmv3_2bilayers_201_interpolation_motorerror00010203_0123_reduced_%d_6_%d_150hiddenunnit_dropout0_2_alr_64batch.mat', index0, test_len), 'net');
     
 
     % Make predictions on the validation set
@@ -195,7 +220,7 @@ for index0=1:10
     save(fullfile(confusionMatrixDir, 'confusion_matrix.mat'), 'C');
 
 
-    f1Score=f1Score(1:4,:);
+    f1Score=f1Score(1:numClasses,:);
     f1Score=f1Score';
     % Store F1 score for the current model
     allF1Scores(index0) = mean(f1Score);
@@ -265,8 +290,7 @@ for index0=1:10
         end
         
         
-        numClasses = 4;  % Number of classes
-        
+    
         % Generate the pattern
         pattern = mod(0:numSeq-1, numClasses);
         
@@ -318,12 +342,12 @@ for index0=1:10
         save(fullfile(confusionMatrixDir, 'confusion_matrix.mat'), 'C');
     
     
-        f1Score=f1Score(1:4,:);
+        f1Score=f1Score(1:numClasses,:);
         f1Score=f1Score';
         % Store mean F1 score for the current model
         modelsdataset1meanF1matrix(index0,index1) = mean(f1Score);
         % Store per class F1 score for the current model
-        allF1scoresdataset1(index0, index1*4-3:index1*4) = f1Score;
+        allF1scoresdataset1(index0, (index1-1)*numClasses+1:index1*numClasses) = f1Score;
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%
@@ -372,7 +396,7 @@ for index0=1:10
         end
             
             
-        numClasses = 4;  % Number of classes
+        
         
         % Generate the pattern
         pattern = mod(0:numSeq-1, numClasses);
@@ -432,10 +456,10 @@ for index0=1:10
             mkdir(confusionMatrixDir);
         end
         save(fullfile(confusionMatrixDir, 'confusion_matrix.mat'), 'C');
-        f1Score = f1Score(1:4, :);
+        f1Score = f1Score(1:numClasses, :);
         f1Score = f1Score';
         modelsdataset2meanF1matrix(index0, index2) = mean(f1Score);
-        allF1scoresdataset2(index0, index2 * 4 - 3:index2 * 4) = f1Score;
+        allF1scoresdataset2(index0, (index2-1) * numClasses +1:index2 * numClasses) = f1Score;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%
     %DATASET3
@@ -484,7 +508,7 @@ for index0=1:10
         end
             
             
-        numClasses = 4;  % Number of classes
+      
         
         % Generate the pattern
         pattern = mod(0:numSeq-1, numClasses);
@@ -545,10 +569,10 @@ for index0=1:10
         end
         save(fullfile(confusionMatrixDir, 'confusion_matrix.mat'), 'C');
         
-        f1Score = f1Score(1:4, :);
+        f1Score = f1Score(1:numClasses, :);
         f1Score = f1Score';
         modelsdataset3meanF1matrix(index0, index3) = mean(f1Score);
-        allF1scoresdataset3(index0, index3 * 4 - 3:index3 * 4) = f1Score;
+        allF1scoresdataset3(index0, (index3-1) * numClasses + 1:index3*numClasses) = f1Score;
     
         
     end
@@ -581,15 +605,24 @@ save(allF1ScoresDirdataset3, 'modelsdataset3meanF1matrix');
 %Display the best model 
 myMatrix =  (modelsdataset1meanF1matrix + modelsdataset2meanF1matrix + modelsdataset3meanF1matrix) / 3;
 bestModelF1overall= max(myMatrix(:));
-[bestModeloverall, bestModelMultfactoroverall] = find(modelsdataset1meanF1matrix == bestModelF1overall);
+[bestModeloverall, bestModelMultfactoroverall] = find(myMatrix == bestModelF1overall);
 disp(['Best combination overall: Best Model: ' num2str(bestModeloverall),'Best Index:' num2str(bestModelMultfactoroverall)]);
 disp(['Best F1 Score overall: ' num2str(bestModelF1overall)]);
 disp("---------------------------------------------------------")   
 
 
-% Save the best overall model information
-bestModelInfoDir = fullfile(gatheredDataDir, 'bestModelInfo.mat');
-save(bestModelInfoDir, 'bestModeloverall', 'bestModelMultfactoroverall', 'bestModelF1overall');
+% Directory to store the best model information
+bestModelInfoDir = fullfile(gatheredDataDir, 'bestModelInfo');
+
+% Create the directory if it does not exist
+if ~exist(bestModelInfoDir, 'dir')
+    mkdir(bestModelInfoDir);
+end
+
+% Save each variable into a separate MAT-file inside the bestModelInfo directory
+save(fullfile(bestModelInfoDir, 'bestModeloverall.mat'), 'bestModeloverall');
+save(fullfile(bestModelInfoDir, 'bestModelMultfactoroverall.mat'), 'bestModelMultfactoroverall');
+save(fullfile(bestModelInfoDir, 'bestModelF1overall.mat'), 'bestModelF1overall');
 
 % Save the overall mean F1 matrix
 overallMeanF1Dir = fullfile(gatheredDataDir, 'overallMeanF1matrix.mat');
