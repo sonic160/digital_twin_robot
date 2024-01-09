@@ -105,7 +105,8 @@ if __name__ == '__main__':
         rospy.init_node('node_test_motor_position', anonymous=True)
 
         # Create two threads
-        thread1 = threading.Thread(target=node_condition_monitoring, args=(rospy, 100, monitored_motor))
+        monitoring_freq = 100
+        thread1 = threading.Thread(target=node_condition_monitoring, args=(rospy, monitoring_freq, monitored_motor))
         thread2 = threading.Thread(target=node_control_robot, args=(rospy, target_value, original_value, duration, monitored_motor))
 
         # Start the threads
