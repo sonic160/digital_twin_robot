@@ -19,9 +19,9 @@ class DataCollector:
 
         if msg.name[0] == 'Target value': # If it is the cmd signal
             # Add data to the list
-            self.data.append({'timestamp': timestamp, 'position': position_data, 'command': True})
+            self.data.append({'timestamp': timestamp, 'position': position_data, 'command': msg.position[1]})
         else:
-            self.data.append({'timestamp': timestamp, 'position': position_data, 'command': False})    
+            self.data.append({'timestamp': timestamp, 'position': position_data, 'command': 0})    
 
     def run(self):
         rospy.init_node('data_collector_node', anonymous=True)
