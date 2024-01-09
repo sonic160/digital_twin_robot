@@ -20,20 +20,24 @@ if __name__ == '__main__':
 
     monitor_pos_pub = rospy.Publisher('/position_monitoring', RosJointState, queue_size=1)
 
-    time.sleep(3) # Sleep for .5 second.
-    target_value = 0
-    Board.setBusServoPulse(6, target_value, 1000) # Turn motor 6 to 0 degree, using 1s.
+    time.sleep(3) # Sleep for 3 second.
+    
+    # Set target value.
+    target_value = 550
+    duration = 50
+    Board.setBusServoPulse(6, target_value, duration) # Turn motor 6 to 0 degree, using 1s.
+    # Publish the target value.
     msg.header.stamp = rospy.Time.now()
     msg.position[0] = target_value
     monitor_pos_pub.publish(msg)
-    print(msg) 
+    rospy.loginfo('Publush position command: Target value {}'.format(target_value))
 
     time.sleep(3) # 延时0.5s
     target_value = 500
     # Run testing.
-    Board.setBusServoPulse(6, 500, 1000)
+    Board.setBusServoPulse(6, target_value, duration)
     msg.header.stamp = rospy.Time.now()
     msg.position[0] = target_value
     monitor_pos_pub.publish(msg)
     time.sleep(3)
-    print(msg)
+    rospy.loginfo('Publush position command: Target value {}'.format(target_value))
