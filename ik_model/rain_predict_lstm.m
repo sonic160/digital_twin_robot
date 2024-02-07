@@ -3,7 +3,7 @@ num_classes = 13;
 numClasses = num_classes;
 
 % Parameters
-struc=load('../cellArray201_circle_line_interpolation_motor123error00010203.mat');
+struc=load('./cellArray402_circle_line_interpolation_motor123error0001_moy_600_0203.mat');
 %cArray=struc.cellArray;
 cArray=struc.cellArray;
 % cArray=struc;
@@ -160,7 +160,7 @@ net = trainNetwork(XTrain,YTrain,layers,options);
 
 
 
-save('lstmv3_2bilayers_201_interpolation_motorerror00010203_0123_full_1000_150hiddenunnit_dropout0_2_alr_64_batch.mat','net')
+save('gated_transformer_600_c_l_i_motorerror_00010203_0123_1000.mat','net')
 % Make predictions on the validation set
 YPred = predict(net, XVal);
 

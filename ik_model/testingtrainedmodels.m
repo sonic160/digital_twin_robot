@@ -1,4 +1,4 @@
-loadedcell=load('../cellArray2000_circle_line_interpolatesshapes.mat');
+loadedcell=load('./finding_error_criterion_3_2_900.mat');
 
 % Get the current directory
 currentDir = pwd;
@@ -8,16 +8,16 @@ currentDir = pwd;
 
 % Load the file
 %net = load(filePathInParent);
-strucnet=load('lstmv3_2bilayers_500_interpolation_motorerror00_0123_reduced_10_6_100_150hiddenunnit_dropout0_2_alr_128batch.mat');
+strucnet=load('lstmv3_2bilayers_V2_2000_circle_line__interpolation_motorerror00_0123_reduced_2_6_200_150hiddenunnit_dropout0_2_alr_128batch.mat');
 net=strucnet.net;
-%cellArray=loadedcell.cellArray;
-cellArray=loadedcell.CD.cellArray;
+cellArray=loadedcell.cellArray;
+%cellArray=loadedcell.CD.cellArray;
 sizearray = size(cellArray);
 numSeq = sizearray(1); % Number of sequences
 disp(numSeq)
 
 %length of the testingdata
-test_len=100;
+test_len=900;
 
 % Size treatment
 numberofcells=numel(cellArray);

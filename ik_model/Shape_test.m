@@ -1,41 +1,56 @@
 %load stuff here
-loadedstructure=load("../cellArray1000.mat");
-loadedCellArray = loadedstructure.cellArray;
-k=201;
-chosencell=loadedCellArray{k};
-%load('trajCS.mat')
+%loadedstructure=load("../cellArray1000.mat");
+% 
+% loadedCellArray = loadedstructure.cellArray;
+% k=201;
+% chosencell=loadedCellArray{k};
+load('trajCS.mat')
 %longeur de la time series
 
-len_time_series=1000;
+len_time_series=32426;
 
-datapoints= [chosencell(1,:)',chosencell(2,:)',chosencell(3,:)'];
-x= chosencell(1,:)';
-y= chosencell(2,:)';
-z= chosencell(3,:)';
-% sample_time=10/len_time_series;
-% %trajectoire CS
-% 
-% x = trajCS.x;
-% y = trajCS.y;
-% z = trajCS.z;
+% datapoints= [chosencell(1,:)',chosencell(2,:)',chosencell(3,:)'];
+% x= chosencell(1,:)';
+% y= chosencell(2,:)';
+% z= chosencell(3,:)';
+
+sample_time=10/len_time_series;
+%trajectoire CS
+
+x = trajCS.x;
+y = trajCS.y;
+z = trajCS.z;
+x=x+0.11;
+y=y+0.11;
+z=z+0.01;
+
+% %on garde les 3500 premiers a vu d'oeil pour virer la spirale
+% x = x(1:3500);
+% y = y(1:3500);
+% z = z(1:3500);
+
 % scaleFactorX = 3;
 % scaleFactorY = 3;
-% 
-% % Scaling the vectors
+datapoints =[x, y,z];
+
+
+% Scaling the vectors
 % x_scaled = x * scaleFactorX;
 % y_scaled = y * scaleFactorY;
-% Plotting in 3D
+%Plotting in 3D
 figure;
 % plot3(x_scaled, y_scaled, z, 'o-');
 plot3(x, y, z, 'o-');
 grid on;
+% Scatter plot with color gradient based on point index
+scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
 xlabel('X-axis');
 ylabel('Y-axis');
 zlabel('Z-axis');
 title('3D Plot Example, what should be done');
-x= chosencell(4,:)';
-y= chosencell(5,:)';
-z= chosencell(6,:)';
+% x= chosencell(4,:)';
+% y= chosencell(5,:)';
+% z= chosencell(6,:)';
 % sample_time=10/len_time_series;
 % %trajectoire CS
 % 
@@ -49,14 +64,14 @@ z= chosencell(6,:)';
 % x_scaled = x * scaleFactorX;
 % y_scaled = y * scaleFactorY;
 % Plotting in 3D
-figure;
+%figure;
 % plot3(x_scaled, y_scaled, z, 'o-');
-plot3(x, y, z, 'o-');
-grid on;
-xlabel('X-axis');
-ylabel('Y-axis');
-zlabel('Z-axis');
-title('3D Plot Example, what was done');
+% plot3(x, y, z, 'o-');
+% grid on;
+% xlabel('X-axis');
+% ylabel('Y-axis');
+% zlabel('Z-axis');
+% title('3D Plot Example, what was done');
 
 % % Desired number of points
 % desiredPoints = len_time_series;
@@ -83,11 +98,11 @@ title('3D Plot Example, what was done');
 disp(size(datapoints))
 
 %Prepwork
-model_name = 'main3_armpi_fpv';
+model_name = 'main3_armpi_fpv_v2';
 load_system(model_name);
 joint1_damping = 0;
 joint2_damping = 0;
-damp_pince = 1000;
+damp_pince = 0;
 mdl = "robot_model";
 load_system(mdl)
 ik = simscape.multibody.KinematicsSolver(mdl);
@@ -111,7 +126,6 @@ j2 = zeros(len_time_series,1);
 j3 = zeros(len_time_series,1);
 j4 = zeros(len_time_series,1);
 j5 = zeros(len_time_series,1);
-T = 10; % period
 spline = zeros(len_time_series,3);
 targets = zeros(len_time_series,3);
 
@@ -144,13 +158,13 @@ m1=[transpose(1:len_time_series), ones(len_time_series, 1)];
         j5(t,1) = outputVec(5);
 end
         
-end_time_value_in_seconds= (len_time_series-1)*0.001;
+end_time_value_in_seconds= (len_time_series-1)*0.01;
 
-joint1_ts = timeseries(j1/180*pi,0:0.001:end_time_value_in_seconds);
-joint2_ts = timeseries(j2/180*pi,0:0.001:end_time_value_in_seconds);
-joint3_ts = timeseries(j3/180*pi,0:0.001:end_time_value_in_seconds);
-joint4_ts = timeseries(j4/180*pi,0:0.001:end_time_value_in_seconds);
-joint5_ts = timeseries(j5/180*pi,0:0.001:end_time_value_in_seconds);
+joint1_ts = timeseries(j1/180*pi,0:0.01:end_time_value_in_seconds);
+joint2_ts = timeseries(j2/180*pi,0:0.01:end_time_value_in_seconds);
+joint3_ts = timeseries(j3/180*pi,0:0.01:end_time_value_in_seconds);
+joint4_ts = timeseries(j4/180*pi,0:0.01:end_time_value_in_seconds);
+joint5_ts = timeseries(j5/180*pi,0:0.01:end_time_value_in_seconds);
 
 for j=0:0   %il faut réparer les moteurs 4/5/6
     fprintf('Motor off is:%d\n',j);
@@ -199,6 +213,7 @@ for j=0:0   %il faut réparer les moteurs 4/5/6
     figure;
     plot3(x, y, z, 'o-');
     grid on;
+    scatter3(x(1:10:end), y(1:10:end), z(1:10:end), 50, find(1:10:len_time_series), 'filled', 'MarkerEdgeColor', 'k');
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
@@ -232,7 +247,6 @@ function [x, y ,z] = ForwardKinematic(j1, j2, j3, j4, j5,len_time_series)
     x = zeros(len_time_series,1);
     y = zeros(len_time_series,1);
     z = zeros(len_time_series,1);
-    T = 10; % period
     %spline = zeros(len_time_series,5);
     
     len = size(j1);
