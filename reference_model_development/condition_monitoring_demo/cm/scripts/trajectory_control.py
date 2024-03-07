@@ -103,7 +103,7 @@ class ControlMotor:
                 
         # Publish the control command per trajectory.        
         self.msg.position[0] = trajectory
-        self.msg.position[1] = duration
+        self.msg.position[1] = duration_list
         self.monitor_pos_pub.publish(self.msg)
         # Log the information.
         rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position[0], self.msg.position[1]))       
