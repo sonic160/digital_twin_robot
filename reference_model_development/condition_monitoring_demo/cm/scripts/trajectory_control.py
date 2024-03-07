@@ -64,8 +64,8 @@ class ControlMotor:
         self.msg = RosJointState()
         self.msg.name = ['Target value']
         self.msg.header.frame_id = 'not_relervant'
-        self.msg.position = [0, 0]
-        self.msg.temperature = [0]
+        self.msg.position = [0, 0, 0, 0, 0, 0]
+        self.msg.temperature = [0, 0, 0, 0, 0, 0]
         self.msg.voltage = [0]
 
         self.monitor_pos_pub = rospy.Publisher('/position_monitoring', RosJointState, queue_size=1)
@@ -102,11 +102,11 @@ class ControlMotor:
         time.sleep(2)
                 
         # Publish the control command per trajectory.        
-        self.msg.position[0] = trajectory
-        self.msg.position[1] = duration_list
+        self.msg.position = trajectory
+        self.msg.temperature = duration_list
         self.monitor_pos_pub.publish(self.msg)
         # Log the information.
-        rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position[0], self.msg.position[1]))       
+        rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position, self.msg.temperature))       
 
 
 def node_condition_monitoring(node, io_block_flag, freq=100):
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         rospy.init_node('node_test_motor_position', anonymous=True)
 
         # Create two threads
-        monitoring_freq = 1
+        monitoring_freq = 10
         thread1 = threading.Thread(target=node_condition_monitoring, args=(rospy, io_block_flag, monitoring_freq))
         thread2 = threading.Thread(target=node_control_robot, args=(rospy, io_block_flag, trajectories, durations_lists))
 
