@@ -27,7 +27,11 @@ class CMDataPublisher:
         self.monitor_pos_pub = rospy.Publisher('/condition_monitoring', RosJointState, queue_size=50)
         rospy.loginfo("Monitoring the position of motors" + " at " + str(rate) + "Hz")
 
-    def get_and_pub_cm_data(self):
+
+    def safe_read_position(self, monitored_motor: int):
+        ''' Read the position safely. This function verifies if the IO is occupied before perform the reading operation.
+        If IO is blocked, it will waits until it is released. During the reading operation, it will block the IO.        
+        '''
         # Check if the io is blocked:
         while self.io_block_flag[0]:
             print('Thread_CM: Waiting for the IO to be released!')
@@ -35,17 +39,20 @@ class CMDataPublisher:
 
         # Block the IO and perform the reading action.
         self.io_block_flag[0] = True
+        # Read the position.
+        self.msg.position[monitored_motor-1] = Board.getBusServoPulse(monitored_motor)  # Position
+        # Release the IO
+        self.io_block_flag[0] = False
 
+
+    def get_and_pub_cm_data(self):             
         # Log current time.
         self.msg.header.stamp = rospy.Time.now()
         # Get CM data.
-        for motor_idx in range(1, 7):
-            self.msg.position[motor_idx-1] = Board.getBusServoPulse(motor_idx)  # Position
+        for monitored_motor in range(1, 7):
+            self.safe_read_position(monitored_motor)
         # Publish the data.
-        self.monitor_pos_pub.publish(self.msg)
-
-        # Release the IO
-        self.io_block_flag[0] = False
+        self.monitor_pos_pub.publish(self.msg)        
 
 
 class ControlMotor:
@@ -63,7 +70,11 @@ class ControlMotor:
 
         self.monitor_pos_pub = rospy.Publisher('/position_monitoring', RosJointState, queue_size=1)
 
-    def send_and_pub_control_signal(self, trajectories: list, durations_lists: list):
+
+    def safe_control_motor(self, target_value: int, duration: int, monitored_motor: int):
+        ''' Send the control command to a given motor safely. It verifies the IO is not occupied before sending the control command.
+        During the sending operation, it will block the IO.
+        '''
         # Check if the io is blocked:
         while self.io_block_flag[0]:
             print('Thread_Control: Waiting for the IO to be released!')
@@ -71,31 +82,31 @@ class ControlMotor:
 
         # Block the IO and perform the reading action.
         self.io_block_flag[0] = True
-
-        # Log the current time.
-        self.msg.header.stamp = rospy.Time.now()
-
-        # Loop over the trajectories.
-        for trajectory, duration_list in zip(trajectories, durations_lists):
-            # Loop over the motors.
-            for monitored_motor in range(1, 7):
-                motor_idx = monitored_motor - 1
-                target_value = trajectory[motor_idx]
-                duration = duration_list[motor_idx]
-                # Set target value.
-                Board.setBusServoPulse(monitored_motor, target_value, duration)
-            # Sleep for 2 seconds. The time needed for the robot to finish one trajectory.
-            time.sleep(2)
-                
-        # Publish the control command per trajectory.        
-        self.msg.position[0] = trajectories
-        self.msg.position[1] = durations_lists
-        self.monitor_pos_pub.publish(self.msg)
-        # Log the information.
-        rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position[0], self.msg.position[1]))
-
+        # Set target value.
+        Board.setBusServoPulse(monitored_motor, target_value, duration)
         # Release the IO
         self.io_block_flag[0] = False
+
+
+    def send_and_pub_control_signal(self, trajectory: list, duration_list: list):       
+        # Log the current time.
+        self.msg.header.stamp = rospy.Time.now()
+        
+        # Loop over the motors.
+        for monitored_motor in range(1, 7):
+            motor_idx = monitored_motor - 1
+            target_value = trajectory[motor_idx]
+            duration = duration_list[motor_idx]
+            self.safe_control_motor(target_value, duration, monitored_motor)            
+        # Sleep for 2 seconds. The time needed for the robot to finish one trajectory.
+        time.sleep(2)
+                
+        # Publish the control command per trajectory.        
+        self.msg.position[0] = trajectory
+        self.msg.position[1] = duration
+        self.monitor_pos_pub.publish(self.msg)
+        # Log the information.
+        rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position[0], self.msg.position[1]))       
 
 
 def node_condition_monitoring(node, io_block_flag, freq=100):
@@ -109,11 +120,11 @@ def node_control_robot(node, io_block_flag: list, trajectories=[[500, 500, 500, 
     # Initialize ros node.
     robot_controller = ControlMotor(node, io_block_flag)
     # Sleep for 5 seconds. Time needed to start the listener on the PC side.
-    time.sleep(5)
-    # Send the control signals.
-    robot_controller.send_and_pub_control_signal(trajectories, durations_lists)
-
-    
+    time.sleep(5)    
+    # Loop over the trajectories. Send the control signals.
+    for trajectory, duration_list in zip(trajectories, durations_lists):
+        robot_controller.send_and_pub_control_signal(trajectory, duration_list)
+  
 
 if __name__ == '__main__':
     # Define trajectories.
