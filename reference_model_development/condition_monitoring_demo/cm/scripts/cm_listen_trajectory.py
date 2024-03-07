@@ -21,7 +21,7 @@ class DataCollector:
         timestamp = msg.header.stamp.to_sec()
 
         # Add the current message into a list.
-        self.data.append({
+        self.position_data.append({
             'timestamp': timestamp, 
             'motor_1': position[0],
             'motor_2': position[1],
@@ -34,8 +34,8 @@ class DataCollector:
 
     def command_monitoring(self, msg):
         # Get the position monitoring data.
-        trajectory = msg.position[0]
-        duration_list = msg.position[1]
+        trajectory = msg.position
+        duration_list = msg.temperature
 
         # Get the time stamp.
         timestamp = msg.header.stamp.to_sec()
@@ -82,8 +82,8 @@ class DataCollector:
 
             # Post-processing
             df['time_since_start'] = (df['timestamp']-df['timestamp'][0])%1e3
-            for i in range(1, 7):
-                df['motor_'.format(i)] = df['motor_'.format(i)]/1000*240
+            for col in df.columns[1:]:
+                df[col] = df[col]/1000*240
 
             df.to_csv('/home/zhiguo/github_repo/digital_twin_robot/reference_model_development/condition_monitoring_demo/cm/scripts/trajectory_monitoring_position.csv', index=False)
             print("trajectory_monitoring_position.csv'")
@@ -93,8 +93,8 @@ class DataCollector:
             df_cmd = pd.DataFrame(self.command_position)
             # Post-processing
             df_cmd['time_since_start'] = (df_cmd['timestamp']-df['timestamp'][0])%1e3
-            for i in range(1, 7):
-                df_cmd['motor_'.format(i)] = df_cmd['motor_'.format(i)]/1000*240
+            for col in df_cmd.columns[1:]:
+                df_cmd[col] = df_cmd[col]/1000*240
 
             df_cmd.to_csv('/home/zhiguo/github_repo/digital_twin_robot/reference_model_development/condition_monitoring_demo/cm/scripts/trajectory_monitoring_cmd.csv', index=False)
             print("trajectory_monitoring_cmd.csv'")
