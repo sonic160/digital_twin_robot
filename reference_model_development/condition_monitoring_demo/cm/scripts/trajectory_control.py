@@ -6,14 +6,15 @@
 
 import threading, rospy, Board, time
 from cm.msg import msg_cm as RosJointState
-import argparse
+# import argparse
 
 
 class CMDataPublisher:
-    def __init__(self, node, freq=10):
+    def __init__(self, node, io_block_flag: list, freq=10):
         self.node = node
         rate = self.node.get_param('~rate', freq)
         self.r = rospy.Rate(rate)
+        self.io_block_flag = io_block_flag
 
         self.msg = RosJointState()
         self.msg.name = ['motor position']
@@ -27,18 +28,30 @@ class CMDataPublisher:
         rospy.loginfo("Monitoring the position of motors" + " at " + str(rate) + "Hz")
 
     def get_and_pub_cm_data(self):
+        # Check if the io is blocked:
+        while self.io_block_flag[0]:
+            print('Thread_CM: Waiting for the IO to be released!')
+            pass
+
+        # Block the IO and perform the reading action.
+        self.io_block_flag[0] = True
+
         # Log current time.
         self.msg.header.stamp = rospy.Time.now()
         # Get CM data.
         for motor_idx in range(1, 7):
             self.msg.position[motor_idx-1] = Board.getBusServoPulse(motor_idx)  # Position
         # Publish the data.
-        #self.monitor_pos_pub.publish(self.msg)
+        self.monitor_pos_pub.publish(self.msg)
+
+        # Release the IO
+        self.io_block_flag[0] = False
 
 
 class ControlMotor:
-    def __init__(self, node):
+    def __init__(self, node, io_block_flag: list):
         self.node = node
+        self.io_block_flag = io_block_flag
 
         # Prepare initial values of the msg.
         self.msg = RosJointState()
@@ -50,43 +63,57 @@ class ControlMotor:
 
         self.monitor_pos_pub = rospy.Publisher('/position_monitoring', RosJointState, queue_size=1)
 
-    def send_and_pub_control_signal(self, target_value, duration, monitored_motor):
-        # Set target value.
-        Board.setBusServoPulse(monitored_motor, target_value, duration)
-        # Publish the target value.
-        #self.msg.header.stamp = rospy.Time.now()
-        #self.msg.position[0] = target_value
-        #self.msg.position[1] = duration
-        #self.monitor_pos_pub.publish(self.msg)
+    def send_and_pub_control_signal(self, trajectories: list, durations_lists: list):
+        # Check if the io is blocked:
+        while self.io_block_flag[0]:
+            print('Thread_Control: Waiting for the IO to be released!')
+            pass
+
+        # Block the IO and perform the reading action.
+        self.io_block_flag[0] = True
+
+        # Log the current time.
+        self.msg.header.stamp = rospy.Time.now()
+
+        # Loop over the trajectories.
+        for trajectory, duration_list in zip(trajectories, durations_lists):
+            # Loop over the motors.
+            for monitored_motor in range(1, 7):
+                motor_idx = monitored_motor - 1
+                target_value = trajectory[motor_idx]
+                duration = duration_list[motor_idx]
+                # Set target value.
+                Board.setBusServoPulse(monitored_motor, target_value, duration)
+            # Sleep for 2 seconds. The time needed for the robot to finish one trajectory.
+            time.sleep(2)
+                
+        # Publish the control command per trajectory.        
+        self.msg.position[0] = trajectories
+        self.msg.position[1] = durations_lists
+        self.monitor_pos_pub.publish(self.msg)
         # Log the information.
-        # rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(target_value, duration))
+        rospy.loginfo('Publish control command: Position target: {}, Duration: {}ms'.format(self.msg.position[0], self.msg.position[1]))
+
+        # Release the IO
+        self.io_block_flag[0] = False
 
 
-def node_condition_monitoring(node, freq=100):
-    cm_data_publisher = CMDataPublisher(node, freq)
+def node_condition_monitoring(node, io_block_flag, freq=100):
+    cm_data_publisher = CMDataPublisher(node, io_block_flag, freq)
     while not rospy.is_shutdown():
         cm_data_publisher.get_and_pub_cm_data()
         cm_data_publisher.r.sleep()
 
 
-def node_control_robot(node, trajectories=[[500, 500, 500, 500, 500, 500]], durations_lists=[[1000, 1000, 1000, 1000, 1000, 1000]]):
+def node_control_robot(node, io_block_flag: list, trajectories=[[500, 500, 500, 500, 500, 500]], durations_lists=[[1000, 1000, 1000, 1000, 1000, 1000]]):
     # Initialize ros node.
-    robot_controller = ControlMotor(node)
-    time.sleep(5)  # Sleep for 5 seconds. Time needed to start the listener on the PC side.
+    robot_controller = ControlMotor(node, io_block_flag)
+    # Sleep for 5 seconds. Time needed to start the listener on the PC side.
+    time.sleep(5)
+    # Send the control signals.
+    robot_controller.send_and_pub_control_signal(trajectories, durations_lists)
 
-    # Loop over the trajectories.
-    for trajectory, duration_list in zip(trajectories, durations_lists):
-        # Loop over the motors.
-        for monitored_motor in range(1, 7):
-            motor_idx = monitored_motor - 1
-            target_value = trajectory[motor_idx]
-            duration = duration_list[motor_idx]
-            # Set the target value.
-            robot_controller.send_and_pub_control_signal(target_value, duration, monitored_motor)
-            time.sleep(.0043)
-
-        time.sleep(2)
-
+    
 
 if __name__ == '__main__':
     # Define trajectories.
@@ -106,6 +133,9 @@ if __name__ == '__main__':
                        [1000, 1000, 1000, 1000, 1000, 1000],
                        [1000, 1000, 1000, 1000, 1000, 1000],
                        [1000, 1000, 1000, 1000, 1000, 1000]]
+    
+    # Define the io block flag.
+    io_block_flag = [False]
 
     try:
         # Initialize ROS node in the main thread
@@ -113,8 +143,8 @@ if __name__ == '__main__':
 
         # Create two threads
         monitoring_freq = 1
-        thread1 = threading.Thread(target=node_condition_monitoring, args=(rospy, monitoring_freq))
-        thread2 = threading.Thread(target=node_control_robot, args=(rospy, trajectories, durations_lists))
+        thread1 = threading.Thread(target=node_condition_monitoring, args=(rospy, io_block_flag, monitoring_freq))
+        thread2 = threading.Thread(target=node_control_robot, args=(rospy, io_block_flag, trajectories, durations_lists))
 
         # Start the threads
         thread1.start()
