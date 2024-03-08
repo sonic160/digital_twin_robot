@@ -79,23 +79,12 @@ class DataCollector:
         # Position monitoring data.
         if self.position_data:
             df = pd.DataFrame(self.position_data)
-
-            # Post-processing
-            df['time_since_start'] = (df['timestamp']-df['timestamp'][0])%1e3
-            for col in df.columns[1:]:
-                df[col] = df[col]/1000*240
-
             df.to_csv('/home/zhiguo/github_repo/digital_twin_robot/reference_model_development/condition_monitoring_demo/cm/scripts/trajectory_monitoring_position.csv', index=False)
             print("trajectory_monitoring_position.csv'")
 
         # Command data.
         if self.command_position:
             df_cmd = pd.DataFrame(self.command_position)
-            # Post-processing
-            df_cmd['time_since_start'] = (df_cmd['timestamp']-df['timestamp'][0])%1e3
-            for col in df_cmd.columns[1:]:
-                df_cmd[col] = df_cmd[col]/1000*240
-
             df_cmd.to_csv('/home/zhiguo/github_repo/digital_twin_robot/reference_model_development/condition_monitoring_demo/cm/scripts/trajectory_monitoring_cmd.csv', index=False)
             print("trajectory_monitoring_cmd.csv'")
 
