@@ -20,26 +20,21 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-## Table of contents
-
-- [Quick start](#quick-start)
-- [Development status](#development-status)
-- [What's included](#whats-included)
-- [Contributing](#contributing)
-- [Contributors](#creators)
-- [Copyright and license](#copyright-and-license)
-- [Credits](#credits)
-
-
 ## Quick start
 
-Some text
-
-- Instruction 1
-- Instruction 2
-- Instruction 3
+Below are a few tutorials that help you get started with this repository.
+- Digital twins:
+  - [A matlab application for condition-monitoring of a robot](documents/cm_matlab_ros/how_to_use_condition_monitoring_app.md)
+  - A digital shadow that synchronizes the digital twin model with the real robot (to be updated)
+  - Trajectory simulation model in Matlab (to be updated)
+  - Trajectory planning model in MoveIt (to be updated)
+- Reliability and predictive maintenance based on digital twin:
+  - Training a deep learning model based on digital twin for fault diagnosis (to be updated)
+  - Using digital twin to detect the temperature drift of the robot motors (to be updated)
 
 ## Development status
+
+This project is currently under development. The final objectives are to create open source digital twin model of a robot and codes and tutorials on how to use the digital twin model for failure simulation, reliability modeling, and predictive maintenance.
 
 Below is a list of new features that we are working on right now:
 - Add a functionality to simulate the temperature and voltage in the digital twin model.
@@ -47,17 +42,20 @@ Below is a list of new features that we are working on right now:
 
 ## What's included
 
-Some text
+The main parts of this repository is organized as follows:
 
 ```text
-folder1/
-└── folder2/
-    ├── folder3/
-    │   ├── file1
-    │   └── file2
-    └── folder4/
-        ├── file3
-        └── file4
+└── robot_digital_twin: This folder contains the digital twin model for the robot.
+    └── 3d_model_urdf_files: 3D model of the robot in URDF format.
+    └── catin_ws: A copy of the catkin workspace on the robot. It contains the source codes on the robot side that are related to this repository.
+    └── condition_monitoring_matlab_ros: A matlab application for condition-monitoring.
+    └── digital_shadow_python_ros (to be finished): A digital shadow (data flow from the robot to the model) developed in python.
+    └── trajectory_simulation_matlab (to be finished): A matlab application for simulating trajectories.
+    └── trajectory_simulation_moveit (to be finished): A moveit application for simulating trajectories.
+
+└── documents: This folder contains the tutorials related to this project.
+
+└── related_projects (to be finished): This folder contains the related projects.
 ```
 
 ## Contributing
@@ -70,7 +68,10 @@ Code and documentation copyright 2023- the authors. Code released under the [MIT
 
 ## Credits
 
-This project is based on the following projects:
+This work is partially supported by the French Research Council (ANR) JCJC projct **Digital Failure Twin** under contract number ANR-22-CE10-0004.
+
+This project benifits from the following open source projects:
+- To be updated.
 
 
 ## Contributors ✨
