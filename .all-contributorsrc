@@ -13,7 +13,7 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/25298455?v=4",
       "profile": "https://github.com/sonic160",
       "contributions": [
-        "projectManagement"
+        "projectManagement", "code"
       ]
     },
     {
@@ -21,6 +21,15 @@
       "name": "ZAPHAKIEL",
       "avatar_url": "https://avatars.githubusercontent.com/u/45849471?v=4",
       "profile": "https://github.com/SAGIRI-kawaii",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "thwtt",
+      "name": "Thomas W",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39498854?v=4",
+      "profile": "https://github.com/thwtt",
       "contributions": [
         "code"
       ]
