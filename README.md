@@ -73,7 +73,6 @@ This work is partially supported by the French Research Council (ANR) JCJC projc
 This project benifits from the following open source projects:
 - To be updated.
 
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
