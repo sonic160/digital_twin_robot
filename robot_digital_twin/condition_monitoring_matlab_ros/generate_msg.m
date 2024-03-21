@@ -1,4 +1,5 @@
 clear; clc;
 
+base_dictionary = 'Z:'
 folderpath = 'Z:\cm\';
-rosgenmsg('Z:')
+rosgenmsg(base_dictionary)
