@@ -87,6 +87,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/SAGIRI-kawaii"><img src="https://avatars.githubusercontent.com/u/45849471?v=4?s=100" width="100px;" alt="ZAPHAKIEL"/><br /><sub><b>ZAPHAKIEL</b></sub></a><br /><a href="https://github.com/sonic160/digital_twin_robot/commits?author=SAGIRI-kawaii" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/thwtt"><img src="https://avatars.githubusercontent.com/u/39498854?v=4?s=100" width="100px;" alt="Thomas W"/><br /><sub><b>Thomas W</b></sub></a><br /><a href="https://github.com/sonic160/digital_twin_robot/commits?author=thwtt" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/KillianMcCourt"><img src="https://avatars.githubusercontent.com/u/119616832?v=4?s=100" width="100px;" alt="KillianMcCourt"/><br /><sub><b>KillianMcCourt</b></sub></a><br /><a href="https://github.com/sonic160/digital_twin_robot/commits?author=KillianMcCourt" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/X1M1C1"><img src="https://avatars.githubusercontent.com/u/119295053?v=4?s=100" width="100px;" alt="X1M1C1"/><br /><sub><b>X1M1C1</b></sub></a><br /><a href="https://github.com/sonic160/digital_twin_robot/commits?author=X1M1C1" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
