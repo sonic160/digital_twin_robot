@@ -13,7 +13,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/25298455?v=4",
       "profile": "https://github.com/sonic160",
       "contributions": [
-        "projectManagement", "code"
+        "projectManagement",
+        "code"
       ]
     },
     {
@@ -30,6 +31,15 @@
       "name": "Thomas W",
       "avatar_url": "https://avatars.githubusercontent.com/u/39498854?v=4",
       "profile": "https://github.com/thwtt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "KillianMcCourt",
+      "name": "KillianMcCourt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/119616832?v=4",
+      "profile": "https://github.com/KillianMcCourt",
       "contributions": [
         "code"
       ]
