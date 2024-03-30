@@ -86,7 +86,7 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', outlier_r
 
 
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list, window_size):
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -105,16 +105,19 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size):
     for name in sequence_name_list:
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
-        for i in range(len(df_tmp)-window_size):
-            X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
-            y_window.append(y_tmp.iloc[i+window_size-1])
+        for i in range(window_size, len(df_tmp)):
+            # X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
+            tmp = df_tmp.iloc[i, :-1].values.flatten().tolist()
+            tmp.extend(y_tmp.iloc[i-window_size:i].values.flatten().tolist())
+            X_window.append(tmp)
+            y_window.append(y_tmp.iloc[i])
     
     X_window = pd.DataFrame(X_window)
     y_window = pd.Series(y_window)
 
     return X_window, y_window
 
-def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=1):
+def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=0):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
@@ -149,7 +152,7 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=1):
         X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size)
 
         # Fitting and prediction.
-        reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, is_cv=True)
+        reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, is_cv=False)
 
         # Calculate the performance indicators.
         perf[counter, :] = np.array([max_error(y_test, y_pred), 
@@ -270,11 +273,11 @@ def model_pef(y_tr, y_test, y_pred_tr, y_pred):
     # Show the model fitting performance.
     print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
     print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
-    print('Training performance, residual error > 3 (%): ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
+    print('Training performance, residual error > 3: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
 
     print('Prediction performance, max error is: ' + str(max_error(y_pred, y_test)))
     print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_pred, y_test, squared=False)))
-    print('Prediction performance, percentage of residual error > 3' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
+    print('Prediction performance, percentage of residual error > 3：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
 
 
 
