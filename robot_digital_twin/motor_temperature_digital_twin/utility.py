@@ -85,7 +85,36 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', outlier_r
     return combined_df
 
 
-def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
+# Sliding the window to create features and response variables.
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size):
+    ''' ## Description
+    Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
+
+    ## Parameters:
+    - df_x: The dataframe containing the features. Must have a column named "test_condition".
+    - y: The target variable.
+    - sequence_name_list: The list of sequence names, each name represents one sequence.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+
+    ## Return  
+    - X: Dataframe of the new features.
+    - y: Series of the response variable.          
+    '''
+    X_window = []
+    y_window = []
+    for name in sequence_name_list:
+        df_tmp = df_x[df_x['test_condition']==name]
+        y_tmp = y[df_x['test_condition']==name]
+        for i in range(len(df_tmp)-window_size):
+            X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
+            y_window.append(y_tmp.iloc[i+window_size-1])
+    
+    X_window = pd.DataFrame(X_window)
+    y_window = pd.Series(y_window)
+
+    return X_window, y_window
+
+def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=1):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
@@ -95,6 +124,7 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
     - y: The target variable.
     - n_fold: The number of folds. Default is 5.
     - threshold: The threshold for the exceedance rate. Default is 3.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
 
     ## Return
     - perf: A dataframe containing the performance indicators. There are three columns: "Max error", "RMSE", and "Exceed boundary rate".
@@ -113,11 +143,10 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
         # Get the dataset names.
         names_train = [test_conditions[i] for i in train_index]
         names_test = [test_conditions[i] for i in test_index]
-        # Get training and testing data.
-        X_train = df_x[df_x['test_condition'].isin(names_train)]
-        X_test = df_x[df_x['test_condition'].isin(names_test)]
-        y_train = y[df_x['test_condition'].isin(names_train)]
-        y_test = y[df_x['test_condition'].isin(names_test)]
+
+        # Get training and testing data.       
+        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size)
+        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size)
 
         # Fitting and prediction.
         reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, is_cv=True)
@@ -287,5 +316,6 @@ if __name__ == '__main__':
     pipeline = Pipeline(steps)
 
     # Now you can use this pipeline object for fitting and prediction
-    df_perf = run_cross_val(pipeline, df_x, y)
+    df_perf = run_cross_val(pipeline, df_x, y, window_size=3)
     print(df_perf)
+ 
