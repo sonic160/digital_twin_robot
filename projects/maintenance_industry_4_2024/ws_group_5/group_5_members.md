@@ -1,3 +1,3 @@
 | Member    | Administrator (Y/N) | Email
 | -------- | ------- | ----------- |
-| Your first name + Last name | Y | your_email@example.com |
+| Imad + Absri | N | imad.absri1@gmail.com |
