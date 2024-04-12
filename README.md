@@ -1,7 +1,7 @@
 <p align="center">
   <a>
     <img src='documents/logo.png' alt="Logo" width=300 height=100>
-  </a> testmax
+  </a> 
   <h3 align="center">Digital failure twins for reliability and predictive maintenance </h3>
 
   <p align="center">
@@ -20,7 +20,6 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## Quick start
-test côme
 Below are a few tutorials that help you get started with this repository.
 - Digital twins:
   - [A matlab application for condition-monitoring of a robot](documents/cm_matlab_ros/how_to_use_condition_monitoring_app.md)
