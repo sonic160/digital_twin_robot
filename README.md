@@ -1,7 +1,7 @@
 <p align="center">
   <a>
     <img src='documents/logo.png' alt="Logo" width=300 height=100>
-  </a> test
+  </a> testmax
   <h3 align="center">Digital failure twins for reliability and predictive maintenance </h3>
 
   <p align="center">
