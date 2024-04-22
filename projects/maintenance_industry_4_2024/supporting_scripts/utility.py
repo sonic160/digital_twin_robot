@@ -58,14 +58,24 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
         for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
             'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
             'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
-            ax.plot(filtered_df['time'], filtered_df[col], marker='o', label=col)
+            
+            label_name = col[:13] + 'label'
+            tmp = filtered_df[filtered_df[label_name]==0]
+            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+            tmp = filtered_df[filtered_df[label_name]==1]
+            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
             ax.set_ylabel(col)
 
         fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
         for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
             'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
             'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
-            ax.plot(filtered_df['time'], filtered_df[col], marker='o', label=col)
+            
+            label_name = col[:13] + 'label'
+            tmp = filtered_df[filtered_df[label_name]==0]
+            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+            tmp = filtered_df[filtered_df[label_name]==1]
+            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
             ax.set_ylabel(col)
 
         plt.show()
