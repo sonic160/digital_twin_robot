@@ -11,39 +11,76 @@ from pandas.plotting import scatter_matrix
 import logging
 import sys
 import os
+import matplotlib.pyplot as plt
 
 
 
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
 
 
-def remove_outliers(df: pd.DataFrame):
-    ''' # Description
-    Remove outliers from the dataframe based on defined valid ranges. 
-    Define a valid range of temperature and voltage. 
-    Use ffil function to replace the invalid measurement with the previous value.
+def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=None, is_plot=True) -> pd.DataFrame:
+    ''' ## Description
+    Read all the test data from a folder. The folder should contain subfolders for each test. Each subfolder should contain the six CSV files for each motor. 
+    The test condition in the input will be recorded as a column in the combined dataframe.
+    
+    ## Parameters
+    - base_dictionary: Path to the folder containing the subfolders for each test.
+    - pre_processing: A function handle to the data preprocessing function.Default is None.
+    - is_plot: Whether to plot the data. Default is True.
+
+    ## Return
+    - df_data: A DataFrame containing all the data from the CSV files.
     '''
-    df['temperature'] = df['temperature'].where(df['temperature'] <= 200, np.nan)
-    df['temperature'] = df['temperature'].where(df['temperature'] >= 0, np.nan)
-    df['temperature'] = df['temperature'].ffill()
 
-    df['voltage'] = df['voltage'].where(df['voltage'] >= 6000, np.nan)
-    df['voltage'] = df['voltage'].where(df['voltage'] <= 9000, np.nan)
-    df['voltage'] = df['voltage'].ffill()
+    # Get all the folders in the base_dictionary
+    path_list = os.listdir(base_dictionary)
+    # Only keep the folders, not the excel file.
+    path_list = path_list[:-1]
 
-    df['position'] = df['position'].where(df['position'] >= 0, np.nan)
-    df['position'] = df['position'].where(df['position'] <= 1000, np.nan)
-    df['position'] = df['position'].ffill()
+    # Read the data.
+    df_data = pd.DataFrame()
+    for tmp_path in path_list:
+        path = base_dictionary + tmp_path
+        tmp_df = read_all_csvs_one_test(path, tmp_path, pre_processing)
+        df_data = pd.concat([df_data, tmp_df])
+        df_data = df_data.reset_index(drop=True)
+
+    # Read the test conditions
+    df_test_conditions = pd.read_excel(base_dictionary+'Test conditions.xlsx')
+
+    # Visulize the data
+    for selected_sequence_idx in path_list:
+        filtered_df = df_data[df_data['test_condition'] == selected_sequence_idx]
+
+        print('{}: {}\n'.format(selected_sequence_idx, df_test_conditions[df_test_conditions['Test id'] == selected_sequence_idx]['Description']))
+
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+        for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
+            'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
+            'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
+            ax.plot(filtered_df['time'], filtered_df[col], marker='o', label=col)
+            ax.set_ylabel(col)
+
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+        for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
+            'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
+            'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
+            ax.plot(filtered_df['time'], filtered_df[col], marker='o', label=col)
+            ax.set_ylabel(col)
+
+        plt.show()
+    
+    return df_data
 
 
-def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', outlier_removal: callable = remove_outliers) -> pd.DataFrame:
+def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_processing: callable = None) -> pd.DataFrame:
     ''' ## Description
     Combine the six CSV files (each for a motor) in a folder into a single DataFrame. The test condition in the input will be recorded as a column in the combined dataframe.
     
     ## Parameters
     - folder_path: Path to the folder containing the six CSV files
     - test_condition: The condition of the test. Should be read from "Test conditions.xlsx". Default is 'unknown'. 
-    - outlier_removal: A function to remove outliers from the dataframe. Default is remove_outliers.
+    - pre_processing: A function handle to the data preprocessing function. Default is None.
 
     ## Return
     - combined_df: A DataFrame containing all the data from the CSV files.    
@@ -65,8 +102,9 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', outlier_r
         # Drop the time. Will add later.
         df = df.drop(labels=df.columns[0], axis=1)
 
-        # Remove outliers by defining ranges.
-        outlier_removal(df)        
+        # Apply the pre-processing.
+        if pre_processing:
+            pre_processing(df)
 
         # Extract the file name (excluding the extension) to use as a prefix
         file_name = os.path.splitext(file)[0]
@@ -85,7 +123,39 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', outlier_r
     return combined_df
 
 
-def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
+# Sliding the window to create features and response variables.
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
+    ''' ## Description
+    Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
+
+    ## Parameters:
+    - df_x: The dataframe containing the features. Must have a column named "test_condition".
+    - y: The target variable.
+    - sequence_name_list: The list of sequence names, each name represents one sequence.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+
+    ## Return  
+    - X: Dataframe of the new features.
+    - y: Series of the response variable.          
+    '''
+    X_window = []
+    y_window = []
+    for name in sequence_name_list:
+        df_tmp = df_x[df_x['test_condition']==name]
+        y_tmp = y[df_x['test_condition']==name]
+        for i in range(window_size, len(df_tmp)):
+            # X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
+            tmp = df_tmp.iloc[i, :-1].values.flatten().tolist()
+            tmp.extend(y_tmp.iloc[i-window_size:i].values.flatten().tolist())
+            X_window.append(tmp)
+            y_window.append(y_tmp.iloc[i])
+    
+    X_window = pd.DataFrame(X_window)
+    y_window = pd.Series(y_window)
+
+    return X_window, y_window
+
+def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run_result=True):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
@@ -95,6 +165,8 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
     - y: The target variable.
     - n_fold: The number of folds. Default is 5.
     - threshold: The threshold for the exceedance rate. Default is 3.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+    - single_run_result: Whether to return the single run result. Default is True.
 
     ## Return
     - perf: A dataframe containing the performance indicators. There are three columns: "Max error", "RMSE", and "Exceed boundary rate".
@@ -113,14 +185,13 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
         # Get the dataset names.
         names_train = [test_conditions[i] for i in train_index]
         names_test = [test_conditions[i] for i in test_index]
-        # Get training and testing data.
-        X_train = df_x[df_x['test_condition'].isin(names_train)]
-        X_test = df_x[df_x['test_condition'].isin(names_test)]
-        y_train = y[df_x['test_condition'].isin(names_train)]
-        y_test = y[df_x['test_condition'].isin(names_test)]
+
+        # Get training and testing data.       
+        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size)
+        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size)
 
         # Fitting and prediction.
-        reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, is_cv=True)
+        reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, single_run_result=single_run_result)
 
         # Calculate the performance indicators.
         perf[counter, :] = np.array([max_error(y_test, y_pred), 
@@ -132,7 +203,7 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3):
     return pd.DataFrame(data=perf, columns=['Max error', 'RMSE', 'Exceed boundary rate'])
     
 
-def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, is_cv=False):  
+def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):  
     ''' ## Description
     This subfunction fits different regression models, and test the performance in both training and testing dataset. 
     
@@ -142,7 +213,7 @@ def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, is_cv=False):
     - y_tr: The training labels. 
     - X_test: The testing data. 
     - y_test: The testing labels. 
-    - is_cv: Whether the function is used for cross validation. Default is False.
+    - single_run_result: Whether to show the result from a single run. Default is True.
 
     ## Returns
     - reg_mdl: The fitted regression model.
@@ -162,7 +233,7 @@ def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, is_cv=False):
     # y_tr = scaler_y.inverse_transform(y_tr)
 
     # If not in cv mode, draw the performance on the training and testing dataset.
-    if not is_cv:
+    if single_run_result:
         model_pef(y_tr, y_test, y_pred_tr, y_pred)
 
     return reg_mdl, y_pred_tr, y_pred
@@ -239,13 +310,14 @@ def model_pef(y_tr, y_test, y_pred_tr, y_pred):
 
     # Performance indicators
     # Show the model fitting performance.
+    print('New cv run:\n')
     print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
     print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
-    print('Training performance, residual error > 3 (%): ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
+    print('Training performance, residual error > 3: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
 
     print('Prediction performance, max error is: ' + str(max_error(y_pred, y_test)))
     print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_pred, y_test, squared=False)))
-    print('Prediction performance, percentage of residual error > 3' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
+    print('Prediction performance, percentage of residual error > 3：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
 
 
 
@@ -287,5 +359,6 @@ if __name__ == '__main__':
     pipeline = Pipeline(steps)
 
     # Now you can use this pipeline object for fitting and prediction
-    df_perf = run_cross_val(pipeline, df_x, y)
+    df_perf = run_cross_val(pipeline, df_x, y, window_size=3)
     print(df_perf)
+ 
