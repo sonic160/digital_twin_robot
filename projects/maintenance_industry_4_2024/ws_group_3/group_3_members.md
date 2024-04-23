@@ -1,5 +1,5 @@
 | Member    | Administrator (Y/N) | Email
-| -------- | ------- | ----------- |
+| (test) | ------- | ----------- |
 | Lara Szterensus  | Y | lara.szterensus@student-cs.fr |
 | Beatriz Fernandes Raposo | | N | beatriz.fernandes-cs.fr |
 | Merse Szalai  | N | merse.szalai@student-cs.fr |
