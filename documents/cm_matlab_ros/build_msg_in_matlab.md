@@ -5,7 +5,7 @@ This can be done through the following steps:
 1. Set the current dictionary of Matlab to be
 <p align="center">
     <code>
-        robot_digital_twin\condition_monitoring_matlab_ros\matlab_application
+        robot_digital_twin\condition_monitoring_matlab_ros
     </code>
 </p>
 
