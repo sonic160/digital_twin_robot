@@ -1,3 +1,6 @@
 | Member    | Administrator (Y/N) | Email
 | -------- | ------- | ----------- |
-| Your first name + Last name | Y | your_email@example.com |
+| Liu Ya | N | liuya2360@gmail.com |
+| Long Zhou | Y | zhoulonge18@gmail.com |
+| Chih-Shin Li | N | ? |
+
