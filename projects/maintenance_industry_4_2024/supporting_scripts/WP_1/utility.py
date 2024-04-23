@@ -47,9 +47,7 @@ def read_all_test_data_from_path(
         df_data = df_data.reset_index(drop=True)
 
     # Read the test conditions
-    df_test_conditions = pd.read_excel(
-        "/Users/user1/Desktop/Industry_40/digital_twin_robot_group2/projects/maintenance_industry_4_2024/dataset/training_data/Test conditions.xlsx"
-    )
+    df_test_conditions = pd.read_excel(base_dictionary + "Test conditions.xlsx")
 
     # Visulize the data
     for selected_sequence_idx in path_list:
