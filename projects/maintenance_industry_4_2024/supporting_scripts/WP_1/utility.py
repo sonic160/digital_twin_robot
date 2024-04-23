@@ -78,7 +78,7 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
             ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
             ax.set_ylabel(col)
 
-        plt.show()
+        # plt.show()
     
     return df_data
 
