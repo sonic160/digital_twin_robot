@@ -1,3 +1,5 @@
 | Member    | Administrator (Y/N) | Email
 | -------- | ------- | ----------- |
-| Merse Szalai | Y | your_email@example.com |
+| Merse Szalai | N | your_email@example.com |
+| Juan Ignacio Baserga | N | juan-ignacio.baserga@student-cs.fr |
+
