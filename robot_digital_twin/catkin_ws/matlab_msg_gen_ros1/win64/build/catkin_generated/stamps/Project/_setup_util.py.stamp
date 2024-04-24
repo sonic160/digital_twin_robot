@@ -1,4 +1,4 @@
-#!C:/Users/Zhiguo/AppData/Roaming/MathWorks/MATLAB/R2023b/ros1/win64/venv/Scripts/python.exe
+#!C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/Scripts/python.exe
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
@@ -273,7 +273,7 @@ if __name__ == '__main__':
             try:
                 CMAKE_PREFIX_PATH = os.environ['ROS1_INSTALL_DIR'].split(';')
             except:
-                CMAKE_PREFIX_PATH = 'C:\Program Files\MATLAB\R2023b\sys\ros1\win64\ros1;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages'.split(';')
+                CMAKE_PREFIX_PATH = 'F:\Program Files\MATLAB\R2024a\sys\ros1\win64\ros1;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

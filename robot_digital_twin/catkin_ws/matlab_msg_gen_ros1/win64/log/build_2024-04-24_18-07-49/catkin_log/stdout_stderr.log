@@ -1,0 +1,40 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.9.6
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+CMake Error at CMakeLists.txt:6 (project):
+  The CMAKE_C_COMPILER:
+
+    C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CC" or the CMake cache entry CMAKE_C_COMPILER to the full path to
+  the compiler, or to the compiler name if it is in the PATH.
+
+
+CMake Error at CMakeLists.txt:6 (project):
+  The CMAKE_CXX_COMPILER:
+
+    C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CXX" or the CMake cache entry CMAKE_CXX_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+
+
+-- Configuring incomplete, errors occurred!
+See also "Z:/matlab_msg_gen_ros1/win64/build/CMakeFiles/CMakeOutput.log".
+Base path: Z:\matlab_msg_gen_ros1\win64
+Source space: Z:\matlab_msg_gen_ros1\win64\src
+Build space: Z:\matlab_msg_gen_ros1\win64\build
+Devel space: Z:\matlab_msg_gen_ros1\win64\devel
+Install space: Z:\matlab_msg_gen_ros1\win64\install
+####
+#### Running command: "cmake Z:\matlab_msg_gen_ros1\win64\src -DALIAS_ROS1_CLASS_LOADER=1 -DBoost_NAMESPACE=mwboost -DCATKIN_ENABLE_TESTING=off -DCMAKE_PREFIX_PATH=C:\Program Files\MATLAB\R2023b\sys\ros1\win64\ros1;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=/MD /Od /Ob2 /DNDEBUG -DCATKIN_DEVEL_PREFIX=Z:\matlab_msg_gen_ros1\win64\devel -DCMAKE_INSTALL_PREFIX=Z:\matlab_msg_gen_ros1\win64\install -G Ninja" in "Z:\matlab_msg_gen_ros1\win64\build"
+####
+Invoking "cmake" failed

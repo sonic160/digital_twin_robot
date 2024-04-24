@@ -4,7 +4,9 @@ Before starting, please make sure that:
 1. You have Python installed in your computer. Matlab Ros Toolbox support versions **3.8 - 3.10**. Please make sure you installed a supported version. Please install the interpreter directly from the [official website](https://www.python.org/downloads/), not from Anaconda.
 2. Matlab requires Visual Studio 2019 or later to build the message. Follow the instruction below:
     - Install Visual Studio C++ 2019 or later. Download the community version from [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false)
-    - Make sure that the "Desktop development with C++" workload is selected when installing Visual Studio (see the tutorial [here](https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2022#step-4---choose-workloads)).
+    - Make sure that the "Desktop development with C++" and  "Universal Windows Platform development (If you're using Windows 11, this could be one of the possible reasons for your failure to run.)" workloads are selected when installing Visual Studio (see the tutorial [here](https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2022#step-4---choose-workloads)).
+    - You should select these two workloads like this:
+    <image src=screen_shots/workloads.png width=600></image>
 
 This can be done through the following steps:
 
@@ -43,7 +45,7 @@ This can be done through the following steps:
 
     - If you see an error message: `Current compiler MinGW64 Compiler (C++) is not supported for ROS build. To choose a compiler, run 'mex -setup cpp'.` 
         - Install Visual Studio C++ 2019 or later. Download the community version from [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false)
-        - Make sure that the "Desktop development with C++" workload is selected when installing Visual Studio (see the tutorial [here](https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2022#step-4---choose-workloads)).
+        - Make sure that the "Desktop development with C++" and  "Universal Windows Platform development" workloads are selected when installing Visual Studio (see the tutorial [here](https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2022#step-4---choose-workloads)).
 
 6. Follow the instructions you got from the screen above, which is summarized in `after_generate_msg.m`. If everything goes well, you should be able to find `msg_cm` appearing in the message list.
 

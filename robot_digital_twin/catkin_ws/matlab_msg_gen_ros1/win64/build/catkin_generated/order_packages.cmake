@@ -11,4 +11,4 @@ list(APPEND CATKIN_ORDERED_PACKAGES_BUILD_TYPE "catkin")
 
 set(CATKIN_MESSAGE_GENERATORS )
 
-set(CATKIN_METAPACKAGE_CMAKE_TEMPLATE "C:/Users/Zhiguo/AppData/Roaming/MATHWO~1/MATLAB/R2023b/ros1/win64/venv/lib/site-packages/catkin_pkg/templates/metapackage.cmake.in")
+set(CATKIN_METAPACKAGE_CMAKE_TEMPLATE "C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/lib/site-packages/catkin_pkg/templates/metapackage.cmake.in")

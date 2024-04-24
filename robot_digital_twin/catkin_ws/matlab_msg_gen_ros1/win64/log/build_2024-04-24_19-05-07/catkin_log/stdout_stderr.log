@@ -1,0 +1,47 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.9.6
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+[0/1] Re-running CMake...
+-- The C compiler identification is unknown
+-- The CXX compiler identification is unknown
+CMake Error at CMakeLists.txt:6 (project):
+  The CMAKE_C_COMPILER:
+
+    C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CC" or the CMake cache entry CMAKE_C_COMPILER to the full path to
+  the compiler, or to the compiler name if it is in the PATH.
+
+
+CMake Error at CMakeLists.txt:6 (project):
+  The CMAKE_CXX_COMPILER:
+
+    C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe
+
+  is not a full path to an existing compiler tool.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CXX" or the CMake cache entry CMAKE_CXX_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+
+
+-- Configuring incomplete, errors occurred!
+See also "Z:/matlab_msg_gen_ros1/win64/build/CMakeFiles/CMakeOutput.log".
+See also "Z:/matlab_msg_gen_ros1/win64/build/CMakeFiles/CMakeError.log".
+FAILED: build.ninja 
+"C:\Program Files\MATLAB\R2023b\bin\win64\cmake\bin\cmake.exe" --regenerate-during-build -SZ:\matlab_msg_gen_ros1\win64\src -BZ:\matlab_msg_gen_ros1\win64\build
+ninja: error: rebuilding 'build.ninja': subcommand failed
+Base path: Z:\matlab_msg_gen_ros1\win64
+Source space: Z:\matlab_msg_gen_ros1\win64\src
+Build space: Z:\matlab_msg_gen_ros1\win64\build
+Devel space: Z:\matlab_msg_gen_ros1\win64\devel
+Install space: Z:\matlab_msg_gen_ros1\win64\install
+####
+#### Running command: "ninja build.ninja" in "Z:\matlab_msg_gen_ros1\win64\build"
+####
+Invoking "ninja build.ninja" failed

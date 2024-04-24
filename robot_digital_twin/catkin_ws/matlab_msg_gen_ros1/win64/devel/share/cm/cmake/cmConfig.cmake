@@ -67,14 +67,14 @@ set(cm_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(cm_SOURCE_PREFIX Z:/matlab_msg_gen_ros1/win64/src/cm)
-  set(cm_DEVEL_PREFIX Z:/matlab_msg_gen_ros1/win64/devel)
+  set(cm_SOURCE_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm)
+  set(cm_DEVEL_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel)
   set(cm_INSTALL_PREFIX "")
   set(cm_PREFIX ${cm_DEVEL_PREFIX})
 else()
   set(cm_SOURCE_PREFIX "")
   set(cm_DEVEL_PREFIX "")
-  set(cm_INSTALL_PREFIX Z:/matlab_msg_gen_ros1/win64/install)
+  set(cm_INSTALL_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install)
   set(cm_PREFIX ${cm_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(cm_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "Z:/matlab_msg_gen_ros1/win64/devel/include;Z:/matlab_msg_gen_ros1/win64/src/cm/include " STREQUAL " ")
+if(NOT "D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/include;D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm/include " STREQUAL " ")
   set(cm_INCLUDE_DIRS "")
-  set(_include_dirs "Z:/matlab_msg_gen_ros1/win64/devel/include;Z:/matlab_msg_gen_ros1/win64/src/cm/include")
+  set(_include_dirs "D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/include;D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "Z:/matlab_msg_gen_ros1/win64/devel/include;Z:/matlab_msg_gen_ros1/win64/
         message(FATAL_ERROR "Project 'cm' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'cm' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in 'Z:/matlab_msg_gen_ros1/win64/src/cm/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'cm' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm/${idir}'.  ${_report}")
     endif()
     _list_append_unique(cm_INCLUDE_DIRS ${include})
   endforeach()
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path Z:/matlab_msg_gen_ros1/win64/devel/lib;C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages/lib)
+    foreach(path D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib;F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/lib;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

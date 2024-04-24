@@ -6,6 +6,6 @@ if "%1"=="" (
   echo "Calling env.bat without arguments is not supported anymore. Instead spawn a subshell and source a setup file manually."
   exit 1
 ) else (
-  call "Z:/matlab_msg_gen_ros1/win64/build/catkin_generated/setup_cached.bat"
+  call "D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/build/catkin_generated/setup_cached.bat"
   %*
 )

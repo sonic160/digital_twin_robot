@@ -7,7 +7,7 @@ REM Supported command line options:
 REM --extend: skips the undoing of changes from a previously sourced setup file
 REM --local: only considers this workspace but not the chained ones
 
-set _SETUP_UTIL=Z:/matlab_msg_gen_ros1/win64/install/_setup_util.py
+set _SETUP_UTIL=D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/_setup_util.py
 
 if NOT EXIST "%_SETUP_UTIL%" (
   echo "Missing Python script: %_SETUP_UTIL%"
@@ -15,7 +15,7 @@ if NOT EXIST "%_SETUP_UTIL%" (
 )
 
 REM set the Python executable
-set _PYTHON="C:/Users/Zhiguo/AppData/Roaming/MathWorks/MATLAB/R2023b/ros1/win64/venv/Scripts/python.exe"
+set _PYTHON="C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/Scripts/python.exe"
 
 REM compute Python home and normalize Python executable path
 if NOT "%PYTHON_VENV_PATH%" == "" (

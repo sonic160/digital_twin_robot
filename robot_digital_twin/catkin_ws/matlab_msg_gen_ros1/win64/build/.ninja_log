@@ -1,16 +1,12 @@
 # ninja log v5
-774	985	7326495183888400	catkin_generated/windows_wrappers/Project__setup_util.py_exec_install_python/_setup_util.exe	1254d23b317087cd
-1	773	7326495181691788	CMakeFiles/Project__setup_util.py_exec_install_python.dir/catkin_generated/add_python_executable/Project__setup_util.py_exec_install_python/_setup_util.cpp.obj	97a24c071ffd93f1
-10	134	0	cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	d7ecbcad832f95d
-10	134	0	Z:/matlab_msg_gen_ros1/win64/build/cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	d7ecbcad832f95d
-516	5734	7326495231167400	cm/CMakeFiles/cm_matlab.dir/src/cm_msg_cm_message.cpp.obj	1808cd74b26e0123
-136	331	7326495177198131	Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm/msg/_msg_cm.py	799ddb9ad30d6b5f
-143	377	7326495177670164	Z:/matlab_msg_gen_ros1/win64/devel/include/cm/msg_cm.h	8a9b7c60c7811778
-332	515	7326495179214608	Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm/msg/__init__.py	dfbb31a2d33f5eab
-5735	12153	7326495295499337	Z:/matlab_msg_gen_ros1/win64/devel/bin/cm_matlab.dll	fe68b9b1710cf892
-5735	12153	7326495295499337	Z:/matlab_msg_gen_ros1/win64/devel/lib/cm_matlab.lib	fe68b9b1710cf892
-12154	14398	0	CMakeFiles/install.util	697eb2a512c8eb42
-116	7157	7327217830884058	build.ninja	b88eb5f461bbc46e
-3	163	0	cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	d7ecbcad832f95d
-3	163	0	Z:/matlab_msg_gen_ros1/win64/build/cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	d7ecbcad832f95d
-164	545	0	CMakeFiles/install.util	697eb2a512c8eb42
+9	170	0	cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	543a4e858b87bf95
+9	170	0	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/build/cm/CMakeFiles/_cm_generate_messages_check_deps_msg_cm	543a4e858b87bf95
+182	461	7356945876667077	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm/msg/_msg_cm.py	58e8b0723b8b753
+172	474	7356945876782882	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/include/cm/msg_cm.h	e703aa3a4481c1a3
+461	627	7356945878395809	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm/msg/__init__.py	ba1dd4bb900e22e3
+1	1027	7356945882423801	CMakeFiles/Project__setup_util.py_exec_install_python.dir/68d6a8b106053d8853ca6f5cf4e42532/Project__setup_util.py_exec_install_python/_setup_util.cpp.obj	61c02380ab37ac7c
+1029	1359	7356945884346605	catkin_generated/windows_wrappers/Project__setup_util.py_exec_install_python/_setup_util.exe	c484a8858fe1b360
+628	7851	7356945950308379	cm/CMakeFiles/cm_matlab.dir/src/cm_msg_cm_message.cpp.obj	1793a36fbd453a09
+7852	8450	7356945955135131	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/bin/cm_matlab.dll	8b423763d4c4778a
+7852	8450	7356945955135131	D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/cm_matlab.lib	8b423763d4c4778a
+8450	8677	0	CMakeFiles/install.util	f83b31f3e2d93497

@@ -142,6 +142,7 @@ EXPORTS
 	??_R0?AV?$ArrayException@VException@matlab@@$0CN@@detail@data@matlab@@@8 	 DATA
 	??_R0?AV?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@@8 	 DATA
 	??_R0?AV?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@@8 	 DATA
+	??_R0?AV?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@@8 	 DATA
 	??_R0?AV?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@@8 	 DATA
 	??_R0?AV?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@@8 	 DATA
 	??_R0?AV?$ArrayException@VException@matlab@@$0N@@detail@data@matlab@@@8 	 DATA
@@ -761,6 +762,8 @@ EXPORTS
 	??0?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
 	??0?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@QEAA@AEBV0123@@Z
 	??0?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
+	??0?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@QEAA@AEBV0123@@Z
+	??0?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
 	??0?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@QEAA@AEBV0123@@Z
 	??0?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z
 	??0?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@QEAA@AEBV0123@@Z
@@ -934,6 +937,7 @@ EXPORTS
 	??1?$ArrayException@VException@matlab@@$0CN@@detail@data@matlab@@UEAA@XZ
 	??1?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@UEAA@XZ
 	??1?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@UEAA@XZ
+	??1?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@UEAA@XZ
 	??1?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@UEAA@XZ
 	??1?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@UEAA@XZ
 	??1?$ArrayException@VException@matlab@@$0N@@detail@data@matlab@@UEAA@XZ
@@ -1114,6 +1118,189 @@ EXPORTS
 	??R?$function0@V?$shared_ptr@U?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@@mwboost@@QEBA?AV?$shared_ptr@U?$msg_cm_@V?$allocator@X@std@@@cm@@@1@XZ
 	??R?$function1@XAEBV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@@mwboost@@QEBAXAEBV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@1@@Z
 	??R?$function1@XV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@@mwboost@@QEBAXV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@1@@Z
+	??_7?$AbstractMetaObject@V?$MATLABROSMsgInterface@U?$msg_cm_@V?$allocator@X@std@@@cm@@@@@impl@ros1_class_loader@@6B@
+	??_7?$AbstractMetaObject@VROSMsgElementInterfaceFactory@@@impl@ros1_class_loader@@6B@
+	??_7?$ArrayException@VException@matlab@@$00@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$00@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$01@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$01@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$02@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$02@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$04@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$04@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$05@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$05@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$06@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$06@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$07@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$07@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$08@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$08@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$09@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$09@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BA@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BA@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BB@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BB@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BC@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BC@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BD@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BD@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BE@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BE@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BF@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BF@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BG@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BG@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BH@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BH@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BI@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BI@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BJ@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BJ@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BK@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BK@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BL@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BL@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BM@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BM@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BN@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BN@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BO@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BO@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0BP@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0BP@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CA@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CA@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CB@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CB@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CC@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CC@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CD@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CD@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CE@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CE@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CF@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CF@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CG@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CG@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CH@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CH@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CI@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CI@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CJ@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CJ@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CK@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CK@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CL@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CL@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CM@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CM@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CN@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CN@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0N@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0N@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0O@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0O@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$ArrayException@VException@matlab@@$0P@@detail@data@matlab@@6BException@3@@
+	??_7?$ArrayException@VException@matlab@@$0P@@detail@data@matlab@@6Bexception@std@@@
+	??_7?$MATLABROSMsgInterface@U?$msg_cm_@V?$allocator@X@std@@@cm@@@@6B@
+	??_7?$MetaObject@Vcm_msg_cm_message@@VROSMsgElementInterfaceFactory@@@impl@ros1_class_loader@@6B@
+	??_7?$MetaObject@Vcm_msg_msg_cm_common@@V?$MATLABROSMsgInterface@U?$msg_cm_@V?$allocator@X@std@@@cm@@@@@impl@ros1_class_loader@@6B@
+	??_7?$ROSBagWriterImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@6B@
+	??_7?$ROSPublisherImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@6B@
+	??_7?$ROSSubscriberImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@V?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@Vcm_msg_msg_cm_common@@@@6B@
+	??_7?$SubscriptionCallbackHelperT@AEBV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@X@ros@@6B@
+	??_7?$TypedArray@N@data@matlab@@6B@
+	??_7?$TypedArray@VArray@data@matlab@@@data@matlab@@6B@
+	??_7?$TypedArray@VStruct@data@matlab@@@data@matlab@@6B@
+	??_7?$TypedArray@_S@data@matlab@@6B@
+	??_7?$_Ref_count_obj2@V?$ROSBagWriterImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@@std@@6B@
+	??_7?$_Ref_count_obj2@V?$ROSPublisherImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@@std@@6B@
+	??_7?$_Ref_count_obj2@V?$ROSSubscriberImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@V?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@Vcm_msg_msg_cm_common@@@@@std@@6B@
+	??_7?$_Ref_count_obj2@VPublisher@ros@@@std@@6B@
+	??_7?$_Ref_count_obj2@VSubscriber@ros@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayFactoryImpl@impl@data@matlab@@V<lambda_a4c5f97d4391fb4c09103a727c16defd>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayImpl@impl@data@matlab@@V<lambda_18bde30140702ba20a566c9dc393b8c0>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayImpl@impl@data@matlab@@V<lambda_49bc69670bef5877f460780ec06c4b58>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayImpl@impl@data@matlab@@V<lambda_7221354e2161a523b28f93cf96116df6>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayImpl@impl@data@matlab@@V<lambda_8717c4bee2934487c85bc1f9f4a10ac1>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVArrayImpl@impl@data@matlab@@V<lambda_e914d30eff449a87d58ddc0a6ee00afb>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVIteratorImpl@detail@data@matlab@@V<lambda_2338e59a205dcd23a85a74566c35c54c>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVIteratorImpl@detail@data@matlab@@V<lambda_5f4fcb290926e6b66c490376dc93f8ff>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVIteratorImpl@detail@data@matlab@@V<lambda_7b2e123050acc360989b02063f1710cc>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVIteratorImpl@detail@data@matlab@@V<lambda_f604b6d186b888d49827c9591affdc3a>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVNameListImpl@detail@data@matlab@@V<lambda_9f3a4d0362104a3bede0405fafec76e1>@@@std@@6B@
+	??_7?$_Ref_count_resource@PEAVReferenceImpl@detail@data@matlab@@V<lambda_2615407b98e1f3a14023b76f0dedc381>@@@std@@6B@
+	??_7?$clone_impl@Ubad_alloc_@exception_detail@mwboost@@@exception_detail@mwboost@@6B@
+	??_7?$clone_impl@Ubad_alloc_@exception_detail@mwboost@@@exception_detail@mwboost@@6Bbad_alloc@std@@@
+	??_7?$clone_impl@Ubad_alloc_@exception_detail@mwboost@@@exception_detail@mwboost@@6Bexception@2@@
+	??_7?$clone_impl@Ubad_exception_@exception_detail@mwboost@@@exception_detail@mwboost@@6B@
+	??_7?$clone_impl@Ubad_exception_@exception_detail@mwboost@@@exception_detail@mwboost@@6Bbad_exception@std@@@
+	??_7?$clone_impl@Ubad_exception_@exception_detail@mwboost@@@exception_detail@mwboost@@6Bexception@2@@
+	??_7?$sp_counted_impl_p@V?$clone_impl@Ubad_alloc_@exception_detail@mwboost@@@exception_detail@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_p@V?$clone_impl@Ubad_exception_@exception_detail@mwboost@@@exception_detail@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_pd@PEAEU?$checked_array_deleter@E@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_pd@PEAU?$msg_cm_@V?$allocator@X@std@@@cm@@V?$sp_ms_deleter@U?$msg_cm_@V?$allocator@X@std@@@cm@@@detail@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_pd@PEAV?$MATLABROSMsgInterface@U?$Header_@V?$allocator@X@std@@@std_msgs@@@@V?$bind_t@XV?$mf1@XVClassLoader@ros1_class_loader@@PEAV?$MATLABROSMsgInterface@U?$Header_@V?$allocator@X@std@@@std_msgs@@@@@_mfi@mwboost@@V?$list2@V?$value@PEAVClassLoader@ros1_class_loader@@@_bi@mwboost@@U?$arg@$00@3@@_bi@3@@_bi@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_pd@PEAV?$SubscriptionCallbackHelperT@AEBV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@X@ros@@V?$sp_ms_deleter@V?$SubscriptionCallbackHelperT@AEBV?$shared_ptr@$$CBU?$msg_cm_@V?$allocator@X@std@@@cm@@@mwboost@@X@ros@@@detail@mwboost@@@detail@mwboost@@6B@
+	??_7?$sp_counted_impl_pd@PEAV?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V12@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V12@@std@@@2@@std@@V?$sp_ms_deleter@V?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V12@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V12@@std@@@2@@std@@@detail@mwboost@@@detail@mwboost@@6B@
+	??_7?$wrapexcept@Vbad_function_call@mwboost@@@mwboost@@6Bbad_function_call@1@@
+	??_7?$wrapexcept@Vbad_function_call@mwboost@@@mwboost@@6Bclone_base@exception_detail@1@@
+	??_7?$wrapexcept@Vbad_function_call@mwboost@@@mwboost@@6Bexception@1@@
+	??_7?$wrapexcept@Vlock_error@mwboost@@@mwboost@@6Bclone_base@exception_detail@1@@
+	??_7?$wrapexcept@Vlock_error@mwboost@@@mwboost@@6Bexception@1@@
+	??_7?$wrapexcept@Vlock_error@mwboost@@@mwboost@@6Block_error@1@@
+	??_7?$wrapexcept@Vthread_resource_error@mwboost@@@mwboost@@6Bclone_base@exception_detail@1@@
+	??_7?$wrapexcept@Vthread_resource_error@mwboost@@@mwboost@@6Bexception@1@@
+	??_7?$wrapexcept@Vthread_resource_error@mwboost@@@mwboost@@6Bthread_resource_error@1@@
+	??_7Array@data@matlab@@6B@
+	??_7BagException@rosbag@@6B@
+	??_7CharArray@data@matlab@@6B@
+	??_7ClassLoaderException@ros1_class_loader@@6B@
+	??_7CreateClassException@ros1_class_loader@@6B@
+	??_7Exception@matlab@@6B@
+	??_7Exception@ros@@6B@
+	??_7MATLABPublisherInterface@@6B@
+	??_7MATLABROSMsgInterfaceBase@@6B@
+	??_7MATLABRosbagWriterInterface@@6B@
+	??_7MATLABSubscriberInterface@@6B@
+	??_7ROSMsgElementInterfaceFactory@@6B@
+	??_7StructArray@data@matlab@@6B@
+	??_7bad_alloc@std@@6B@
+	??_7bad_alloc_@exception_detail@mwboost@@6Bbad_alloc@std@@@
+	??_7bad_alloc_@exception_detail@mwboost@@6Bexception@2@@
+	??_7bad_array_new_length@std@@6B@
+	??_7bad_exception@std@@6B@
+	??_7bad_exception_@exception_detail@mwboost@@6Bbad_exception@std@@@
+	??_7bad_exception_@exception_detail@mwboost@@6Bexception@2@@
+	??_7bad_function_call@mwboost@@6B@
+	??_7clone_base@exception_detail@mwboost@@6B@
+	??_7cm_msg_cm_message@@6B@
+	??_7cm_msg_msg_cm_common@@6B@
+	??_7exception@mwboost@@6B@
+	??_7exception@std@@6B@
+	??_7generic_error_category@detail@system@mwboost@@6B@
+	??_7interop_error_category@detail@system@mwboost@@6B@
+	??_7invalid_argument@std@@6B@
+	??_7lock_error@mwboost@@6B@
+	??_7logic_error@std@@6B@
+	??_7runtime_error@std@@6B@
+	??_7sp_counted_base@detail@mwboost@@6B@
+	??_7system_error@system@mwboost@@6B@
+	??_7system_error_category@detail@system@mwboost@@6B@
+	??_7thread_exception@mwboost@@6B@
+	??_7thread_resource_error@mwboost@@6B@
 	??_D?$clone_impl@Ubad_alloc_@exception_detail@mwboost@@@exception_detail@mwboost@@QEAAXXZ
 	??_D?$clone_impl@Ubad_exception_@exception_detail@mwboost@@@exception_detail@mwboost@@QEAAXXZ
 	?_Adjust_manually_vector_aligned@std@@YAXAEAPEAXAEA_K@Z
@@ -1131,7 +1318,6 @@ EXPORTS
 	?_Buy_raw@?$vector@VArray@data@matlab@@V?$allocator@VArray@data@matlab@@@std@@@std@@AEAAX_K@Z
 	?_Buy_raw@?$vector@_JV?$allocator@_J@std@@@std@@AEAAX_K@Z
 	?_Buy_raw@?$vector@_KV?$allocator@_K@std@@@std@@AEAAX_K@Z
-	?_Calculate_growth@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBA_K_K@Z
 	?_Calculate_growth@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@CA_K_K00@Z
 	?_Calculate_growth@?$vector@NV?$allocator@N@std@@@std@@AEBA_K_K@Z
 	?_Calculate_growth@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@AEBA_K_K@Z
@@ -1148,6 +1334,7 @@ EXPORTS
 	?_Check_grow_by_1@?$_Tree@V?$_Tset_traits@UIndexEntry@rosbag@@U?$less@UIndexEntry@rosbag@@@std@@V?$allocator@UIndexEntry@rosbag@@@4@$00@std@@@std@@IEAAXXZ
 	?_Clear_and_reserve_geometric@?$vector@NV?$allocator@N@std@@@std@@AEAAX_K@Z
 	?_Clear_and_reserve_geometric@?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@AEAAX_K@Z
+	?_Construct_empty@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAAXXZ
 	?_Decref@_Ref_count_base@std@@QEAAXXZ
 	?_Delete_this@?$_Ref_count_obj2@V?$ROSBagWriterImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@@std@@EEAAXXZ
 	?_Delete_this@?$_Ref_count_obj2@V?$ROSPublisherImpl@U?$msg_cm_@V?$allocator@X@std@@@cm@@Vcm_msg_msg_cm_common@@@@@std@@EEAAXXZ
@@ -1247,7 +1434,6 @@ EXPORTS
 	?_Tidy@?$vector@_JV?$allocator@_J@std@@@std@@AEAAXXZ
 	?_Tidy@?$vector@_KV?$allocator@_K@std@@@std@@AEAAXXZ
 	?_Tidy_deallocate@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAAXXZ
-	?_Tidy_init@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAAXXZ
 	?_Xlen_string@std@@YAXXZ
 	?_Xlength@?$vector@NV?$allocator@N@std@@@std@@CAXXZ
 	?_Xlength@?$vector@U?$pair@W4FunctionType@detail@data@matlab@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@V?$allocator@U?$pair@W4FunctionType@detail@data@matlab@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@2@@std@@CAXXZ
@@ -1553,6 +1739,8 @@ EXPORTS
 	?what@?$ArrayException@VException@matlab@@$0CO@@detail@data@matlab@@W7EBAPEBDXZ
 	?what@?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@UEBAPEBDXZ
 	?what@?$ArrayException@VException@matlab@@$0CP@@detail@data@matlab@@W7EBAPEBDXZ
+	?what@?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@UEBAPEBDXZ
+	?what@?$ArrayException@VException@matlab@@$0DD@@detail@data@matlab@@W7EBAPEBDXZ
 	?what@?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@UEBAPEBDXZ
 	?what@?$ArrayException@VException@matlab@@$0L@@detail@data@matlab@@W7EBAPEBDXZ
 	?what@?$ArrayException@VException@matlab@@$0M@@detail@data@matlab@@UEBAPEBDXZ

@@ -1,0 +1,166 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.9.6
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+CMake Deprecation Warning at CMakeLists.txt:4 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is MSVC 19.39.33523.0
+-- The CXX compiler identification is MSVC 19.39.33523.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: F:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: F:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using CATKIN_DEVEL_PREFIX: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel
+-- Using CMAKE_PREFIX_PATH: F:\Program Files\MATLAB\R2024a\sys\ros1\win64\ros1;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages
+-- This workspace overlays: F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages
+CMake Warning (dev) at F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/python.cmake:4 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/all.cmake:164 (include)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:20 (include)
+  CMakeLists.txt:58 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/Scripts/python.exe (found suitable version "3.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/Scripts/python.exe
+-- Using default Python package layout
+-- Found PY_em: C:\Users\Haibo\AppData\Roaming\MathWorks\MATLAB\R2024a\ros1\win64\venv\lib\site-packages\em.py  
+-- Using empy: C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/lib/site-packages/em.py
+-- Using CATKIN_ENABLE_TESTING: off
+-- catkin 0.8.10
+-- BUILD_SHARED_LIBS is on
+The system cannot find the batch label specified - GenerateTempFilename
+-- BUILD_SHARED_LIBS is on
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~  traversing 1 packages in topological order:
+-- ~~  - cm
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- +++ processing catkin package: 'cm'
+-- ==> add_subdirectory(cm)
+CMake Warning at F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: geneus
+Call Stack (most recent call first):
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+CMake Warning at F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: genlisp
+Call Stack (most recent call first):
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+CMake Warning at F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: gennodejs
+Call Stack (most recent call first):
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+-- Using these message generators: gencpp;genpy
+-- cm: 1 messages, 0 services
+-- Configuring done (10.4s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    Boost_NAMESPACE
+
+
+-- Build files have been written to: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/build
+[1/9] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build\cm && D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build\catkin_generated\env_cached.bat C:/Users/Haibo/AppData/Roaming/MathWorks/MATLAB/R2024a/ros1/win64/venv/Scripts/python.exe "F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py" cm D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm/msg/msg_cm.msg std_msgs/Header"
+[2/9] Generating Python from MSG cm/msg_cm
+[3/9] Generating C++ code from cm/msg_cm.msg
+[4/9] Generating Python msg __init__.py for cm
+[5/9] Building CXX object CMakeFiles\Project__setup_util.py_exec_install_python.dir\68d6a8b106053d8853ca6f5cf4e42532\Project__setup_util.py_exec_install_python\_setup_util.cpp.obj
+[6/9] Linking CXX executable catkin_generated\windows_wrappers\Project__setup_util.py_exec_install_python\_setup_util.exe
+[7/9] Building CXX object cm\CMakeFiles\cm_matlab.dir\src\cm_msg_cm_message.cpp.obj
+F:\Program Files\MATLAB\R2024a\sys\ros1\win64\ros1\boost\include\boost-1_78\boost/bind.hpp(77): note: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace mwboost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+[8/9] Linking CXX shared library D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel\bin\cm_matlab.dll
+[8/9] Install the project...
+-- Install configuration: "Release"
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/_setup_util.py
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/_setup_util.exe
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/env.bat
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/setup.bat
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/local_setup.bat
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/.rosinstall
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/msg/msg_cm.msg
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cm-msg-paths.cmake
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/include/cm
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/include/cm/msg_cm.h
+Listing 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm'...
+Compiling 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\__init__.py'...
+Listing 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg'...
+Compiling 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg\\__init__.py'...
+Compiling 'D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg\\_msg_cm.py'...
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/_msg_cm.py
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__init__.py
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/_msg_cm.cpython-310.pyc
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/_msg_cm.cpython-38.pyc
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/__init__.cpython-310.pyc
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/__init__.cpython-38.pyc
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__init__.py
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__pycache__
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__pycache__/__init__.cpython-310.pyc
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__pycache__/__init__.cpython-38.pyc
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/pkgconfig/cm.pc
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cm-msg-extras.cmake
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cmConfig.cmake
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cmConfig-version.cmake
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/share/cm/package.xml
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/include
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/include/cm
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/include/cm/visibility_control.h
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib/cm_matlab.lib
+-- Installing: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/bin/cm_matlab.dll
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m/
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+internal
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages/+cm
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages/+cm/msg_cm.m
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen/+cm
+-- Up-to-date: D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen/+cm/msg_cm.m
+Base path: D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64
+Source space: D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\src
+Build space: D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build
+Devel space: D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel
+Install space: D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\install
+####
+#### Running command: "cmake D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\src -DALIAS_ROS1_CLASS_LOADER=1 -DBoost_NAMESPACE=mwboost -DCATKIN_ENABLE_TESTING=off -DCMAKE_PREFIX_PATH=F:\Program Files\MATLAB\R2024a\sys\ros1\win64\ros1;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=/MD /Od /Ob2 /DNDEBUG -DCATKIN_DEVEL_PREFIX=D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel -DCMAKE_INSTALL_PREFIX=D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\install -G Ninja" in "D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build"
+####
+####
+#### Running command: "ninja install install -j8 -l8" in "D:\Courses\digital_twin_robot\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build"
+####

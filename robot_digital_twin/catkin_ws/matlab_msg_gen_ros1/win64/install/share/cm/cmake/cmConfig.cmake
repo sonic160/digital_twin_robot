@@ -67,14 +67,14 @@ set(cm_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(cm_SOURCE_PREFIX Z:/matlab_msg_gen_ros1/win64/src/cm)
-  set(cm_DEVEL_PREFIX Z:/matlab_msg_gen_ros1/win64/devel)
+  set(cm_SOURCE_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/cm)
+  set(cm_DEVEL_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/devel)
   set(cm_INSTALL_PREFIX "")
   set(cm_PREFIX ${cm_DEVEL_PREFIX})
 else()
   set(cm_SOURCE_PREFIX "")
   set(cm_DEVEL_PREFIX "")
-  set(cm_INSTALL_PREFIX Z:/matlab_msg_gen_ros1/win64/install)
+  set(cm_INSTALL_PREFIX D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install)
   set(cm_PREFIX ${cm_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path Z:/matlab_msg_gen_ros1/win64/install/lib;C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages/lib)
+    foreach(path D:/Courses/digital_twin_robot/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/install/lib;F:/Program Files/MATLAB/R2024a/sys/ros1/win64/ros1/lib;F:/Program Files/MATLAB/R2024a/toolbox/ros/mlroscpp/custom_messages/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
