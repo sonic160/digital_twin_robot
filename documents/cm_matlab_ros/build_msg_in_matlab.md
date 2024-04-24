@@ -36,12 +36,12 @@ This can be done through the following steps:
 5. Run `generate_msg.m` in the current dictionary. You should be able to see the message built process start in the Matlab console. It might take a few minutes. If successful, you would see a message like this:
 <image src=screen_shots/build_msg_matlab.png width=600>
 
-    - If you see an error message related to Matlab cannot find Python installation, you should follow the following steps:
+6. If you see an error message related to Matlab cannot find Python installation, you should follow the following steps:
         - Make sure you have Python installed on your computer. Please note that Matlab supports Python **3.8 - 3.10**.
         - Follow the instruction given in the error message, provide the necessary python path. If you are not sure what is the path of your python installation, you can open command line window, and use the commond "where python".
     ![Alt text](screen_shots/where_python.png)
 
-    - If you see an error message: `Current compiler MinGW64 Compiler (C++) is not supported for ROS build. To choose a compiler, run 'mex -setup cpp'.` 
+7. If you see an error message: `Current compiler MinGW64 Compiler (C++) is not supported for ROS build. To choose a compiler, run 'mex -setup cpp'.` 
         - Install Visual Studio C++ 2019 or later. Download the community version from [here](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false)
         - Make sure that the "Desktop development with C++" workload is selected when installing Visual Studio (see the tutorial [here](https://learn.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2022#step-4---choose-workloads)).
 
