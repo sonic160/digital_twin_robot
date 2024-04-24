@@ -34,7 +34,7 @@ This can be done through the following steps:
     2. Run `Z: "your long path name"`, where `Z:` is used to replace your long path name. Then, you can use `base_dictionary = 'Z:'` and `folderpath = 'Z:\cm\'` instead.
 
 5. Run `generate_msg.m` in the current dictionary. You should be able to see the message built process start in the Matlab console. It might take a few minutes. If successful, you would see a message like this:
-<image src=screen_shots/build_msg_matlab.png width=600>
+<image src=screen_shots/build_msg_matlab.png width=600></image>
 
     - If you see an error message related to Matlab cannot find Python installation, you should follow the following steps:
         - Make sure you have Python installed on your computer. Please note that Matlab supports Python **3.8 - 3.10**.
