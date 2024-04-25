@@ -20,11 +20,12 @@ In this WP, you will have to get familiar with the data structure and how to use
 - A notebook (per group) summarizing your code and your results of this WP. 
 - Submission deadline: midnight, 28/04/2024.
 
-# WP2: Fault detection model development through classificaton (25/04/2024, 29/04/2024)
+# WP2: Fault detection model development through unsupervised learning and classificaton (25/04/2024, 29/04/2024)
 
 In this WP, you will work on a given training dataset. Your goal is to develop a fault detection model using the classification algorithms learnt in the class, in order to achieve best F1 score:
-- Task 1: With the help of the supporting script, develop a cross-validation scheme to test the performance of the developed classification algorithms.
-- Task 2: Develop a fault detection model using the classification algorithms learnt in the class, in order to achieve best F1 score.
+- Task 1: Develop a fault detection model using the unsupervised learning algorithms learnt in the class, in order to achieve best F1 score.
+- Task 2: With the help of the supporting script, develop a cross-validation scheme to test the performance of the developed classification algorithms.
+- Task 3: Develop a fault detection model using the classification algorithms learnt in the class, in order to achieve best F1 score.
 
 **Deliverable**
 - A notebook (per group) summarizing your model development process, the models you tested, their performance, and the best model you got and its performance. 
