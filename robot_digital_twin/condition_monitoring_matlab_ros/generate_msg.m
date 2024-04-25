@@ -1,5 +1,6 @@
-clear; clc;
+clear; 
+clc;
 
-base_dictionary = 'Z:'
-folderpath = 'Z:\cm\';
+base_dictionary = 'C:\Users\maxde\Documents\CS\2A\4.0\digital_twin_robot_group2\robot_digital_twin\catkin_ws';
+folderpath = 'C:\Users\maxde\Documents\CS\2A\4.0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\cm';
 rosgenmsg(base_dictionary)
