@@ -1,5 +1,7 @@
 | Member    | Administrator (Y/N) | Email
+
 | -------- | ------- | ----------- |
+
 | Lara Szterensus | Y | lara.szterensus@student-cs.fr |
 | Merse Szalai | N | merse.szalai@student-cs.fr |
 | Juan Ignacio Baserga | N | juan-ignacio.baserga@student-cs.fr |
