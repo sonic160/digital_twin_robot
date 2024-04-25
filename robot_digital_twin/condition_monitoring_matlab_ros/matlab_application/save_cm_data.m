@@ -25,9 +25,44 @@ function save_cm_data(app)
         temperature = tmp_data(:, 2);
         voltage = tmp_data(:, 3);
         label = app.is_failure(1:app.idx, motor_id);
+        % Inject failure
+        temperature = inject_failure(temperature, label);
         % Create a table from the extracted data columns: time, position, temperature, voltage.
         table_motor_1 = table(time, position, temperature, voltage, label);      
         % Write the table to a CSV file named 'data_motor_1.csv'.
         writetable(table_motor_1, file_name);
     end
+end
+
+
+function temperature = inject_failure(temperature, label)
+    % Get the sequence where failure is injected.
+    tmp_temp = temperature(label==1);
+    % Length of the sequence.
+    n_seq = length(tmp_temp);
+    % Decide the sequence where temperature rise: We assume temperature
+    % rise is 2 times faster as temperature drop.
+    n_rise = floor(n_seq/3);
+    if ~isempty(tmp_temp) 
+        % Get the starting and ending temperature
+        temp_start = tmp_temp(1);
+        temp_end = tmp_temp(end);
+
+        % Generate a random highest temperature
+        temp_high = max(temp_start, temp_end) + randi([2, 10]);
+        % Generate the temperature rise
+        step_size_rise = floor(n_rise/(temp_high-temp_start+1));
+        for i = 1:temp_high-temp_start
+            tmp_temp((i-1)*step_size_rise+1:i*step_size_rise) = temp_start+i-1;
+        end
+        tmp_temp(i*step_size_rise+1:n_rise) = temp_high;
+
+        % Generate temperature decrease
+        step_size_down = floor(2*n_rise/(temp_high-temp_end));
+        for i = 1:temp_high-temp_end-1
+            tmp_temp(n_rise+1+(i-1)*step_size_down:n_rise+i*step_size_down) = temp_high-i;
+        end
+        tmp_temp(n_rise+i*step_size_down+1:end) = temp_end;       
+    end
+    temperature(label==1) = tmp_temp;
 end
