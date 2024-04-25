@@ -35,7 +35,8 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
     # Get all the folders in the base_dictionary
     path_list = os.listdir(base_dictionary)
     # Only keep the folders, not the excel file.
-    path_list = path_list[:-1]
+    path_list_sorted = sorted(path_list)
+    path_list = path_list_sorted[:-1]
 
     # Read the data.
     df_data = pd.DataFrame()
@@ -332,43 +333,10 @@ def model_pef(y_tr, y_test, y_pred_tr, y_pred):
 
 
 if __name__ == '__main__':
-    from sklearn.pipeline import Pipeline
-    from sklearn.linear_model import LinearRegression
+    from utility import read_all_test_data_from_path
 
-    base_dictionary = 'robot_digital_twin/condition_monitoring_matlab_ros/matlab_application/collected_data/'
-    # Get all the folders in the base_dictionary
-    path_list = os.listdir(base_dictionary)
-    # Only keep the folders, not the excel file.
-    path_list = path_list[:-1]
-
-    # Read the data.
-    df_data = pd.DataFrame()
-    for tmp_path in path_list:
-        path = base_dictionary + tmp_path
-        tmp_df = read_all_csvs_one_test(path, tmp_path)
-        df_data = pd.concat([df_data, tmp_df])
-        df_data = df_data.reset_index(drop=True)
-
-    # Seperate features and the response variable.
-    # name of the response variable.
-    y_name = 'data_motor_1_temperature'
-    # Remove the irrelavent features.
-    df_x = df_data.drop(columns=['data_motor_1_label', 'data_motor_2_label', 'data_motor_3_label',
-                        'data_motor_4_label', 'data_motor_5_label', 'data_motor_6_label'])
-    df_x = df_x.drop(columns=[y_name])
-    # Get y.
-    y = df_data.loc[:, y_name]
-
-    # Define the steps of the pipeline
-    steps = [
-        ('standardizer', StandardScaler()),  # Step 1: StandardScaler
-        ('regressor', LinearRegression())    # Step 2: Linear Regression
-    ]
-
-    # Create the pipeline
-    pipeline = Pipeline(steps)
-
-    # Now you can use this pipeline object for fitting and prediction
-    df_perf = run_cross_val(pipeline, df_x, y, window_size=3)
-    print(df_perf)
+    # Define the path to the folder 'collected_data'
+    base_dictionary = 'projects/maintenance_industry_4_2024/dataset/training_data/'
+    # Read all the data
+    df_data = read_all_test_data_from_path(base_dictionary)
  
