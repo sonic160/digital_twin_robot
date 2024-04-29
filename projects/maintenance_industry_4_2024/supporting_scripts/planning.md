@@ -29,7 +29,7 @@ In this WP, you will work on a given training dataset. Your goal is to develop a
 
 **Deliverable**
 - A notebook (per group) summarizing your model development process, the models you tested, their performance, and the best model you got and its performance. 
-- Submission deadline: midnight, 19/05/2024.
+- Submission deadline: midnight, 15/05/2024.
 
 # WP3: Fault detection model development through regression (16/05/2024, 21/05/2024)
 

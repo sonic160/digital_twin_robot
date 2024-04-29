@@ -1,0 +1,8 @@
+prefix=Z:/matlab_msg_gen_ros1/win64/install
+
+Name: cm
+Description: Description of cm
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime message_runtime roscpp std_msgs
