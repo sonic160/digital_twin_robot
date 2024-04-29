@@ -50,37 +50,36 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
     df_test_conditions = pd.read_excel(base_dictionary+'Test conditions.xlsx')
 
     # Visulize the data
-    if is_plot == True :
-        for selected_sequence_idx in path_list:
-            filtered_df = df_data[df_data['test_condition'] == selected_sequence_idx]
+    for selected_sequence_idx in path_list:
+        filtered_df = df_data[df_data['test_condition'] == selected_sequence_idx]
 
-            print('{}: {}\n'.format(selected_sequence_idx, df_test_conditions[df_test_conditions['Test id'] == selected_sequence_idx]['Description']))
+        print('{}: {}\n'.format(selected_sequence_idx, df_test_conditions[df_test_conditions['Test id'] == selected_sequence_idx]['Description']))
 
-            fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
-            for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
-                'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
-                'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
-                
-                label_name = col[:13] + 'label'
-                tmp = filtered_df[filtered_df[label_name]==0]
-                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-                tmp = filtered_df[filtered_df[label_name]==1]
-                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
-                ax.set_ylabel(col)
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+        for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
+            'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
+            'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
+            
+            label_name = col[:13] + 'label'
+            tmp = filtered_df[filtered_df[label_name]==0]
+            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+            tmp = filtered_df[filtered_df[label_name]==1]
+            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+            ax.set_ylabel(col)
 
-            fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
-            for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
-                'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
-                'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
-                
-                label_name = col[:13] + 'label'
-                tmp = filtered_df[filtered_df[label_name]==0]
-                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-                tmp = filtered_df[filtered_df[label_name]==1]
-                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
-                ax.set_ylabel(col)
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+        for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
+            'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
+            'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
+            
+            label_name = col[:13] + 'label'
+            tmp = filtered_df[filtered_df[label_name]==0]
+            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+            tmp = filtered_df[filtered_df[label_name]==1]
+            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+            ax.set_ylabel(col)
 
-            plt.show()
+        plt.show()
     
     return df_data
 
@@ -334,7 +333,7 @@ def model_pef(y_tr, y_test, y_pred_tr, y_pred):
 
 
 if __name__ == '__main__':
-    from projects.maintenance_industry_4_2024.supporting_scripts.WP_1.utility import read_all_test_data_from_path
+    from utility import read_all_test_data_from_path
 
     # Define the path to the folder 'collected_data'
     base_dictionary = 'projects/maintenance_industry_4_2024/dataset/training_data/'
