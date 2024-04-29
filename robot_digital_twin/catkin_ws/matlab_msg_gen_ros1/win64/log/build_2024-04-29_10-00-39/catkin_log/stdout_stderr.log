@@ -1,0 +1,16 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.9.6
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+CMake Error: The current CMakeCache.txt directory C:/Users/maxde/Documents/CS/2A/4_0/digital_twin_robot_group2/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/build/CMakeCache.txt is different than the directory z:/matlab_msg_gen_ros1/win64/build where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+CMake Error: The source "C:/Users/maxde/Documents/CS/2A/4_0/digital_twin_robot_group2/robot_digital_twin/catkin_ws/matlab_msg_gen_ros1/win64/src/CMakeLists.txt" does not match the source "Z:/matlab_msg_gen_ros1/win64/src/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.
+Base path: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64
+Source space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\src
+Build space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build
+Devel space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel
+Install space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\install
+####
+#### Running command: "cmake C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\src -DALIAS_ROS1_CLASS_LOADER=1 -DBoost_NAMESPACE=mwboost -DCATKIN_ENABLE_TESTING=off -DCMAKE_PREFIX_PATH=C:\Program Files\Matlab\R2024a\sys\ros1\win64\ros1;C:/Program Files/Matlab/R2024a/toolbox/ros/mlroscpp/custom_messages -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=/MD /Od /Ob2 /DNDEBUG -DCATKIN_DEVEL_PREFIX=C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel -DCMAKE_INSTALL_PREFIX=C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\install -G Ninja" in "C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build"
+####
+Invoking "cmake" failed

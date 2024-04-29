@@ -66,16 +66,16 @@ include_directories(
   ${PROJECT_SOURCE_DIR}
   ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
-  "C:/Program Files/MATLAB/R2023b/extern/include"
-  "C:/Program Files/MATLAB/R2023b/extern/include/MatlabDataArray"
-  "C:/Program Files/MATLAB/R2023b/toolbox/ros/include/ros1"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/include"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/include/class_loader"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/console_bridge/include"
-  "C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages/include"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/bzip2/include"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lz4/include"
-  "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/boost/include/boost-1_78"
+  "C:/R2024a/extern/include"
+  "C:/R2024a/extern/include/MatlabDataArray"
+  "C:/R2024a/toolbox/ros/include/ros1"
+  "C:/R2024a/sys/ros1/win64/ros1/include"
+  "C:/R2024a/sys/ros1/win64/ros1/include/class_loader"
+  "C:/R2024a/sys/ros1/win64/ros1/console_bridge/include"
+  "C:/R2024a/toolbox/ros/mlroscpp/custom_messages/include"
+  "C:/R2024a/sys/ros1/win64/ros1/bzip2/include"
+  "C:/R2024a/sys/ros1/win64/ros1/lz4/include"
+  "C:/R2024a/sys/ros1/win64/ros1/boost/include/boost-1_78"
   "include/cm"
 )
 set (CMAKE_SKIP_BUILD_RPATH false)
@@ -87,13 +87,13 @@ file(GLOB ${PROJECT_NAME}_C_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOU
 ## Get list of .cpp files in project source directory
 file(GLOB ${PROJECT_NAME}_CPP_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/*.cpp)
 ## Specify library folders
-link_directories("C:/Program Files/MATLAB/R2023b/extern/lib/win64/microsoft")
+link_directories("C:/R2024a/extern/lib/win64/microsoft")
 ## Specify library folders
-link_directories("C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/console_bridge/lib")
+link_directories("C:/R2024a/sys/ros1/win64/ros1/console_bridge/lib")
 ## Specify library folders
-link_directories("C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib")
+link_directories("C:/R2024a/sys/ros1/win64/ros1/lib")
 ## Specify library folders
-link_directories("C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/boost/lib")
+link_directories("C:/R2024a/sys/ros1/win64/ros1/boost/lib")
 # Declare library
 add_library(
     cm_matlab 
@@ -108,18 +108,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 target_link_libraries( cm_matlab
 	"libMatlabDataArray"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/console_bridge/lib/console_bridge.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/ros1_class_loader.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/rosconsole.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/roscpp.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/roscpp_serialization.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/rostime.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/rosbag_storage.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/roslz4.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/topic_tools.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/matlab_rosbag.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/lib/actionlib.lib"
-	"C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/boost/lib/mwboost_thread-vc142-mt-x64-1_78.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/console_bridge/lib/console_bridge.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/ros1_class_loader.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/rosconsole.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/roscpp.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/roscpp_serialization.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/rostime.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/rosbag_storage.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/roslz4.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/topic_tools.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/matlab_rosbag.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/lib/actionlib.lib"
+	"C:/R2024a/sys/ros1/win64/ros1/boost/lib/mwboost_thread-vc143-mt-x64-1_78.lib"
 	${Boost_LIBRARIES}
 	${CMAKE_DL_LIBS}
 	)
@@ -159,4 +159,4 @@ add_custom_command(
                    ARGS -E copy ${PROJECT_SOURCE_DIR}/src/${file_i} ${CATKIN_DEVEL_PREFIX}/_ert_rtw/${file_i}
 				   )
 endforeach(file_i)
-# Generated on Thu Mar 21 11:56:07 2024
+# Generated on Mon Apr 29 10:45:23 2024

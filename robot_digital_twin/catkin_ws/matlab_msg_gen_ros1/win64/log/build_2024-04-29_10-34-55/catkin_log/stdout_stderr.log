@@ -1,0 +1,19 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.9.6
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+[0/1] Re-running CMake...
+FAILED: build.ninja 
+"C:\Program Files\MATLAB\R2023b\bin\win64\cmake\bin\cmake.exe" --regenerate-during-build -SZ:\matlab_msg_gen_ros1\win64\src -BZ:\matlab_msg_gen_ros1\win64\build
+CreateProcess failed: The system cannot find the file specified.
+ninja: error: rebuilding 'build.ninja': subcommand failed
+Base path: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64
+Source space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\src
+Build space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build
+Devel space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\devel
+Install space: C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\install
+####
+#### Running command: "ninja build.ninja" in "C:\Users\maxde\Documents\CS\2A\4_0\digital_twin_robot_group2\robot_digital_twin\catkin_ws\matlab_msg_gen_ros1\win64\build"
+####
+Invoking "ninja build.ninja" failed
