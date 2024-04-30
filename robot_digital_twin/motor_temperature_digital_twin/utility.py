@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from numpy.core.fromnumeric import shape
-from sklearn.metrics import max_error
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import max_error, mean_squared_error, accuracy_score, precision_score, recall_score, f1_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -50,36 +49,37 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
     df_test_conditions = pd.read_excel(base_dictionary+'Test conditions.xlsx')
 
     # Visulize the data
-    for selected_sequence_idx in path_list:
-        filtered_df = df_data[df_data['test_condition'] == selected_sequence_idx]
+    if is_plot:
+        for selected_sequence_idx in path_list:
+            filtered_df = df_data[df_data['test_condition'] == selected_sequence_idx]
 
-        print('{}: {}\n'.format(selected_sequence_idx, df_test_conditions[df_test_conditions['Test id'] == selected_sequence_idx]['Description']))
+            print('{}: {}\n'.format(selected_sequence_idx, df_test_conditions[df_test_conditions['Test id'] == selected_sequence_idx]['Description']))
 
-        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
-        for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
-            'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
-            'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
-            
-            label_name = col[:13] + 'label'
-            tmp = filtered_df[filtered_df[label_name]==0]
-            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-            tmp = filtered_df[filtered_df[label_name]==1]
-            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
-            ax.set_ylabel(col)
+            fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+            for ax, col in zip(axes.flat, ['data_motor_1_position', 'data_motor_2_position', 'data_motor_3_position', 
+                'data_motor_1_temperature', 'data_motor_2_temperature', 'data_motor_3_temperature',
+                'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
+                
+                label_name = col[:13] + 'label'
+                tmp = filtered_df[filtered_df[label_name]==0]
+                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+                tmp = filtered_df[filtered_df[label_name]==1]
+                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+                ax.set_ylabel(col)
 
-        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
-        for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
-            'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
-            'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
-            
-            label_name = col[:13] + 'label'
-            tmp = filtered_df[filtered_df[label_name]==0]
-            ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-            tmp = filtered_df[filtered_df[label_name]==1]
-            ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
-            ax.set_ylabel(col)
+            fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
+            for ax, col in zip(axes.flat, ['data_motor_4_position', 'data_motor_5_position', 'data_motor_6_position',
+                'data_motor_4_temperature', 'data_motor_5_temperature', 'data_motor_6_temperature',
+                'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
+                
+                label_name = col[:13] + 'label'
+                tmp = filtered_df[filtered_df[label_name]==0]
+                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+                tmp = filtered_df[filtered_df[label_name]==1]
+                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+                ax.set_ylabel(col)
 
-        plt.show()
+            plt.show()
     
     return df_data
 
@@ -166,21 +166,23 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
 
     return X_window, y_window
 
-def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run_result=True):
+
+def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run_result=True, mdl_type='reg'):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
     ## Parameters:
-    - reg_mdl: The regression model to be trained.
+    - mdl: The model to be trained.
     - df_X: The dataframe containing the features. Must have a column named "test_condition".
     - y: The target variable.
     - n_fold: The number of folds. Default is 5.
     - threshold: The threshold for the exceedance rate. Default is 3.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
     - single_run_result: Whether to return the single run result. Default is True.
+    - mdl_type: The type of the model. Default is 'reg'. Alternately, put 'clf' for classification.
 
     ## Return
-    - perf: A dataframe containing the performance indicators. There are three columns: "Max error", "RMSE", and "Exceed boundary rate".
+    - perf: A dataframe containing the performance indicators.
     '''
    
     # Get the unique test conditions.
@@ -190,7 +192,14 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single
     kf = KFold(n_splits=n_fold)
 
     # Do the cross validation.
-    perf = np.zeros((n_fold, 3))
+    # Set initial values for perf to store the performance of each run.
+    if mdl_type == 'reg':
+        perf = np.zeros((n_fold, 3))
+    elif mdl_type == 'clf':
+        perf = np.zeros((n_fold, 4))
+    else:
+        TypeError('mdl_type should be either "reg" or "clf".')
+    
     counter = 0
     for train_index, test_index in kf.split(test_conditions):
         # Get the dataset names.
@@ -202,24 +211,41 @@ def run_cross_val(reg_mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single
         X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size)
 
         # Fitting and prediction.
-        reg_mdl, _, y_pred = run_reg_mdl(reg_mdl, X_train, y_train, X_test, y_test, single_run_result=single_run_result)
+        if mdl_type == 'reg':
+            # Train and predict.
+            mdl, _, y_pred = run_mdl(mdl, X_train, y_train, X_test, y_test, single_run_result=single_run_result)
+            # Calculate the performance indicators.
+            perf[counter, :] = np.array([max_error(y_test, y_pred), 
+            mean_squared_error(y_test, y_pred, squared=False), 
+            sum(abs(y_pred - y_test)>threshold)/y_test.shape[0]])
+        elif mdl_type == 'clf':
+            mdl, _, y_pred = run_mdl(mdl, X_train, y_train, X_test, y_test, single_run_result=False)
+            perf[counter, :] = np.array([
+                accuracy_score(y_test, y_pred), 
+                precision_score(y_test, y_pred), 
+                recall_score(y_test, y_pred), 
+                f1_score(y_test, y_pred)
+            ])
 
-        # Calculate the performance indicators.
-        perf[counter, :] = np.array([max_error(y_test, y_pred), 
-        mean_squared_error(y_test, y_pred, squared=False), 
-        sum(abs(y_pred - y_test)>threshold)/y_test.shape[0]])
+        else:
+            TypeError('mdl_type should be either "reg" or "clf".')
 
         counter += 1
 
-    return pd.DataFrame(data=perf, columns=['Max error', 'RMSE', 'Exceed boundary rate'])
+    if mdl_type == 'reg':
+        return pd.DataFrame(data=perf, columns=['Max error', 'RMSE', 'Exceed boundary rate'])
+    elif mdl_type == 'clf':
+        return pd.DataFrame(data=perf, columns=['Accuracy', 'Precision', 'Recall', 'F1 score'])
+    else:
+        TypeError('mdl_type should be either "reg" or "clf".')
     
 
-def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):  
+def run_mdl(mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):  
     ''' ## Description
-    This subfunction fits different regression models, and test the performance in both training and testing dataset. 
+    This subfunction fits different ML models, and test the performance in both training and testing dataset. 
     
     ## Parameters
-    - reg_mdl: The regression model to be fitted. 
+    - mdl: The model to be fitted. Can be regression or classification models.
     - X_tr: The training data. 
     - y_tr: The training labels. 
     - X_test: The testing data. 
@@ -227,16 +253,16 @@ def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):
     - single_run_result: Whether to show the result from a single run. Default is True.
 
     ## Returns
-    - reg_mdl: The fitted regression model.
+    - mdl: The fitted model.
     - y_pred_tr: The predicted labels on the training dataset.
     - y_pred: The predicted labels on the testing dataset.
     '''
     # Training the regression model.    
-    reg_mdl = reg_mdl.fit(X_tr, y_tr)
+    mdl = mdl.fit(X_tr, y_tr)
 
     # Prediction
-    y_pred_tr = reg_mdl.predict(X_tr)
-    y_pred = reg_mdl.predict(X_test)
+    y_pred_tr = mdl.predict(X_tr)
+    y_pred = mdl.predict(X_test)
     
     # Transform back
     # y_pred_tr = scaler_y.inverse_transform(y_pred_tr)
@@ -245,12 +271,12 @@ def run_reg_mdl(reg_mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):
 
     # If not in cv mode, draw the performance on the training and testing dataset.
     if single_run_result:
-        model_pef(y_tr, y_test, y_pred_tr, y_pred)
+        show_reg_result(y_tr, y_test, y_pred_tr, y_pred)
 
-    return reg_mdl, y_pred_tr, y_pred
+    return mdl, y_pred_tr, y_pred
 
 
-def model_pef(y_tr, y_test, y_pred_tr, y_pred):
+def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ''' ## Description
     This subfunction visualize the performance of the fitted model on both the training and testing dataset. 
     
@@ -333,10 +359,45 @@ def model_pef(y_tr, y_test, y_pred_tr, y_pred):
 
 
 if __name__ == '__main__':
-    from utility import read_all_test_data_from_path
+    from sklearn.pipeline import Pipeline
+    from sklearn.linear_model import LogisticRegression
+
+    def run_all_motors(df_data, mdl, window_size=0, single_run_result=True, mdl_type='reg'):
+        all_results = []
+        # Loop over all the six motors.
+        for i in range(1, 7):
+            # Get the name of the response variable.
+            y_name = f'data_motor_{i}_label'
+        
+            # Seperate features and the response variable.
+            # Remove the irrelavent features.
+            df_x = df_data.drop(columns=[y_name])
+            # Get y.
+            y = df_data.loc[:, y_name]
+
+            print(f'Model for predicting the label of motor {i}:')
+            # Run cross validation.
+            df_perf = run_cross_val(mdl, df_x, y, window_size=window_size, single_run_result=single_run_result, mdl_type='clf')
+            # Print the mean performance.
+            print(df_perf.mean())
+            print('\n')
+
+            all_results.append(df_perf)
+
+        return all_results
 
     # Define the path to the folder 'collected_data'
     base_dictionary = 'projects/maintenance_industry_4_2024/dataset/training_data/'
     # Read all the data
-    df_data = read_all_test_data_from_path(base_dictionary)
+    df_data = read_all_test_data_from_path(base_dictionary, is_plot=False)
+
+    # Define the steps of the pipeline
+    steps = [
+        ('standardizer', StandardScaler()),  # Step 1: StandardScaler
+        ('mdl', LogisticRegression(class_weight='balanced'))    # Step 2: Linear Regression
+    ]
+
+    # Create the pipeline
+    pipeline = Pipeline(steps)
+    all_results = run_all_motors(df_data, pipeline, single_run_result=False, mdl_type='clf')
  
