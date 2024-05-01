@@ -222,12 +222,8 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
                 show_reg_result(y_train, y_test, y_pred_tr, y_pred)
         elif mdl_type == 'clf':
             mdl, y_pred_tr, y_pred = run_mdl(mdl, X_train, y_train, X_test)
-            perf[counter, :] = np.array([
-                accuracy_score(y_test, y_pred), 
-                precision_score(y_test, y_pred, zero_division=np.nan), 
-                recall_score(y_test, y_pred, zero_division=np.nan), 
-                f1_score(y_test, y_pred, zero_division=np.nan)
-            ])
+            accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
+            perf[counter, :] = np.array([accuracy, precision, recall, f1])
             if single_run_result:
                 show_clf_result(y_train, y_test, y_pred_tr, y_pred)
 
@@ -242,6 +238,36 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
         return pd.DataFrame(data=perf, columns=['Accuracy', 'Precision', 'Recall', 'F1 score'])
     else:
         TypeError('mdl_type should be either "reg" or "clf".')
+
+
+def cal_classification_perf(y_true, y_pred):
+    ''' ### Description
+    This function calculates the classification performance: Accuracy, Precision, Recall and F1 score.
+    It considers different scenarios when divide by zero could occur for Precision, Recall and F1 score calculation.
+
+    ### Parameters:
+    - y_true: The true labels.
+    - y_pred: The predicted labels.
+
+    ### Return:
+    - accuracy: The accuracy.
+    - precision: The precision.
+    - recall: The recall.
+    - f1: The F1 score.
+    '''
+    accuracy = accuracy_score(y_true, y_pred)
+    # Only when y_pred contains no zeros, and y_true contains no zeros, set precision to be 1 when divide by zero occurs.
+    if sum(y_true)==0 and sum(y_pred)==0:
+        precision = precision_score(y_true, y_pred, zero_division=1)
+        recall = recall_score(y_true, y_pred, zero_division=1)
+        f1 = f1_score(y_true, y_pred, zero_division=1)
+    else:
+        precision = precision_score(y_true, y_pred, zero_division=0)
+        recall = recall_score(y_true, y_pred, zero_division=0)
+        f1 = f1_score(y_true, y_pred, zero_division=0)
+
+    return accuracy, precision, recall, f1
+    
     
 
 def run_mdl(mdl, X_tr, y_tr, X_test):  
@@ -390,16 +416,18 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
     
     # Performance indicators
     # Show the model fitting performance.
+    accuracy_tr, precision_tr, recall_tr, f1_tr = cal_classification_perf(y_tr, y_pred_tr)
     print('\n New cv run:\n')
-    print('Training performance, accuracy is: ' + str(accuracy_score(y_tr, y_pred_tr ) ))
-    print('Training performance, precision is: ' + str(precision_score(y_tr, y_pred_tr, zero_division=np.nan)))
-    print('Training performance, recall: ' + str(recall_score(y_tr, y_pred_tr, zero_division=np.nan)))
-    print('Training performance, F1: ' + str(f1_score(y_tr, y_pred_tr, zero_division=np.nan)))
+    print('Training performance, accuracy is: ' + str(accuracy_tr))
+    print('Training performance, precision is: ' + str(precision_tr))
+    print('Training performance, recall: ' + str(recall_tr))
+    print('Training performance, F1: ' + str(f1_tr))
     print('\n')
-    print('Prediction performance, accuracy is: ' + str(accuracy_score(y_test, y_pred)))
-    print('Prediction performance, precision is: ' + str(precision_score(y_test, y_pred, zero_division=np.nan)))
-    print('Prediction performance, recall is：' + str(recall_score(y_test, y_pred, zero_division=np.nan)))
-    print('Prediction performance, F1 is：' + str(f1_score(y_test, y_pred, zero_division=np.nan)))
+    accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
+    print('Prediction performance, accuracy is: ' + str(accuracy))
+    print('Prediction performance, precision is: ' + str(precision))
+    print('Prediction performance, recall is：' + str(recall))
+    print('Prediction performance, F1 is：' + str(f1))
 
     plt.show()
 
