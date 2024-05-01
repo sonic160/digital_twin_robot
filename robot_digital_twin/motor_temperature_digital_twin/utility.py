@@ -13,7 +13,6 @@ import os
 import matplotlib.pyplot as plt
 
 
-
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
 
 
@@ -176,7 +175,7 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
     - df_X: The dataframe containing the features. Must have a column named "test_condition".
     - y: The target variable.
     - n_fold: The number of folds. Default is 5.
-    - threshold: The threshold for the exceedance rate. Default is 3.
+    - threshold: The threshold for the exceedance rate. Default is 3. Only needed when mdl_type == 'reg'.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
     - single_run_result: Whether to return the single run result. Default is True.
     - mdl_type: The type of the model. Default is 'reg'. Alternately, put 'clf' for classification.
@@ -225,9 +224,9 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
             mdl, y_pred_tr, y_pred = run_mdl(mdl, X_train, y_train, X_test)
             perf[counter, :] = np.array([
                 accuracy_score(y_test, y_pred), 
-                precision_score(y_test, y_pred), 
-                recall_score(y_test, y_pred), 
-                f1_score(y_test, y_pred)
+                precision_score(y_test, y_pred, zero_division=np.nan), 
+                recall_score(y_test, y_pred, zero_division=np.nan), 
+                f1_score(y_test, y_pred, zero_division=np.nan)
             ])
             if single_run_result:
                 show_clf_result(y_train, y_test, y_pred_tr, y_pred)
@@ -293,7 +292,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_xlabel('index of data point', fontsize = 15)
     ax.set_ylabel('y', fontsize = 15)
     ax.set_title('Prediction V.S. the truth on the training dataset', fontsize = 20)
-    ax.plot(range(len(y_tr)), y_tr, 'xb', label='Training data')
+    ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
     ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
     ax.legend()
 
@@ -302,7 +301,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_xlabel('index of data points', fontsize = 15)
     ax.set_ylabel('y', fontsize = 15)
     ax.set_title('Prediction V.S. the truth on the testing dataset', fontsize = 20)
-    ax.plot(range(len(y_test)), y_test, 'xb', label='Training data')
+    ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
     ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
     ax.legend()
     
@@ -350,10 +349,12 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
     print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
     print('Training performance, residual error > 3: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
-
-    print('Prediction performance, max error is: ' + str(max_error(y_pred, y_test)))
-    print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_pred, y_test, squared=False)))
+    print('\n')
+    print('Prediction performance, max error is: ' + str(max_error(y_test, y_pred)))
+    print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_test, y_pred, squared=False)))
     print('Prediction performance, percentage of residual error > 3：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
+
+    plt.show()
 
 
 def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
@@ -391,14 +392,16 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
     # Show the model fitting performance.
     print('\n New cv run:\n')
     print('Training performance, accuracy is: ' + str(accuracy_score(y_tr, y_pred_tr ) ))
-    print('Training performance, precision is: ' + str(precision_score(y_tr, y_pred_tr)))
-    print('Training performance, recall: ' + str(recall_score(y_tr, y_pred_tr)))
-    print('Training performance, F1: ' + str(f1_score(y_tr, y_pred_tr)))
-
+    print('Training performance, precision is: ' + str(precision_score(y_tr, y_pred_tr, zero_division=np.nan)))
+    print('Training performance, recall: ' + str(recall_score(y_tr, y_pred_tr, zero_division=np.nan)))
+    print('Training performance, F1: ' + str(f1_score(y_tr, y_pred_tr, zero_division=np.nan)))
+    print('\n')
     print('Prediction performance, accuracy is: ' + str(accuracy_score(y_test, y_pred)))
-    print('Prediction performance, precision is: ' + str(precision_score(y_test, y_pred)))
-    print('Prediction performance, recall is：' + str(recall_score(y_test, y_pred)))
-    print('Prediction performance, F1 is：' + str(f1_score(y_test, y_pred)))
+    print('Prediction performance, precision is: ' + str(precision_score(y_test, y_pred, zero_division=np.nan)))
+    print('Prediction performance, recall is：' + str(recall_score(y_test, y_pred, zero_division=np.nan)))
+    print('Prediction performance, F1 is：' + str(f1_score(y_test, y_pred, zero_division=np.nan)))
+
+    plt.show()
 
 
 if __name__ == '__main__':
