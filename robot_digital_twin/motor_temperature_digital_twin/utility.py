@@ -213,19 +213,24 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
         # Fitting and prediction.
         if mdl_type == 'reg':
             # Train and predict.
-            mdl, _, y_pred = run_mdl(mdl, X_train, y_train, X_test, y_test, single_run_result=single_run_result)
+            mdl, y_pred_tr, y_pred = run_mdl(mdl, X_train, y_train, X_test)
             # Calculate the performance indicators.
             perf[counter, :] = np.array([max_error(y_test, y_pred), 
             mean_squared_error(y_test, y_pred, squared=False), 
             sum(abs(y_pred - y_test)>threshold)/y_test.shape[0]])
+            # If selected, draw the performance on the training and testing dataset.
+            if single_run_result:
+                show_reg_result(y_train, y_test, y_pred_tr, y_pred)
         elif mdl_type == 'clf':
-            mdl, _, y_pred = run_mdl(mdl, X_train, y_train, X_test, y_test, single_run_result=False)
+            mdl, y_pred_tr, y_pred = run_mdl(mdl, X_train, y_train, X_test)
             perf[counter, :] = np.array([
                 accuracy_score(y_test, y_pred), 
                 precision_score(y_test, y_pred), 
                 recall_score(y_test, y_pred), 
                 f1_score(y_test, y_pred)
             ])
+            if single_run_result:
+                show_clf_result(y_train, y_test, y_pred_tr, y_pred)
 
         else:
             TypeError('mdl_type should be either "reg" or "clf".')
@@ -240,7 +245,7 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
         TypeError('mdl_type should be either "reg" or "clf".')
     
 
-def run_mdl(mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):  
+def run_mdl(mdl, X_tr, y_tr, X_test):  
     ''' ## Description
     This subfunction fits different ML models, and test the performance in both training and testing dataset. 
     
@@ -248,9 +253,7 @@ def run_mdl(mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):
     - mdl: The model to be fitted. Can be regression or classification models.
     - X_tr: The training data. 
     - y_tr: The training labels. 
-    - X_test: The testing data. 
-    - y_test: The testing labels. 
-    - single_run_result: Whether to show the result from a single run. Default is True.
+    - X_test: The testing data.
 
     ## Returns
     - mdl: The fitted model.
@@ -268,10 +271,6 @@ def run_mdl(mdl, X_tr, y_tr, X_test, y_test, single_run_result=True):
     # y_pred_tr = scaler_y.inverse_transform(y_pred_tr)
     # y_pred = scaler_y.inverse_transform(y_pred)
     # y_tr = scaler_y.inverse_transform(y_tr)
-
-    # If not in cv mode, draw the performance on the training and testing dataset.
-    if single_run_result:
-        show_reg_result(y_tr, y_test, y_pred_tr, y_pred)
 
     return mdl, y_pred_tr, y_pred
 
@@ -347,7 +346,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
 
     # Performance indicators
     # Show the model fitting performance.
-    print('New cv run:\n')
+    print('\n New cv run:\n')
     print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
     print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
     print('Training performance, residual error > 3: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
@@ -356,6 +355,50 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_pred, y_test, squared=False)))
     print('Prediction performance, percentage of residual error > 3：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
 
+
+def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
+    ''' ## Description
+    This subfunction visualize the performance of the fitted model on both the training and testing dataset for the classfication model. 
+    
+    ## Parameters
+    - y_tr: The training labels. 
+    - y_test: The testing labels. 
+    - y_pred_tr: The predicted labels on the training dataset. 
+    - y_pred: The predicted labels on the testing dataset. 
+    '''
+
+    # Plot the predicted and truth.
+    # Training data set.
+    fig_1 = plt.figure(figsize = (16,6))
+    ax = fig_1.add_subplot(1,2,1) 
+    ax.set_xlabel('index of data point', fontsize = 15)
+    ax.set_ylabel('y', fontsize = 15)
+    ax.set_title('Prediction V.S. the truth on the training dataset', fontsize = 20)
+    ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
+    ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
+    ax.legend()
+
+    # Testing data set.
+    ax = fig_1.add_subplot(1,2,2) 
+    ax.set_xlabel('index of data points', fontsize = 15)
+    ax.set_ylabel('y', fontsize = 15)
+    ax.set_title('Prediction V.S. the truth on the testing dataset', fontsize = 20)
+    ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
+    ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
+    ax.legend()
+    
+    # Performance indicators
+    # Show the model fitting performance.
+    print('\n New cv run:\n')
+    print('Training performance, accuracy is: ' + str(accuracy_score(y_tr, y_pred_tr ) ))
+    print('Training performance, precision is: ' + str(precision_score(y_tr, y_pred_tr)))
+    print('Training performance, recall: ' + str(recall_score(y_tr, y_pred_tr)))
+    print('Training performance, F1: ' + str(f1_score(y_tr, y_pred_tr)))
+
+    print('Prediction performance, accuracy is: ' + str(accuracy_score(y_test, y_pred)))
+    print('Prediction performance, precision is: ' + str(precision_score(y_test, y_pred)))
+    print('Prediction performance, recall is：' + str(recall_score(y_test, y_pred)))
+    print('Prediction performance, F1 is：' + str(f1_score(y_test, y_pred)))
 
 
 if __name__ == '__main__':
