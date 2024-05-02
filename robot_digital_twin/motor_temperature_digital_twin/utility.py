@@ -128,6 +128,12 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
     # Add time and test condition
     df = pd.read_csv(file_path)
     combined_df = pd.concat([df['time'], combined_df], axis=1)
+
+    # Calculate the time difference since the first row
+    time_since_first_row = combined_df['time'] - combined_df['time'].iloc[0]
+    # Replace the 'time' column with the time difference
+    combined_df['time'] = time_since_first_row
+
     combined_df.loc[:, 'test_condition'] = test_id
 
     return combined_df
