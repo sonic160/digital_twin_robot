@@ -396,21 +396,33 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
 
     # Plot the predicted and truth.
     # Training data set.
-    fig_1 = plt.figure(figsize = (16,6))
-    ax = fig_1.add_subplot(1,2,1) 
+    fig_1 = plt.figure(figsize = (16,12))
+    ax = fig_1.add_subplot(2,2,1) 
     ax.set_xlabel('index of data point', fontsize = 15)
     ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Prediction V.S. the truth on the training dataset', fontsize = 20)
+    ax.set_title('Training: Truth', fontsize = 20)
     ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
+    ax.legend()
+
+    ax = fig_1.add_subplot(2,2,3) 
+    ax.set_xlabel('index of data point', fontsize = 15)
+    ax.set_ylabel('y', fontsize = 15)
+    ax.set_title('Training: Prediction', fontsize = 20)
     ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
     ax.legend()
 
     # Testing data set.
-    ax = fig_1.add_subplot(1,2,2) 
+    ax = fig_1.add_subplot(2,2,2) 
     ax.set_xlabel('index of data points', fontsize = 15)
     ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Prediction V.S. the truth on the testing dataset', fontsize = 20)
+    ax.set_title('Testing: Truth', fontsize = 20)
     ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
+    ax.legend()
+
+    ax = fig_1.add_subplot(2,2,4) 
+    ax.set_xlabel('index of data points', fontsize = 15)
+    ax.set_ylabel('y', fontsize = 15)
+    ax.set_title('Testing: Prediction', fontsize = 20)
     ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
     ax.legend()
     
