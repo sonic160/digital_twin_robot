@@ -134,7 +134,7 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
 
 
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0, mdl_type='clf'):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -143,6 +143,7 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
     - y: The target variable.
     - sequence_name_list: The list of sequence names, each name represents one sequence.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+    - mdl_type: The type of the model. 'clf' for classification, 'reg' for regression. Default is 'clf'.
 
     ## Return  
     - X: Dataframe of the new features.
@@ -156,7 +157,8 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0):
         for i in range(window_size, len(df_tmp)):
             # X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
             tmp = df_tmp.iloc[i, :-1].values.flatten().tolist()
-            tmp.extend(y_tmp.iloc[i-window_size:i].values.flatten().tolist())
+            if mdl_type == 'reg':
+                tmp.extend(y_tmp.iloc[i-window_size:i].values.flatten().tolist())
             X_window.append(tmp)
             y_window.append(y_tmp.iloc[i])
     
@@ -206,8 +208,8 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run
         names_test = [test_conditions[i] for i in test_index]
 
         # Get training and testing data.       
-        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size)
-        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size)
+        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size, mdl_type=mdl_type)
+        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size, mdl_type=mdl_type)
 
         # Fitting and prediction.
         if mdl_type == 'reg':
