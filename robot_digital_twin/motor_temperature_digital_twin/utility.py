@@ -51,9 +51,12 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, window_siz
     print(f'Model for predicting the label of motor {motor_idx}:')
     # Run cross validation.
     df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, window_size=window_size, single_run_result=single_run_result, mdl_type=mdl_type)
-    # Print the mean performance.
-    print('Mean performance:')
-    print(df_perf.mean())
+    print(df_perf)
+    print('\n')
+    # Print the mean performance and standard error.
+    print('Mean performance metric and standard error:')
+    for name, metric, error in zip(df_perf.columns, df_perf.mean(), df_perf.std()):
+        print(f'{name}: {metric:.4f} +- {error:.4f}') 
     print('\n')
 
     return df_perf
