@@ -16,6 +16,49 @@ import matplotlib.pyplot as plt
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
 
 
+def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, window_size=0, single_run_result=True, mdl_type='clf'):
+    ''' ### Description
+    Run cross validation for a given motor and return the performance metrics for each cv run.
+    Can be used for both classification and regression models.
+
+    ### Parameters
+    - motor_idx: The index of the motor.
+    - df_data: The dataframe containing the data. Must contain a column named 'test_condition'.
+    - mdl: The model to be trained. Must have a fit() and predict() method.
+    - feature_list: The list of features to be used for the model.
+    - n_fold: The number of folds for cross validation. Default is 5. The training and testing data are split by sequence.
+    So one needs to make sure n_fold <= the number of sequences.
+    - window_size: The window size for the sliding window. Default is 0, which means no sliding window.
+    - single_run_result: Whether to return the performance metrics for each cv run. Default is True.
+    - mdl_type: The type of the model. Can be 'clf' or 'reg'. Default is 'clf'.
+
+    ### Return
+    - df_perf: The dataframe containing the performance metrics for each cv run.
+    If mdl_type is 'clf', the performance metrics are accuracy, precision, recall, and f1 score.
+    If mdl_type is 'reg', the performance metrics are max error, mean squared error, and out-of-threshold percentage.
+    
+    '''
+    # Get the name of the response variable.
+    y_name = f'data_motor_{motor_idx}_label'
+
+    # Seperate features and the response variable.
+    # Remove the irrelavent features.
+    feature_list.append('test_condition')
+    df_x = df_data[feature_list]
+    # Get y.
+    y = df_data.loc[:, y_name]
+
+    print(f'Model for predicting the label of motor {motor_idx}:')
+    # Run cross validation.
+    df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, window_size=window_size, single_run_result=single_run_result, mdl_type=mdl_type)
+    # Print the mean performance.
+    print('Mean performance:')
+    print(df_perf.mean())
+    print('\n')
+
+    return df_perf
+
+
 def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=None, is_plot=True) -> pd.DataFrame:
     ''' ## Description
     Read all the test data from a folder. The folder should contain subfolders for each test. Each subfolder should contain the six CSV files for each motor. 
