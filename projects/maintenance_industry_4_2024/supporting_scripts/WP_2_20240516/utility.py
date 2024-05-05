@@ -11,12 +11,13 @@ import logging
 import sys
 import os
 import matplotlib.pyplot as plt
+import copy
 
 
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
 
 
-def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, window_size=0, single_run_result=True, mdl_type='clf'):
+def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=0, single_run_result=True, mdl_type='clf'):
     ''' ### Description
     Run cross validation for a given motor and return the performance metrics for each cv run.
     Can be used for both classification and regression models.
@@ -28,6 +29,7 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, window_siz
     - feature_list: The list of features to be used for the model.
     - n_fold: The number of folds for cross validation. Default is 5. The training and testing data are split by sequence.
     So one needs to make sure n_fold <= the number of sequences.
+    - threshold: The threshold for the out-of-threshold percentage. Default is 3. Only needed for regression models.
     - window_size: The window size for the sliding window. Default is 0, which means no sliding window.
     - single_run_result: Whether to return the performance metrics for each cv run. Default is True.
     - mdl_type: The type of the model. Can be 'clf' or 'reg'. Default is 'clf'.
@@ -38,19 +40,27 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, window_siz
     If mdl_type is 'reg', the performance metrics are max error, mean squared error, and out-of-threshold percentage.
     
     '''
+    # Create a copy of feature_list
+    feature_list_local = copy.deepcopy(feature_list)
     # Get the name of the response variable.
-    y_name = f'data_motor_{motor_idx}_label'
-
+    if mdl_type == 'clf':
+        y_name = f'data_motor_{motor_idx}_label'
+    elif mdl_type == 'reg':
+        y_name = f'data_motor_{motor_idx}_temperature'
+        feature_list_local.remove(y_name)
+    else:
+        raise ValueError('mdl_type must be \'clf\' or \'reg\'.')
+    
     # Seperate features and the response variable.
     # Remove the irrelavent features.
-    feature_list.append('test_condition')
-    df_x = df_data[feature_list]
+    feature_list_local.append('test_condition')
+    df_x = df_data[feature_list_local]
     # Get y.
     y = df_data.loc[:, y_name]
 
-    print(f'Model for predicting the label of motor {motor_idx}:')
+    print(f'Model for motor {motor_idx}:')
     # Run cross validation.
-    df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, window_size=window_size, single_run_result=single_run_result, mdl_type=mdl_type)
+    df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, threshold=threshold, window_size=window_size, single_run_result=single_run_result, mdl_type=mdl_type)
     print(df_perf)
     print('\n')
     # Print the mean performance and standard error.
