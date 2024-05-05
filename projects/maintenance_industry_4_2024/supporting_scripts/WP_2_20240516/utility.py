@@ -17,6 +17,42 @@ import copy
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
 
 
+def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_idx: int, mdl_type: str):
+    ''' ### Description
+    Extract the selected features and the response variable from the dataframe.
+
+    ### Parameters
+    df_data: The dataframe containing the data.
+    feature_list: The list of features to be used.
+    motor_idx: The index of the motor.
+    mdl_type: The type of the model. 'clf' for classification, 'reg' for regression.
+
+    ### Return
+    df_x: The dataframe containing the features.
+    y: The response variable.
+    '''
+    
+    # Create a copy of feature_list
+    feature_list_local = copy.deepcopy(feature_list)
+    # Get the name of the response variable.
+    if mdl_type == 'clf':
+        y_name = f'data_motor_{motor_idx}_label'
+    elif mdl_type == 'reg':
+        y_name = f'data_motor_{motor_idx}_temperature'
+        feature_list_local.remove(y_name)
+    else:
+        raise ValueError('mdl_type must be \'clf\' or \'reg\'.')
+    
+    # Seperate features and the response variable.
+    # Remove the irrelavent features.
+    feature_list_local.append('test_condition')
+    df_x = df_data[feature_list_local]
+    # Get y.
+    y = df_data.loc[:, y_name]
+
+    return df_x, y
+
+
 def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=0, single_run_result=True, mdl_type='clf'):
     ''' ### Description
     Run cross validation for a given motor and return the performance metrics for each cv run.
@@ -40,23 +76,8 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=
     If mdl_type is 'reg', the performance metrics are max error, mean squared error, and out-of-threshold percentage.
     
     '''
-    # Create a copy of feature_list
-    feature_list_local = copy.deepcopy(feature_list)
-    # Get the name of the response variable.
-    if mdl_type == 'clf':
-        y_name = f'data_motor_{motor_idx}_label'
-    elif mdl_type == 'reg':
-        y_name = f'data_motor_{motor_idx}_temperature'
-        feature_list_local.remove(y_name)
-    else:
-        raise ValueError('mdl_type must be \'clf\' or \'reg\'.')
-    
-    # Seperate features and the response variable.
-    # Remove the irrelavent features.
-    feature_list_local.append('test_condition')
-    df_x = df_data[feature_list_local]
-    # Get y.
-    y = df_data.loc[:, y_name]
+    # Extract the selected features.
+    df_x, y = extract_selected_feature(df_data, feature_list, motor_idx, mdl_type)
 
     print(f'Model for motor {motor_idx}:')
     # Run cross validation.
