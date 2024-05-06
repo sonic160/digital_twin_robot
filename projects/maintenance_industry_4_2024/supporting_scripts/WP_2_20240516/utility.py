@@ -39,9 +39,12 @@ def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_id
         y_name = f'data_motor_{motor_idx}_label'
     elif mdl_type == 'reg':
         y_name = f'data_motor_{motor_idx}_temperature'
-        feature_list_local.remove(y_name)
     else:
         raise ValueError('mdl_type must be \'clf\' or \'reg\'.')
+    
+    # Remove the y from the feature
+    if y_name in feature_list_local:
+        feature_list_local.remove(y_name)
     
     # Seperate features and the response variable.
     # Remove the irrelavent features.
@@ -53,7 +56,7 @@ def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_id
     return df_x, y
 
 
-def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=0, single_run_result=True, mdl_type='clf'):
+def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=1, single_run_result=True, mdl_type='clf'):
     ''' ### Description
     Run cross validation for a given motor and return the performance metrics for each cv run.
     Can be used for both classification and regression models.
@@ -217,7 +220,7 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
 
 
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0, mdl_type='clf'):
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, mdl_type='clf'):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -225,7 +228,7 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0, mdl_type=
     - df_x: The dataframe containing the features. Must have a column named "test_condition".
     - y: The target variable.
     - sequence_name_list: The list of sequence names, each name represents one sequence.
-    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+    - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
     - mdl_type: The type of the model. 'clf' for classification, 'reg' for regression. Default is 'clf'.
 
     ## Return  
@@ -238,10 +241,10 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0, mdl_type=
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
         for i in range(window_size, len(df_tmp)):
-            # X_window.append(df_tmp.iloc[i:i+window_size, :-1].values.flatten())
-            tmp = df_tmp.iloc[i, :-1].values.flatten().tolist()
+            tmp = df_tmp.iloc[i-window_size:i, :-1].values.flatten().tolist()
             if mdl_type == 'reg':
-                tmp.extend(y_tmp.iloc[i-window_size:i].values.flatten().tolist())
+                # tmp.extend(y_tmp.iloc[i-window_size:i-1].values.flatten().tolist())
+                tmp.append(y_tmp.iloc[i-window_size])
             X_window.append(tmp)
             y_window.append(y_tmp.iloc[i])
     
@@ -251,7 +254,7 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=0, mdl_type=
     return X_window, y_window
 
 
-def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=0, single_run_result=True, mdl_type='reg'):
+def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, single_run_result=True, mdl_type='reg'):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
@@ -530,45 +533,22 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
 
 
 if __name__ == '__main__':
-    from sklearn.pipeline import Pipeline
-    from sklearn.linear_model import LogisticRegression
-
-    def run_all_motors(df_data, mdl, window_size=0, single_run_result=True, mdl_type='reg'):
-        all_results = []
-        # Loop over all the six motors.
-        for i in range(1, 7):
-            # Get the name of the response variable.
-            y_name = f'data_motor_{i}_label'
-        
-            # Seperate features and the response variable.
-            # Remove the irrelavent features.
-            df_x = df_data.drop(columns=[y_name])
-            # Get y.
-            y = df_data.loc[:, y_name]
-
-            print(f'Model for predicting the label of motor {i}:')
-            # Run cross validation.
-            df_perf = run_cross_val(mdl, df_x, y, window_size=window_size, single_run_result=single_run_result, mdl_type='clf')
-            # Print the mean performance.
-            print(df_perf.mean())
-            print('\n')
-
-            all_results.append(df_perf)
-
-        return all_results
+    # Test extract_selected_features()
 
     # Define the path to the folder 'collected_data'
     base_dictionary = 'projects/maintenance_industry_4_2024/dataset/training_data/'
     # Read all the data
     df_data = read_all_test_data_from_path(base_dictionary, is_plot=False)
 
-    # Define the steps of the pipeline
-    steps = [
-        ('standardizer', StandardScaler()),  # Step 1: StandardScaler
-        ('mdl', LogisticRegression(class_weight='balanced'))    # Step 2: Linear Regression
-    ]
+    feature_list_all = ['time', 'data_motor_1_position', 'data_motor_1_temperature', 'data_motor_1_voltage',
+                    'data_motor_2_position', 'data_motor_2_temperature', 'data_motor_2_voltage',
+                    'data_motor_3_position', 'data_motor_3_temperature', 'data_motor_3_voltage',
+                    'data_motor_4_position', 'data_motor_4_temperature', 'data_motor_4_voltage',
+                    'data_motor_5_position', 'data_motor_5_temperature', 'data_motor_5_voltage',
+                    'data_motor_6_position', 'data_motor_6_temperature', 'data_motor_6_voltage']
+    df_x, y = extract_selected_feature(df_data=df_data, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
 
-    # Create the pipeline
-    pipeline = Pipeline(steps)
-    all_results = run_all_motors(df_data, pipeline, single_run_result=False, mdl_type='clf')
- 
+    sequence_list = ['20240425_093699', '20240425_094425', '20240426_140055',
+                    '20240503_164675', '20240503_165189',
+                    '20240503_163963', '20240325_155003']
+    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=5, mdl_type='reg')
