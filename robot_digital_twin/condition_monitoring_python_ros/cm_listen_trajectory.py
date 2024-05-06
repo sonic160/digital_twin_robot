@@ -137,7 +137,7 @@ class DataCollector:
         Save the collected data.
         '''
 
-        # Generate the folder to save teh data.
+        # Generate the folder to save the data.
         path = self.generate_data_path()
 
         # Position monitoring data.
