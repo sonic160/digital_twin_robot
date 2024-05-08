@@ -56,7 +56,7 @@ def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_id
     return df_x, y
 
 
-def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=1, single_run_result=True, mdl_type='clf'):
+def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=0, single_run_result=True, mdl_type='clf'):
     ''' ### Description
     Run cross validation for a given motor and return the performance metrics for each cv run.
     Can be used for both classification and regression models.
@@ -70,6 +70,8 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=
     So one needs to make sure n_fold <= the number of sequences.
     - threshold: The threshold for the out-of-threshold percentage. Default is 3. Only needed for regression models.
     - window_size: The window size for the sliding window. Default is 0, which means no sliding window.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
     - single_run_result: Whether to return the performance metrics for each cv run. Default is True.
     - mdl_type: The type of the model. Can be 'clf' or 'reg'. Default is 'clf'.
 
@@ -84,7 +86,7 @@ def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=
 
     print(f'Model for motor {motor_idx}:')
     # Run cross validation.
-    df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, threshold=threshold, window_size=window_size, single_run_result=single_run_result, mdl_type=mdl_type)
+    df_perf = run_cross_val(mdl, df_x, y, n_fold=n_fold, threshold=threshold, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, single_run_result=single_run_result, mdl_type=mdl_type)
     print(df_perf)
     print('\n')
     # Print the mean performance and standard error.
@@ -239,16 +241,20 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_st
     '''
     X_window = []
     y_window = []
+    # Process sequence by sequence.
     for name in sequence_name_list:
+        # Extract one sequence.
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
-        for i in range(window_size+prediction_lead_time, len(df_tmp)):
-            tmp_idx = range(i-window_size-prediction_lead_time, i, sample_step)
-            tmp = df_tmp.iloc[tmp_idx, :-1].values.flatten().tolist()
+        # Use sliding window to create features.
+        for i in range(window_size+prediction_lead_time-1, len(df_tmp)):
+            # Define the sampled feature in the window.
+            tmp_idx = reversed(range(i, i-window_size-prediction_lead_time, -1*sample_step))
+            tmp = df_tmp.iloc[tmp_idx].drop(columns=['test_condition']).values.flatten().tolist()
             if mdl_type == 'reg':
-                tmp_idx = range(i-window_size-prediction_lead_time, i-prediction_lead_time, sample_step)
-                tmp.extend(y_tmp.iloc[tmp_idx].values.flatten().tolist())
-                # tmp.append(y_tmp.iloc[i-window_size])
+                if i-max(1, prediction_lead_time) > i-window_size-prediction_lead_time:
+                    tmp_idx = reversed(range(i-max(1, prediction_lead_time), i-window_size-prediction_lead_time, -1*sample_step))
+                    tmp.extend(y_tmp.iloc[tmp_idx].values.flatten().tolist())
             X_window.append(tmp)
             y_window.append(y_tmp.iloc[i])
     
@@ -258,7 +264,7 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_st
     return X_window, y_window
 
 
-def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, single_run_result=True, mdl_type='reg'):
+def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=0, single_run_result=True, mdl_type='reg'):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
@@ -269,6 +275,8 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, single_run
     - n_fold: The number of folds. Default is 5.
     - threshold: The threshold for the exceedance rate. Default is 3. Only needed when mdl_type == 'reg'.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
     - single_run_result: Whether to return the single run result. Default is True.
     - mdl_type: The type of the model. Default is 'reg'. Alternately, put 'clf' for classification.
 
@@ -298,8 +306,8 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, single_run
         names_test = [test_conditions[i] for i in test_index]
 
         # Get training and testing data.       
-        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size, mdl_type=mdl_type)
-        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size, mdl_type=mdl_type)
+        X_train, y_train = prepare_sliding_window(df_x, y, names_train, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
+        X_test, y_test = prepare_sliding_window(df_x, y, names_test, window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
 
         # Fitting and prediction.
         if mdl_type == 'reg':
@@ -311,7 +319,7 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, single_run
             sum(abs(y_pred - y_test)>threshold)/y_test.shape[0]])
             # If selected, draw the performance on the training and testing dataset.
             if single_run_result:
-                show_reg_result(y_train, y_test, y_pred_tr, y_pred)
+                show_reg_result(y_train, y_test, y_pred_tr, y_pred, threshold=threshold)
         elif mdl_type == 'clf':
             mdl, y_pred_tr, y_pred = run_mdl(mdl, X_train, y_train, X_test)
             accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
@@ -392,7 +400,7 @@ def run_mdl(mdl, X_tr, y_tr, X_test):
     return mdl, y_pred_tr, y_pred
 
 
-def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
+def show_reg_result(y_tr, y_test, y_pred_tr, y_pred, threshold=3):
     ''' ## Description
     This subfunction visualize the performance of the fitted model on both the training and testing dataset. 
     
@@ -401,6 +409,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     - y_test: The testing labels. 
     - y_pred_tr: The predicted labels on the training dataset. 
     - y_pred: The predicted labels on the testing dataset. 
+    - threshold: The threshold for exceeding the boundary.
     '''
 
     # Plot the predicted and truth.
@@ -431,7 +440,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_ylabel('Residual error', fontsize = 15)
     ax.set_title('Residual errors on the training dataset', fontsize = 20)
     ax.plot(y_pred_tr - y_tr, 'o')
-    ax.hlines([3, -3], 0, len(y_tr), linestyles='dashed', colors='r')
+    ax.hlines([threshold, -1*threshold], 0, len(y_tr), linestyles='dashed', colors='r')
 
     # Testing data set.
     ax = fig.add_subplot(1,2,2) 
@@ -439,7 +448,7 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_ylabel('Residual error', fontsize = 15)
     ax.set_title('Residual errors on the testing dataset', fontsize = 20)
     ax.plot(y_pred-y_test, 'o')
-    ax.hlines([3, -3], 0, len(y_test), linestyles='dashed', colors='r')
+    ax.hlines([threshold, -1*threshold], 0, len(y_test), linestyles='dashed', colors='r')
 
     # Plot the distribution of residual errors.
     # Training data set.
@@ -449,8 +458,8 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_ylabel('Counts', fontsize = 15)
     ax.set_title('Distribution of residual errors (training)', fontsize = 20)
     ax.hist(y_pred_tr - y_tr)
-    ax.axvline(x=3, linestyle='--', color='r')
-    ax.axvline(x=-3, linestyle='--', color='r')
+    ax.axvline(x=threshold, linestyle='--', color='r')
+    ax.axvline(x=-1*threshold, linestyle='--', color='r')
 
     # Testing data set.
     ax = fig.add_subplot(1,2,2) 
@@ -458,19 +467,19 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred):
     ax.set_ylabel('Counts', fontsize = 15)
     ax.set_title('Distribution of residual errors (testing)', fontsize = 20)
     ax.hist(y_pred-y_test)
-    ax.axvline(x=3, linestyle='--', color='r')
-    ax.axvline(x=-3, linestyle='--', color='r')
+    ax.axvline(x=threshold, linestyle='--', color='r')
+    ax.axvline(x=-1*threshold, linestyle='--', color='r')
 
     # Performance indicators
     # Show the model fitting performance.
     print('\n New cv run:\n')
     print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
     print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
-    print('Training performance, residual error > 3: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
+    print(f'Training performance, residual error > {threshold}: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
     print('\n')
     print('Prediction performance, max error is: ' + str(max_error(y_test, y_pred)))
     print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_test, y_pred, squared=False)))
-    print('Prediction performance, percentage of residual error > 3：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
+    print(f'Prediction performance, percentage of residual error > {threshold}：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
 
     plt.show()
 
@@ -555,4 +564,4 @@ if __name__ == '__main__':
     sequence_list = ['20240425_093699', '20240425_094425', '20240426_140055',
                     '20240503_164675', '20240503_165189',
                     '20240503_163963', '20240325_155003']
-    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=5, mdl_type='reg')
+    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=1, sample_step=1, prediction_lead_time=0, mdl_type='reg')
