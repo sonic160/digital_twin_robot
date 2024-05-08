@@ -220,7 +220,7 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
 
 
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, mdl_type='clf'):
+def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_step=1, prediction_lead_time=0, mdl_type='clf'):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -229,6 +229,8 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, mdl_type=
     - y: The target variable.
     - sequence_name_list: The list of sequence names, each name represents one sequence.
     - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
     - mdl_type: The type of the model. 'clf' for classification, 'reg' for regression. Default is 'clf'.
 
     ## Return  
@@ -240,11 +242,13 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, mdl_type=
     for name in sequence_name_list:
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
-        for i in range(window_size, len(df_tmp)):
-            tmp = df_tmp.iloc[i-window_size:i, :-1].values.flatten().tolist()
+        for i in range(window_size+prediction_lead_time, len(df_tmp)):
+            tmp_idx = range(i-window_size-prediction_lead_time, i, sample_step)
+            tmp = df_tmp.iloc[tmp_idx, :-1].values.flatten().tolist()
             if mdl_type == 'reg':
-                # tmp.extend(y_tmp.iloc[i-window_size:i-1].values.flatten().tolist())
-                tmp.append(y_tmp.iloc[i-window_size])
+                tmp_idx = range(i-window_size-prediction_lead_time, i-prediction_lead_time, sample_step)
+                tmp.extend(y_tmp.iloc[tmp_idx].values.flatten().tolist())
+                # tmp.append(y_tmp.iloc[i-window_size])
             X_window.append(tmp)
             y_window.append(y_tmp.iloc[i])
     
