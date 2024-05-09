@@ -218,6 +218,9 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
 
     combined_df.loc[:, 'test_condition'] = test_id
 
+    # Drop the NaN values, which represents the first n data points in the original dataframe.
+    combined_df.dropna(inplace=True)
+
     return combined_df
 
 
