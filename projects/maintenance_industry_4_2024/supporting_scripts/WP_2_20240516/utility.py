@@ -250,14 +250,14 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_st
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
         # Use sliding window to create features.
-        for i in range(window_size+prediction_lead_time-1, len(df_tmp)):
+        for i in range(window_size-1, len(df_tmp)):
             # Define the sampled feature in the window.
-            tmp_idx = reversed(range(i, i-window_size-prediction_lead_time, -1*sample_step))
+            tmp_idx = list(reversed(range(i, i-window_size, -1*sample_step)))
             tmp = df_tmp.iloc[tmp_idx].drop(columns=['test_condition']).values.flatten().tolist()
             if mdl_type == 'reg':
-                if i-max(1, prediction_lead_time) > i-window_size-prediction_lead_time:
-                    tmp_idx = reversed(range(i-max(1, prediction_lead_time), i-window_size-prediction_lead_time, -1*sample_step))
-                    tmp.extend(y_tmp.iloc[tmp_idx].values.flatten().tolist())
+                if prediction_lead_time>0 and prediction_lead_time<window_size:
+                    tmp_idx_pred = [x for x in tmp_idx if x <= i-prediction_lead_time]
+                    tmp.extend(y_tmp.iloc[tmp_idx_pred].values.flatten().tolist())
             X_window.append(tmp)
             y_window.append(y_tmp.iloc[i])
     
@@ -567,4 +567,4 @@ if __name__ == '__main__':
     sequence_list = ['20240425_093699', '20240425_094425', '20240426_140055',
                     '20240503_164675', '20240503_165189',
                     '20240503_163963', '20240325_155003']
-    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=1, sample_step=1, prediction_lead_time=0, mdl_type='reg')
+    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=50, sample_step=10, prediction_lead_time=49, mdl_type='reg')
