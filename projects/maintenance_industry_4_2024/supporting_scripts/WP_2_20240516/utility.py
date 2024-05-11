@@ -56,7 +56,7 @@ def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_id
     return df_x, y
 
 
-def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=0, single_run_result=True, mdl_type='clf'):
+def run_cv_one_motor(motor_idx, df_data, mdl, feature_list, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=1, single_run_result=True, mdl_type='clf'):
     ''' ### Description
     Run cross validation for a given motor and return the performance metrics for each cv run.
     Can be used for both classification and regression models.
@@ -224,8 +224,51 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
     return combined_df
 
 
+# Subfunction for create the sliding window.
+def concatenate_features(df_input, y_input, X_window, y_window, window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
+    ''' ### Description
+    This function takes every sample_step point from a interval window_size, and concatenate the extracted 
+    features into a new feature list X_window. It extracts the corresponding y in y_window.
+
+    ### Parameters
+    - df_input: The original feature matrix.
+    - y_input: The original response variable.
+    - X_window: A list containing the existing concatenated features. Each element is a list of the new features.
+    - y_window: A list containing the existing concatenated response variable.
+    - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: We predict y at t using the previous measurement of y up to t-prediction_lead_time. Default is 1.
+    - mdl_type: The type of the model. 'clf' for classification, 'reg' for regression. Default is 'clf'.
+
+    ### Return
+    - X_window: The X_window after adding the concatenated features from df_input.
+    - y_window: The y_window after adding the corresponding y.
+    '''
+    
+    # Get the index of the last element in the dataframe.
+    idx_last_element = len(df_input)-1    
+    # Get the indexes the sampled feature in the window, from the last element of the dataframe.
+    idx_samples = list(reversed(range(idx_last_element, idx_last_element-window_size, -1*sample_step)))
+    # Get the sample X features, and concatenate 
+    new_features = df_input.iloc[idx_samples].drop(columns=['test_condition']).values.flatten().tolist()
+    
+    # If mdl_type is 'reg', we need to add the past ys to the new_features.
+    if mdl_type == 'reg':
+        if prediction_lead_time<=1: # It is meaningless to add the current y as it is what we need to predict. So the prediction_leatime >= 1.
+            prediction_lead_time = 1 
+        if prediction_lead_time<window_size and window_size>1: # Otherwise no need to add y_prev as they are beyond the window_size.
+            tmp_idx_pred = [x for x in idx_samples if x <= idx_last_element-prediction_lead_time]
+            new_features.extend(y_input.iloc[tmp_idx_pred].values.flatten().tolist())
+    
+    # Add the added features and the corresponding ys into X_window and y_window.
+    X_window.append(new_features) # New features
+    y_window.append(y_input.iloc[idx_last_element]) # Corresponding y
+
+    return X_window, y_window
+
+
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_step=1, prediction_lead_time=0, mdl_type='clf'):
+def prepare_sliding_window(df_x, y, sequence_name_list=None, window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -235,7 +278,7 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_st
     - sequence_name_list: The list of sequence names, each name represents one sequence.
     - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
     - sample_step: We take every sample_step points from the window_size. default is 1.
-    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
+    - prediction_lead_time: We predict y at t using the previous measurement of y up to t-prediction_lead_time. Default is 1.
     - mdl_type: The type of the model. 'clf' for classification, 'reg' for regression. Default is 'clf'.
 
     ## Return  
@@ -243,31 +286,31 @@ def prepare_sliding_window(df_x, y, sequence_name_list, window_size=1, sample_st
     - y: Series of the response variable.          
     '''
     X_window = []
-    y_window = []
+    y_window = []    
+
+    # If no sequence_list is given, extract all the unique values from 'test_condition'.
+    if sequence_name_list is None:
+        sequence_name_list = df_x['test_condition'].unique().tolist()
+
     # Process sequence by sequence.
     for name in sequence_name_list:
         # Extract one sequence.
         df_tmp = df_x[df_x['test_condition']==name]
         y_tmp = y[df_x['test_condition']==name]
-        # Use sliding window to create features.
-        for i in range(window_size-1, len(df_tmp)):
-            # Define the sampled feature in the window.
-            tmp_idx = list(reversed(range(i, i-window_size, -1*sample_step)))
-            tmp = df_tmp.iloc[tmp_idx].drop(columns=['test_condition']).values.flatten().tolist()
-            if mdl_type == 'reg':
-                if prediction_lead_time>0 and prediction_lead_time<window_size:
-                    tmp_idx_pred = [x for x in tmp_idx if x <= i-prediction_lead_time]
-                    tmp.extend(y_tmp.iloc[tmp_idx_pred].values.flatten().tolist())
-            X_window.append(tmp)
-            y_window.append(y_tmp.iloc[i])
-    
+
+        # Do a loop to concatenate features by sliding the window.
+        for i in range(window_size, len(df_tmp)+1):
+            X_window, y_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], y_input=y_tmp.iloc[i-window_size:i], 
+                X_window=X_window, y_window=y_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
+        
+    # Transform into dataframe.
     X_window = pd.DataFrame(X_window)
     y_window = pd.Series(y_window)
 
     return X_window, y_window
 
 
-def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=0, single_run_result=True, mdl_type='reg'):
+def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=1, single_run_result=True, mdl_type='reg'):
     ''' ## Description
     Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
 
