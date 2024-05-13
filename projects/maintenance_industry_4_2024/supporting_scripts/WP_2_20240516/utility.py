@@ -41,7 +41,7 @@ class FaultDetectReg():
     ### Methods
 
     '''
-    def __init__(self, reg_mdl, pre_trained: bool=True, window_size: int = 1, sample_step: int = 1, pred_lead_time: int = 1):
+    def __init__(self, reg_mdl, pre_trained: bool=True, threshold: int=1, abnormal_limit: int=3, window_size: int = 1, sample_step: int = 1, pred_lead_time: int = 1):
         ''' ### Description
         Initialization function.        
         '''
@@ -49,21 +49,52 @@ class FaultDetectReg():
         self.window_size = window_size
         self.sample_step = sample_step
         self.pred_lead_time = pred_lead_time
-        self.threshold = 1
+        self.threshold = threshold
         self.pre_trained = pre_trained
-        self.abnormal_indicator = 3
+        self.abnormal_limit = abnormal_limit
 
     
-    # def fit_reg_mdl(self, X, y_response):
+    # def fit(self, df_x, y_label, y_response):
     #     ''' ### Description
-    #     Fit the regression model.
+    #     Learn to predict the labels. It learns the best value of self.threshold by 
+    #     checking the performance with different threshold values from .5 to 2.
 
     #     ### Parameters
-    #     - X: The training features.
-    #     - y: The response variable.
+    #     - df_x: The training features.
+    #     - y_label: The labels in the training dataset.
+    #     - y_response: The response variable.
+
+    #     ### Returns
+    #     - y_label_pred_best: The predicted labels using the best thresold learnt from training data.
+    #     - y_response_pred_best: The predicted response variable using the best thresold learnt from training data.
     #     '''
-    #     # Fit the model.
-    #     self.reg_mdl.fit(X, y)
+    #     # Get the y labels corresponding to the new concatenated features.
+    #     _, y_label = prepare_sliding_window(df_x=df_x, y=y_label, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
+    #     # _, y_response = prepare_sliding_window(df_x=df_x, y=y_response, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+
+    #     # Define the search space for values of threshold.
+    #     threshold_space = np.arange(.6, 1.6, .1)
+    #     n_search = len(threshold_space)
+
+    #     # Initial the results
+    #     perfs = np.zeros(n_search)
+    #     results_y_label_pred = []
+    #     results_y_response_pred = []
+    #     for i in range(n_search):
+    #         self.threshold = threshold_space[i]
+    #         y_label_pred, y_response_pred = self.predict(df_x, y_response)
+    #         perfs[i] = cal_classification_perf(y_label, pd.Series(y_label_pred))[3] # Log only F1 score.
+    #         results_y_label_pred.append(y_label_pred)
+    #         results_y_response_pred.append(y_response_pred)
+        
+    #     # Get the best threshold.
+    #     best_threshold = threshold_space[np.argmax(perfs)]
+    #     # Set the threshold value to the best value.
+    #     self.threshold = best_threshold
+    #     y_label_pred_best = results_y_label_pred[np.argmax(perfs)]
+    #     y_response_pred_best = results_y_response_pred[np.argmax(perfs)]
+
+    #     return y_label_pred_best, y_response_pred_best
 
 
     def fit(self, df_x, y_label, y_response):
@@ -80,33 +111,37 @@ class FaultDetectReg():
         - y_label_pred_best: The predicted labels using the best thresold learnt from training data.
         - y_response_pred_best: The predicted response variable using the best thresold learnt from training data.
         '''
-        # Get the y labels corresponding to the new concatenated features.
-        _, y_label = prepare_sliding_window(df_x=df_x, y=y_label, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
-        # _, y_response = prepare_sliding_window(df_x=df_x, y=y_response, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+        if not self.pre_trained:
+            # Train a regression model first, based on the normal samples.
+            # Align indices
+            df_x_normal = copy.deepcopy(df_x)
+            # Initialize a counter for numbering
+            counter = 0
+            flag = False
+            # Iterate over each row in df
+            for i in range(len(y_label)):
+                value = y_label.iloc[i]
+                if i>0:
+                    if value==0 and y_label.iloc[i-1] == 1:
+                        flag = True
+                        counter += 1                
+                    if value==1 and y_label.iloc[i-1] == 0:
+                        flag = False                
+                    if flag:
+                        df_x_normal.at[df_x_normal.index[i], 'test_condition'] += f'_{counter}'               
 
-        # Define the search space for values of threshold.
-        threshold_space = np.arange(.6, 1.6, .1)
-        n_search = len(threshold_space)
+            df_x_normal = df_x_normal[y_label==0]
+            y_response_normal = y_response[y_label==0]
 
-        # Initial the results
-        perfs = np.zeros(n_search)
-        results_y_label_pred = []
-        results_y_response_pred = []
-        for i in range(n_search):
-            self.threshold = threshold_space[i]
-            y_label_pred, y_response_pred = self.predict(df_x, y_response)
-            perfs[i] = cal_classification_perf(y_label, pd.Series(y_label_pred))[3] # Log only F1 score.
-            results_y_label_pred.append(y_label_pred)
-            results_y_response_pred.append(y_response_pred)
-        
-        # Get the best threshold.
-        best_threshold = threshold_space[np.argmax(perfs)]
-        # Set the threshold value to the best value.
-        self.threshold = best_threshold
-        y_label_pred_best = results_y_label_pred[np.argmax(perfs)]
-        y_response_pred_best = results_y_response_pred[np.argmax(perfs)]
+            # Train the regression model.
+            x_tr, y_temp_tr = prepare_sliding_window(df_x=df_x_normal, y=y_response_normal, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+            self.reg_mdl = self.reg_mdl.fit(x_tr, y_temp_tr)
 
-        return y_label_pred_best, y_response_pred_best
+        # Calculate and return the predicted labels and response variable for the training data.
+        y_label_pred, y_response_pred = self.predict(df_x, y_response)
+
+        return y_label_pred, y_response_pred
+
 
 
     def predict(self, df_x_test, y_response_test):
@@ -165,7 +200,7 @@ class FaultDetectReg():
 
                 # If we predict a failure, we replace the measure with the predicted temperature.
                 # This is to avoid accumulation of errors.
-                if tmp_y_label_pred[-1] == 1 and tmp_residual <= self.abnormal_indicator:
+                if tmp_y_label_pred[-1] == 1 and tmp_residual <= self.abnormal_limit:
                     y_temp_local.iloc[i-1] = tmp_y_temp_pred[-1]
 
             y_label_pred.extend(y_label_pred_tmp)
