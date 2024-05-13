@@ -12,9 +12,258 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import copy
+from tqdm import tqdm
 
 
 # We provide some supporting function for training a data-driven digital twin for predicting the temperature of motors.
+
+
+class FaultDetectReg():
+    ''' ### Description
+    This is the class for fault detection based on regression models.
+
+    ### Initialize
+    Initialize the class with the following parameters:    
+    - reg_mdl: The pre-trained regression model.
+    - pre_trained: If the provided reg_mdl is pretrained. Default is True.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
+    
+    ### Attributes
+    - reg_mdl: The pre-trained regression model.
+    - pre_trained: If the provided reg_mdl is pretrained. Default is True.
+    - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
+    - sample_step: We take every sample_step points from the window_size. default is 1.
+    - prediction_lead_time: We predict y at t using the previous measurement of y up to t-prediction_lead_time. Default is 1.
+    - threshold: threshold for the residual error. If the residual error is larger than the threshold, we consider it as a fault. Default is 3.
+    
+    ### Methods
+
+    '''
+    def __init__(self, reg_mdl, pre_trained: bool=True, window_size: int = 1, sample_step: int = 1, pred_lead_time: int = 1):
+        ''' ### Description
+        Initialization function.        
+        '''
+        self.reg_mdl = reg_mdl
+        self.window_size = window_size
+        self.sample_step = sample_step
+        self.pred_lead_time = pred_lead_time
+        self.threshold = 1
+        self.pre_trained = pre_trained
+        self.abnormal_indicator = 3
+
+    
+    # def fit_reg_mdl(self, X, y_response):
+    #     ''' ### Description
+    #     Fit the regression model.
+
+    #     ### Parameters
+    #     - X: The training features.
+    #     - y: The response variable.
+    #     '''
+    #     # Fit the model.
+    #     self.reg_mdl.fit(X, y)
+
+
+    def fit(self, df_x, y_label, y_response):
+        ''' ### Description
+        Learn to predict the labels. It learns the best value of self.threshold by 
+        checking the performance with different threshold values from .5 to 2.
+
+        ### Parameters
+        - df_x: The training features.
+        - y_label: The labels in the training dataset.
+        - y_response: The response variable.
+
+        ### Returns
+        - y_label_pred_best: The predicted labels using the best thresold learnt from training data.
+        - y_response_pred_best: The predicted response variable using the best thresold learnt from training data.
+        '''
+        # Get the y labels corresponding to the new concatenated features.
+        _, y_label = prepare_sliding_window(df_x=df_x, y=y_label, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
+        # _, y_response = prepare_sliding_window(df_x=df_x, y=y_response, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+
+        # Define the search space for values of threshold.
+        threshold_space = np.arange(.6, 1.6, .1)
+        n_search = len(threshold_space)
+
+        # Initial the results
+        perfs = np.zeros(n_search)
+        results_y_label_pred = []
+        results_y_response_pred = []
+        for i in range(n_search):
+            self.threshold = threshold_space[i]
+            y_label_pred, y_response_pred = self.predict(df_x, y_response)
+            perfs[i] = cal_classification_perf(y_label, pd.Series(y_label_pred))[3] # Log only F1 score.
+            results_y_label_pred.append(y_label_pred)
+            results_y_response_pred.append(y_response_pred)
+        
+        # Get the best threshold.
+        best_threshold = threshold_space[np.argmax(perfs)]
+        # Set the threshold value to the best value.
+        self.threshold = best_threshold
+        y_label_pred_best = results_y_label_pred[np.argmax(perfs)]
+        y_response_pred_best = results_y_response_pred[np.argmax(perfs)]
+
+        return y_label_pred_best, y_response_pred_best
+
+
+    def predict(self, df_x_test, y_response_test):
+        ''' ### Description
+        Predict the labels using the trained regression model and the threshold value.
+
+        ### Parameters
+        - df_x_test: The testing features.
+        - y_response_test: The response variable.
+
+        ### Return
+        - y_label_pred: The predicted labels.
+        - y_response_pred: The predicted response variable.
+        '''
+        # Get parameters.
+        window_size = self.window_size
+        sample_step = self.sample_step
+        prediction_lead_time = self.pred_lead_time
+
+
+        # If no sequence_list is given, extract all the unique values from 'test_condition'.
+        sequence_name_list = df_x_test['test_condition'].unique().tolist()
+
+        y_label_pred = []
+        y_response_pred = []
+
+        # Process sequence by sequence.
+        for name in tqdm(sequence_name_list):
+            # Extract one sequence.
+            df_x_test_seq = df_x_test[df_x_test['test_condition']==name]
+            y_temp_test_seq = y_response_test[df_x_test['test_condition']==name]        
+        
+            y_temp_local = copy.deepcopy(y_temp_test_seq)
+
+            # Initial values of the prediction.
+            # Length is len - window_size + 1 because we need to use the sliding window to define features.
+            y_label_pred_tmp = np.zeros(len(df_x_test_seq)-window_size+1) # Predicted label.
+            y_temp_pred_tmp = np.zeros(len(df_x_test_seq)-window_size+1) # Predicted temperature.
+            
+            # Making the prediction using a sequential approach.
+            for i in range(window_size, len(df_x_test_seq)+1):
+                # Get the data up to current moment i-1.
+                tmp_df_x = df_x_test_seq.iloc[i-window_size:i, :]
+                tmp_y_temp_measure = y_temp_local.iloc[i-window_size:i]
+
+                # Use the same sliding window to generate features.
+                feature_x, _ = concatenate_features(df_input=tmp_df_x, y_input=tmp_y_temp_measure, X_window=[], y_window=[], 
+                        window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
+                
+                # Make prediction.
+                tmp_y_label_pred, tmp_y_temp_pred, tmp_residual= self.predict_label_by_reg_base(X=feature_x, y_temp_measure=tmp_y_temp_measure.iloc[-1])
+                
+                # Save the prediction at the current moment i.
+                y_label_pred_tmp[i-window_size] = tmp_y_label_pred[-1]
+                y_temp_pred_tmp[i-window_size] = tmp_y_temp_pred[-1]
+
+                # If we predict a failure, we replace the measure with the predicted temperature.
+                # This is to avoid accumulation of errors.
+                if tmp_y_label_pred[-1] == 1 and tmp_residual <= self.abnormal_indicator:
+                    y_temp_local.iloc[i-1] = tmp_y_temp_pred[-1]
+
+            y_label_pred.extend(y_label_pred_tmp)
+            y_response_pred.extend(y_temp_pred_tmp)
+
+        return y_label_pred, y_response_pred
+
+
+    def predict_label_by_reg_base(self, X, y_temp_measure):
+        ''' ### Description
+        Predict the response variable (temperature) using the regression model.
+
+        ### Parameters
+        - X: The features.
+        - y_temp_measure: The temperature measurements.
+
+        ### Return
+        - y_label pred: The predicted labels.
+        - y_temp_pred: The predicted temperature.
+        - residual_error: The residual error.        
+        '''
+        # Predict the temperature
+        mdl = self.reg_mdl # Get the regression model.
+        y_temp_pred = mdl.predict(X) # Predict the temperature.
+        # Calculate the residual
+        residual_error = np.array(abs(y_temp_pred - y_temp_measure)) 
+        
+        # Predict the label based on the threshold
+        y_label_pred = np.where(residual_error <= self.threshold, 0, 1)
+
+        return y_label_pred, y_temp_pred, residual_error
+    
+
+    def run_cross_val(self, df_x, y_label, y_response, n_fold=5, single_run_result=True):
+        ''' ## Description
+        Run a k-fold cross validation based on the testing conditions. Each test sequence is considered as a elementary part in the data.
+
+        ## Parameters:
+        - df_X: The dataframe containing the features. Must have a column named "test_condition".
+        - y_label: The target variable, i.e., failure.
+        - y_response: The response variable associated with the target variable, e.g., temperature.
+        - n_fold: The number of folds. Default is 5.
+        - single_run_result: Whether to return the single run result. Default is True.
+        
+        ## Return
+        - perf: A dataframe containing the performance indicators.
+        '''
+    
+        # Get the unique test conditions.
+        test_conditions = df_x['test_condition'].unique().tolist()
+
+        # Define the cross validator.
+        kf = KFold(n_splits=n_fold)
+
+        # Set initial values for perf to store the performance of each run.
+        perf = np.zeros((n_fold, 4))
+
+        counter = 0
+        for train_index, test_index in kf.split(test_conditions):
+            # Get the dataset names.
+            names_train = [test_conditions[i] for i in train_index]
+            names_test = [test_conditions[i] for i in test_index]
+
+            # Extract the training and testing data.
+            df_tr = df_x[df_x['test_condition'].isin(names_train)]
+            y_tr = y_label[df_x['test_condition'].isin(names_train)]
+            y_response_tr = y_response[df_x['test_condition'].isin(names_train)]
+            df_test = df_x[df_x['test_condition'].isin(names_test)]
+            y_test = y_label[df_x['test_condition'].isin(names_test)]
+            y_response_test = y_response[df_x['test_condition'].isin(names_test)]
+
+            # Train the model.
+            y_tr_pred, y_response_tr_pred = self.fit(df_x=df_tr, y_label=y_tr, y_response=y_response_tr)
+
+            # Predict for the testing data.
+            y_pred, y_response_test_pred = self.predict(df_x_test=df_test, y_response_test=y_response_test)
+
+            # Calculate the performance.
+            # Truncate the true values for y_test and y_response_test in the same format as the concatenated features.
+            _, y_test = prepare_sliding_window(df_x=df_test, y=y_test, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
+            accuracy, precision, recall, f1 = cal_classification_perf(y_test, pd.Series(y_pred))
+            perf[counter, :] = np.array([accuracy, precision, recall, f1])
+            
+            # Show single run results.
+            if single_run_result:
+                # Truncate the true values for y_test and y_response_test in the same format as the concatenated features.
+                _, y_tr = prepare_sliding_window(df_x=df_tr, y=y_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
+                _, y_response_tr = prepare_sliding_window(df_x=df_tr, y=y_response_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+                _, y_response_test = prepare_sliding_window(df_x=df_test, y=y_response_test, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+                
+                # Show the results.
+                show_reg_result(y_tr=y_response_tr, y_test=y_response_test, y_pred_tr=y_response_tr_pred, y_pred=y_response_test_pred, threshold=self.threshold)
+                show_clf_result(y_tr, y_test, y_tr_pred, y_pred)
+
+            counter += 1
+
+        return pd.DataFrame(data=perf, columns=['Accuracy', 'Precision', 'Recall', 'F1 score'])
+        
 
 
 def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_idx: int, mdl_type: str):
@@ -322,7 +571,7 @@ def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, sample_ste
     - threshold: The threshold for the exceedance rate. Default is 3. Only needed when mdl_type == 'reg'.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
     - sample_step: We take every sample_step points from the window_size. default is 1.
-    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 1.
     - single_run_result: Whether to return the single run result. Default is True.
     - mdl_type: The type of the model. Default is 'reg'. Alternately, put 'clf' for classification.
 
@@ -592,12 +841,60 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
 
 
 if __name__ == '__main__':
-    # Test extract_selected_features()
+    # Test the class FaultDetectReg
 
-    # Define the path to the folder 'collected_data'
-    base_dictionary = 'projects/maintenance_industry_4_2024/dataset/training_data/'
-    # Read all the data
-    df_data = read_all_test_data_from_path(base_dictionary, is_plot=False)
+    import numpy as np
+    import pandas as pd
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.linear_model import LinearRegression
+
+
+    def remove_outliers(df: pd.DataFrame):
+        ''' # Description
+        Remove outliers from the dataframe based on defined valid ranges. 
+        Define a valid range of temperature and voltage. 
+        Use ffil function to replace the invalid measurement with the previous value.
+        '''
+        df['temperature'] = df['temperature'].where(df['temperature'] <= 100, np.nan)
+        df['temperature'] = df['temperature'].where(df['temperature'] >= 0, np.nan)
+        df['temperature'] = df['temperature'].ffill()
+        df['temperature'] = df['temperature'] - df['temperature'].iloc[0]
+
+        df['voltage'] = df['voltage'].where(df['voltage'] >= 6000, np.nan)
+        df['voltage'] = df['voltage'].where(df['voltage'] <= 9000, np.nan)
+        df['voltage'] = df['voltage'].ffill()
+        df['voltage'] = df['voltage'] - df['voltage'].iloc[0]
+
+        df['position'] = df['position'].where(df['position'] >= 0, np.nan)
+        df['position'] = df['position'].where(df['position'] <= 1000, np.nan)
+        df['position'] = df['position'].ffill()
+        df['position'] = df['position'] - df['position'].iloc[0]
+
+
+    # Read data.
+    base_dictionary = 'C:/Users/Zhiguo/OneDrive - CentraleSupelec/Code/Python/digital_twin_robot/projects/maintenance_industry_4_2024/dataset/training_data/'
+    df_data = read_all_test_data_from_path(base_dictionary, remove_outliers, is_plot=False)
+
+    # Pre-train the model.
+    # Get all the normal data.
+    normal_test_id = ['20240105_164214', 
+        '20240105_165300', 
+        '20240105_165972', 
+        '20240320_152031', 
+        '20240320_153841', 
+        '20240320_155664', 
+        '20240321_122650', 
+        '20240325_135213', 
+        '20240426_141190', 
+        '20240426_141532', 
+        '20240426_141602', 
+        '20240426_141726', 
+        '20240426_141938', 
+        '20240426_141980', 
+        '20240503_164435']
+    
+    df_tr = df_data[df_data['test_condition'].isin(normal_test_id)]
 
     feature_list_all = ['time', 'data_motor_1_position', 'data_motor_1_temperature', 'data_motor_1_voltage',
                     'data_motor_2_position', 'data_motor_2_temperature', 'data_motor_2_voltage',
@@ -605,9 +902,74 @@ if __name__ == '__main__':
                     'data_motor_4_position', 'data_motor_4_temperature', 'data_motor_4_voltage',
                     'data_motor_5_position', 'data_motor_5_temperature', 'data_motor_5_voltage',
                     'data_motor_6_position', 'data_motor_6_temperature', 'data_motor_6_voltage']
-    df_x, y = extract_selected_feature(df_data=df_data, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
 
-    sequence_list = ['20240425_093699', '20240425_094425', '20240426_140055',
-                    '20240503_164675', '20240503_165189',
-                    '20240503_163963', '20240325_155003']
-    X_window, y_window = prepare_sliding_window(df_x, y, sequence_list, window_size=50, sample_step=10, prediction_lead_time=49, mdl_type='reg')
+    # Prepare feature and response of the training dataset.
+    x_tr_org, y_temp_tr_org = extract_selected_feature(df_data=df_tr, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
+
+    # Enrich the features based on the sliding window.
+    window_size = 100
+    sample_step = 10
+    prediction_lead_time = 10
+
+    x_tr, y_temp_tr = prepare_sliding_window(df_x=x_tr_org, y=y_temp_tr_org, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
+
+    # Define the steps of the pipeline
+    steps = [
+        ('standardizer', StandardScaler()),  # Step 1: StandardScaler
+        ('regressor', LinearRegression())    # Step 2: Linear Regression
+    ]
+
+    # Create the pipeline
+    mdl_linear_regreession = Pipeline(steps)
+    # Fit the model
+    mdl = mdl_linear_regreession.fit(x_tr, y_temp_tr)
+
+    # Test data.
+    test_id = [
+        '20240325_155003',
+        '20240425_093699',
+        '20240425_094425',
+        '20240426_140055',
+        '20240503_163963',
+        '20240503_164675',
+        '20240503_165189'
+    ]
+    df_test = df_data[df_data['test_condition'].isin(test_id)]
+
+    # Define the fault detector.
+    detector_reg = FaultDetectReg(reg_mdl=mdl, window_size=window_size, sample_step=sample_step, pred_lead_time=prediction_lead_time)
+
+    # # Test
+    # _, y_label_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='clf')
+    # x_test_org, y_temp_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
+
+    # # Predict the temperature
+    # detector_reg.threshold = 1
+    # y_label_pred_tr, y_temp_pred_tr = detector_reg.predict(df_x_test=x_tr_org, y_response_test=y_temp_tr_org)
+    # y_label_pred_tmp, y_temp_pred_tmp = detector_reg.predict(df_x_test=x_test_org, y_response_test=y_temp_test_org)
+
+    # # Get the true values.
+    # _, y_label_test = prepare_sliding_window(df_x=x_test_org, y=y_label_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='clf')
+    # _, y_temp_test_seq = prepare_sliding_window(df_x=x_test_org, y=y_temp_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
+
+
+    # show_reg_result(y_tr=y_temp_tr, y_test=y_temp_test_seq, y_pred_tr=y_temp_pred_tr, y_pred=y_temp_pred_tmp, threshold=detector_reg.threshold)
+    # show_clf_result(y_tr=np.zeros(len(y_label_pred_tr)), y_test=y_label_test, y_pred_tr=y_label_pred_tr, y_pred=y_label_pred_tmp)
+
+    # # Run cross validation
+    n_fold = 7
+    _, y_label_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='clf')
+    x_test_org, y_temp_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
+
+    motor_idx = 6
+    print(f'Model for motor {motor_idx}:')
+    # Run cross validation.
+    df_perf = detector_reg.run_cross_val(df_x=x_test_org, y_label=y_label_test_org, y_response=y_temp_test_org, 
+                                         n_fold=n_fold)
+    print(df_perf)
+    print('\n')
+    # Print the mean performance and standard error.
+    print('Mean performance metric and standard error:')
+    for name, metric, error in zip(df_perf.columns, df_perf.mean(), df_perf.std()):
+        print(f'{name}: {metric:.4f} +- {error:.4f}') 
+    print('\n')
