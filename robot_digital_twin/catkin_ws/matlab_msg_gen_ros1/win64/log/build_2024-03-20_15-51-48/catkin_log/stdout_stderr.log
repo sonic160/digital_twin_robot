@@ -1,0 +1,145 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.8.3
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x86_x64'
+-- The C compiler identification is MSVC 19.38.33133.0
+-- The CXX compiler identification is MSVC 19.38.33133.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx86/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using CATKIN_DEVEL_PREFIX: Z:/matlab_msg_gen_ros1/win64/devel
+-- Using CMAKE_PREFIX_PATH: C:\Program Files\MATLAB\R2023b\sys\ros1\win64\ros1;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages
+-- This workspace overlays: C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages
+-- Found PythonInterp: C:/Users/Zhiguo/AppData/Roaming/MathWorks/MATLAB/R2023b/ros1/win64/venv/Scripts/python.exe (found suitable version "3.8.6", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: C:/Users/Zhiguo/AppData/Roaming/MathWorks/MATLAB/R2023b/ros1/win64/venv/Scripts/python.exe
+-- Using default Python package layout
+-- Found PY_em: C:\Users\Zhiguo\AppData\Roaming\MATHWO~1\MATLAB\R2023b\ros1\win64\venv\lib\site-packages\em.py  
+-- Using empy: C:/Users/Zhiguo/AppData/Roaming/MATHWO~1/MATLAB/R2023b/ros1/win64/venv/lib/site-packages/em.py
+-- Using CATKIN_ENABLE_TESTING: off
+-- catkin 0.8.10
+-- BUILD_SHARED_LIBS is on
+The system cannot find the batch label specified - GenerateTempFilename
+-- BUILD_SHARED_LIBS is on
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~  traversing 1 packages in topological order:
+-- ~~  - cm
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- +++ processing catkin package: 'cm'
+-- ==> add_subdirectory(cm)
+CMake Warning at C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: geneus
+Call Stack (most recent call first):
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+CMake Warning at C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: genlisp
+Call Stack (most recent call first):
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+CMake Warning at C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsg-extras.cmake:49 (message):
+  Unknown message generator specified in ROS_LANG_DISABLE: gennodejs
+Call Stack (most recent call first):
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/genmsgConfig.cmake:222 (include)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/gencpp/cmake/gencppConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/message_generation/cmake/message_generationConfig.cmake:197 (find_package)
+  C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/catkin/cmake/catkinConfig.cmake:76 (find_package)
+  cm/CMakeLists.txt:24 (find_package)
+
+
+-- Using these message generators: gencpp;genpy
+-- cm: 1 messages, 0 services
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    Boost_NAMESPACE
+
+
+-- Build files have been written to: Z:/matlab_msg_gen_ros1/win64/build
+[1/9] cmd.exe /C "cd /D Z:\matlab_msg_gen_ros1\win64\build\cm && Z:\matlab_msg_gen_ros1\win64\build\catkin_generated\env_cached.bat C:/Users/Zhiguo/AppData/Roaming/MathWorks/MATLAB/R2023b/ros1/win64/venv/Scripts/python.exe "C:/Program Files/MATLAB/R2023b/sys/ros1/win64/ros1/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py" cm Z:/matlab_msg_gen_ros1/win64/src/cm/msg/msg_cm.msg std_msgs/Header"
+[2/9] Generating Python from MSG cm/msg_cm
+[3/9] Generating C++ code from cm/msg_cm.msg
+[4/9] Generating Python msg __init__.py for cm
+[5/9] Building CXX object CMakeFiles\Project__setup_util.py_exec_install_python.dir\catkin_generated\add_python_executable\Project__setup_util.py_exec_install_python\_setup_util.cpp.obj
+[6/9] Linking CXX executable catkin_generated\windows_wrappers\Project__setup_util.py_exec_install_python\_setup_util.exe
+[7/9] Building CXX object cm\CMakeFiles\cm_matlab.dir\src\cm_msg_cm_message.cpp.obj
+C:\Program Files\MATLAB\R2023b\sys\ros1\win64\ros1\boost\include\boost-1_78\boost/bind.hpp(77): note: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace mwboost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+[8/9] Linking CXX shared library Z:\matlab_msg_gen_ros1\win64\devel\bin\cm_matlab.dll
+[8/9] Install the project...
+-- Install configuration: "Release"
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/_setup_util.py
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/_setup_util.exe
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/env.bat
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/setup.bat
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/local_setup.bat
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/.rosinstall
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/msg/msg_cm.msg
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cm-msg-paths.cmake
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/include/cm
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/include/cm/msg_cm.h
+Listing 'Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm'...
+Compiling 'Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\__init__.py'...
+Listing 'Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg'...
+Compiling 'Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg\\__init__.py'...
+Compiling 'Z:/matlab_msg_gen_ros1/win64/devel/lib/site-packages/cm\\msg\\_msg_cm.py'...
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/_msg_cm.py
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__init__.py
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/_msg_cm.cpython-38.pyc
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/msg/__pycache__/__init__.cpython-38.pyc
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__init__.py
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__pycache__
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/site-packages/cm/__pycache__/__init__.cpython-38.pyc
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/pkgconfig/cm.pc
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cm-msg-extras.cmake
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cmConfig.cmake
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/cmake/cmConfig-version.cmake
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/share/cm/package.xml
+-- Up-to-date: Z:/matlab_msg_gen_ros1/win64/install/include
+-- Up-to-date: Z:/matlab_msg_gen_ros1/win64/install/include/cm
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/include/cm/visibility_control.h
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/lib/cm_matlab.lib
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/bin/cm_matlab.dll
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m/
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+internal
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages/+cm
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+internal/+ros/+custommessages/+cm/msg_cm.m
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen/+cm
+-- Installing: Z:/matlab_msg_gen_ros1/win64/install/m//+ros/+msggen/+cm/msg_cm.m
+Base path: Z:\matlab_msg_gen_ros1\win64
+Source space: Z:\matlab_msg_gen_ros1\win64\src
+Build space: Z:\matlab_msg_gen_ros1\win64\build
+Devel space: Z:\matlab_msg_gen_ros1\win64\devel
+Install space: Z:\matlab_msg_gen_ros1\win64\install
+Copying file from "C:\PROGRA~1\MATLAB\R2023b\sys\ros1\win64\ros1\share\catkin\cmake\toplevel.cmake" to "Z:\matlab_msg_gen_ros1\win64\src\CMakeLists.txt"
+####
+#### Running command: "cmake Z:\matlab_msg_gen_ros1\win64\src -DALIAS_ROS1_CLASS_LOADER=1 -DBoost_NAMESPACE=mwboost -DCATKIN_ENABLE_TESTING=off -DCMAKE_PREFIX_PATH=C:\Program Files\MATLAB\R2023b\sys\ros1\win64\ros1;C:/Program Files/MATLAB/R2023b/toolbox/ros/mlroscpp/custom_messages -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE=/MD /Od /Ob2 /DNDEBUG -DCATKIN_DEVEL_PREFIX=Z:\matlab_msg_gen_ros1\win64\devel -DCMAKE_INSTALL_PREFIX=Z:\matlab_msg_gen_ros1\win64\install -G Ninja" in "Z:\matlab_msg_gen_ros1\win64\build"
+####
+####
+#### Running command: "ninja install install -j12 -l12" in "Z:\matlab_msg_gen_ros1\win64\build"
+####
