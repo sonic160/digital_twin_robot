@@ -870,56 +870,6 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
     - y_pred_tr: The predicted labels on the training dataset. 
     - y_pred: The predicted labels on the testing dataset. 
     '''
-
-    # # Plot the predicted and truth.
-    # # Training data set.
-    # fig_1 = plt.figure(figsize = (16,12))
-    # ax = fig_1.add_subplot(2,2,1) 
-    # ax.set_xlabel('index of data point', fontsize = 15)
-    # ax.set_ylabel('y', fontsize = 15)
-    # ax.set_title('Training: Truth', fontsize = 20)
-    # ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
-    # ax.legend()
-
-    # ax = fig_1.add_subplot(2,2,3) 
-    # ax.set_xlabel('index of data point', fontsize = 15)
-    # ax.set_ylabel('y', fontsize = 15)
-    # ax.set_title('Training: Prediction', fontsize = 20)
-    # ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
-    # ax.legend()
-
-    # # Testing data set.
-    # ax = fig_1.add_subplot(2,2,2) 
-    # ax.set_xlabel('index of data points', fontsize = 15)
-    # ax.set_ylabel('y', fontsize = 15)
-    # ax.set_title('Testing: Truth', fontsize = 20)
-    # ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
-    # ax.legend()
-
-    # ax = fig_1.add_subplot(2,2,4) 
-    # ax.set_xlabel('index of data points', fontsize = 15)
-    # ax.set_ylabel('y', fontsize = 15)
-    # ax.set_title('Testing: Prediction', fontsize = 20)
-    # ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
-    # ax.legend()
-    
-    # # Performance indicators
-    # # Show the model fitting performance.
-    # accuracy_tr, precision_tr, recall_tr, f1_tr = cal_classification_perf(y_tr, y_pred_tr)
-    # print('\n New cv run:\n')
-    # print('Training performance, accuracy is: ' + str(accuracy_tr))
-    # print('Training performance, precision is: ' + str(precision_tr))
-    # print('Training performance, recall: ' + str(recall_tr))
-    # print('Training performance, F1: ' + str(f1_tr))
-    # print('\n')
-    # accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
-    # print('Prediction performance, accuracy is: ' + str(accuracy))
-    # print('Prediction performance, precision is: ' + str(precision))
-    # print('Prediction performance, recall is：' + str(recall))
-    # print('Prediction performance, F1 is：' + str(f1))
-
-    # plt.show()
-
     fig_1 = plt.figure(figsize = (16,12))
     ax_tr_true = fig_1.add_subplot(2,2,1)
     ax_tr_pred = fig_1.add_subplot(2,2,3)
@@ -946,7 +896,7 @@ def show_clf_result_single_run(y_true, y_pred, ax_tr, ax_pred, suffix='training'
     ax_pred.set_xlabel('index of data points', fontsize = 15)
     ax_pred.set_ylabel('y', fontsize = 15)
     ax_pred.set_title(f'{suffix}: Prediction', fontsize = 20)
-    ax_pred.plot(range(len(y_pred)), y_pred, 'xb', label='Truth')
+    ax_pred.plot(range(len(y_pred)), y_pred, 'ro', label='Prediction')
     ax_pred.legend()
 
     # Performance indicators
