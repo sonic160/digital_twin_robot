@@ -26,19 +26,31 @@ class FaultDetectReg():
     Initialize the class with the following parameters:    
     - reg_mdl: The pre-trained regression model.
     - pre_trained: If the provided reg_mdl is pretrained. Default is True.
+    - threshold: threshold for the residual error. If the residual error is larger than the threshold, we consider it as a fault. Default is 1.
+    - abnormal_limit: If the model predict a abnormal point and its residual error <= abnormal_limit, the predicted value will be used to replace
+      the measured value in the next prediction. Default is 1.
     - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
     - sample_step: We take every sample_step points from the window_size. default is 1.
-    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 0.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 1.   
     
     ### Attributes
     - reg_mdl: The pre-trained regression model.
     - pre_trained: If the provided reg_mdl is pretrained. Default is True.
-    - window_size: Size of the sliding window. The points in the sliding window will be used to create a new feature.
+    - threshold: threshold for the residual error. If the residual error is larger than the threshold, we consider it as a fault. Default is 1.
+    - abnormal_limit: If the model predict a abnormal point and its residual error <= abnormal_limit, the predicted value will be used to replace
+      the measured value in the next prediction. Default is 1.
+    - window_size: Size of the sliding window. The previous window size points will be used to create a new feature.
     - sample_step: We take every sample_step points from the window_size. default is 1.
-    - prediction_lead_time: We predict y at t using the previous measurement of y up to t-prediction_lead_time. Default is 1.
-    - threshold: threshold for the residual error. If the residual error is larger than the threshold, we consider it as a fault. Default is 3.
+    - prediction_lead_time: The number of time steps to predict into the future. Only valid for regression model. Default is 1.   
+    - residual_norm: The stored residual errors for all the normal samples in the current sequence. 
+      It is used to calculate the threshold adpatively.
+    - threshold_int: The threshold value set by the initialization function.
     
     ### Methods
+    - fit(): This method learns the regression model from the training data. If self.pre_trained is True, it will directly use the pre-trained model.
+    - predict(): This method predicts the labels for the input data.
+    - predict_label_by_reg_base(): This method is the base function for predicting the label, called from self.predict().
+    - run_cross_val(): This method defines a cross validation scheme to test the performance of the model.
 
     '''
     def __init__(self, reg_mdl, pre_trained: bool=True, threshold: int=1, abnormal_limit: int=3, window_size: int = 1, sample_step: int = 1, pred_lead_time: int = 1):
@@ -50,67 +62,27 @@ class FaultDetectReg():
         self.sample_step = sample_step
         self.pred_lead_time = pred_lead_time
         self.threshold = threshold
+        self.threshold_int = threshold
         self.pre_trained = pre_trained
         self.abnormal_limit = abnormal_limit
-
-    
-    # def fit(self, df_x, y_label, y_response):
-    #     ''' ### Description
-    #     Learn to predict the labels. It learns the best value of self.threshold by 
-    #     checking the performance with different threshold values from .5 to 2.
-
-    #     ### Parameters
-    #     - df_x: The training features.
-    #     - y_label: The labels in the training dataset.
-    #     - y_response: The response variable.
-
-    #     ### Returns
-    #     - y_label_pred_best: The predicted labels using the best thresold learnt from training data.
-    #     - y_response_pred_best: The predicted response variable using the best thresold learnt from training data.
-    #     '''
-    #     # Get the y labels corresponding to the new concatenated features.
-    #     _, y_label = prepare_sliding_window(df_x=df_x, y=y_label, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
-    #     # _, y_response = prepare_sliding_window(df_x=df_x, y=y_response, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
-
-    #     # Define the search space for values of threshold.
-    #     threshold_space = np.arange(.6, 1.6, .1)
-    #     n_search = len(threshold_space)
-
-    #     # Initial the results
-    #     perfs = np.zeros(n_search)
-    #     results_y_label_pred = []
-    #     results_y_response_pred = []
-    #     for i in range(n_search):
-    #         self.threshold = threshold_space[i]
-    #         y_label_pred, y_response_pred = self.predict(df_x, y_response)
-    #         perfs[i] = cal_classification_perf(y_label, pd.Series(y_label_pred))[3] # Log only F1 score.
-    #         results_y_label_pred.append(y_label_pred)
-    #         results_y_response_pred.append(y_response_pred)
-        
-    #     # Get the best threshold.
-    #     best_threshold = threshold_space[np.argmax(perfs)]
-    #     # Set the threshold value to the best value.
-    #     self.threshold = best_threshold
-    #     y_label_pred_best = results_y_label_pred[np.argmax(perfs)]
-    #     y_response_pred_best = results_y_response_pred[np.argmax(perfs)]
-
-    #     return y_label_pred_best, y_response_pred_best
+        self.residual_norm = []
 
 
     def fit(self, df_x, y_label, y_response):
         ''' ### Description
-        Learn to predict the labels. It learns the best value of self.threshold by 
-        checking the performance with different threshold values from .5 to 2.
+        Learn the regression model from the training data, and use the trained model to predict the labels and the repsonse variables for the training data.
+        If self.pre_trained is True, it will directly use the pre-trained model.     
 
         ### Parameters
         - df_x: The training features.
         - y_label: The labels in the training dataset.
-        - y_response: The response variable.
+        - y_response: The response variable in the training dataset.
 
         ### Returns
-        - y_label_pred_best: The predicted labels using the best thresold learnt from training data.
-        - y_response_pred_best: The predicted response variable using the best thresold learnt from training data.
+        - y_label_pred: The predicted labels using the best regression model learnt from training data.
+        - y_response_pred: The predicted response variable using the best regression model learnt from training data.
         '''
+        # Train the regression model if not pretrained.
         if not self.pre_trained:
             # Train a regression model first, based on the normal samples.
             # Align indices
@@ -143,14 +115,15 @@ class FaultDetectReg():
         return y_label_pred, y_response_pred
 
 
-
     def predict(self, df_x_test, y_response_test):
         ''' ### Description
-        Predict the labels using the trained regression model and the threshold value.
+        Predict the labels using the trained regression model and the measured response variable.
+        Note that if a fault is predicted, the predicted, not measured response variable will be used to concatenate features
+        for predicting the values of next response variable.
 
         ### Parameters
         - df_x_test: The testing features.
-        - y_response_test: The response variable.
+        - y_response_test: The measured response variable.
 
         ### Return
         - y_label_pred: The predicted labels.
@@ -161,19 +134,22 @@ class FaultDetectReg():
         sample_step = self.sample_step
         prediction_lead_time = self.pred_lead_time
 
-
-        # If no sequence_list is given, extract all the unique values from 'test_condition'.
+        # Get the sequence names.
         sequence_name_list = df_x_test['test_condition'].unique().tolist()
 
+        # Initial values
         y_label_pred = []
         y_response_pred = []
 
         # Process sequence by sequence.
         for name in tqdm(sequence_name_list):
+            # Reset the stored residual errors for normal samples and the threshold value.
+            self.residual_norm = []
+            self.threshold = self.threshold_int
+
             # Extract one sequence.
             df_x_test_seq = df_x_test[df_x_test['test_condition']==name]
             y_temp_test_seq = y_response_test[df_x_test['test_condition']==name]        
-        
             y_temp_local = copy.deepcopy(y_temp_test_seq)
 
             # Initial values of the prediction.
@@ -203,6 +179,7 @@ class FaultDetectReg():
                 if tmp_y_label_pred[-1] == 1 and tmp_residual <= self.abnormal_limit:
                     y_temp_local.iloc[i-1] = tmp_y_temp_pred[-1]
 
+            # Save the results and proceed to the next sequence.
             y_label_pred.extend(y_label_pred_tmp)
             y_response_pred.extend(y_temp_pred_tmp)
 
@@ -212,6 +189,7 @@ class FaultDetectReg():
     def predict_label_by_reg_base(self, X, y_temp_measure):
         ''' ### Description
         Predict the response variable (temperature) using the regression model.
+        Then, it saves the residuals of all the normal samples in the current sequence.
 
         ### Parameters
         - X: The features.
@@ -230,6 +208,14 @@ class FaultDetectReg():
         
         # Predict the label based on the threshold
         y_label_pred = np.where(residual_error <= self.threshold, 0, 1)
+
+        # Update the residual error database.
+        self.residual_norm.extend(residual_error[y_label_pred==0])
+        threshold_prop = np.mean(self.residual_norm) + 6*np.std(self.residual_norm)
+        # threshold_prop = np.percentile(self.residual_norm, 75) + 1.5*(np.percentile(self.residual_norm, 75)-np.percentile(self.residual_norm, 25))
+
+        if self.threshold < threshold_prop and threshold_prop < 1.5:
+            self.threshold = threshold_prop
 
         return y_label_pred, y_temp_pred, residual_error
     
@@ -264,17 +250,21 @@ class FaultDetectReg():
             names_train = [test_conditions[i] for i in train_index]
             names_test = [test_conditions[i] for i in test_index]
 
+            # If not pretrained, train the model.
+            if not self.pre_trained:
+                df_tr = df_x[df_x['test_condition'].isin(names_train)]
+                y_tr = y_label[df_x['test_condition'].isin(names_train)]
+                y_response_tr = y_response[df_x['test_condition'].isin(names_train)]
+
+                # Train the model.
+                y_tr_pred, y_response_tr_pred = self.fit(df_x=df_tr, y_label=y_tr, y_response=y_response_tr)
+            
             # Extract the training and testing data.
-            df_tr = df_x[df_x['test_condition'].isin(names_train)]
-            y_tr = y_label[df_x['test_condition'].isin(names_train)]
-            y_response_tr = y_response[df_x['test_condition'].isin(names_train)]
             df_test = df_x[df_x['test_condition'].isin(names_test)]
             y_test = y_label[df_x['test_condition'].isin(names_test)]
             y_response_test = y_response[df_x['test_condition'].isin(names_test)]
 
-            # Train the model.
-            y_tr_pred, y_response_tr_pred = self.fit(df_x=df_tr, y_label=y_tr, y_response=y_response_tr)
-
+               
             # Predict for the testing data.
             y_pred, y_response_test_pred = self.predict(df_x_test=df_test, y_response_test=y_response_test)
 
@@ -286,14 +276,28 @@ class FaultDetectReg():
             
             # Show single run results.
             if single_run_result:
-                # Truncate the true values for y_test and y_response_test in the same format as the concatenated features.
-                _, y_tr = prepare_sliding_window(df_x=df_tr, y=y_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
-                _, y_response_tr = prepare_sliding_window(df_x=df_tr, y=y_response_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
-                _, y_response_test = prepare_sliding_window(df_x=df_test, y=y_response_test, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
-                
-                # Show the results.
-                show_reg_result(y_tr=y_response_tr, y_test=y_response_test, y_pred_tr=y_response_tr_pred, y_pred=y_response_test_pred, threshold=self.threshold)
-                show_clf_result(y_tr, y_test, y_tr_pred, y_pred)
+                if self.pre_trained: # Only show the testing performance.
+                    # Show the results.
+                    fig_1 = plt.figure(figsize = (8,18))
+                    axes_test = [fig_1.add_subplot(3, 1, 1), fig_1.add_subplot(3, 1, 2), fig_1.add_subplot(3, 1, 3)]
+                    _, y_response_test = prepare_sliding_window(df_x=df_test, y=y_response_test, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+                    show_reg_result_single_run(y_response_test, y_response_test_pred, axes_test, 'testing', self.threshold)
+
+                    fig_2 = plt.figure(figsize = (8,12))
+                    ax_test_true = fig_2.add_subplot(2,1,1)
+                    ax_test_pred = fig_2.add_subplot(2,1,2)
+                    show_clf_result_single_run(y_test, y_pred, ax_test_true, ax_test_pred, suffix='testing')
+
+                    plt.show()
+                else:
+                    # Truncate the true values for y_test and y_response_test in the same format as the concatenated features.
+                    _, y_tr = prepare_sliding_window(df_x=df_tr, y=y_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='clf')
+                    _, y_response_tr = prepare_sliding_window(df_x=df_tr, y=y_response_tr, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+                    _, y_response_test = prepare_sliding_window(df_x=df_test, y=y_response_test, window_size=self.window_size, sample_step=self.sample_step, prediction_lead_time=self.pred_lead_time, mdl_type='reg')
+                    
+                    # Show the results.
+                    show_reg_result(y_tr=y_response_tr, y_test=y_response_test, y_pred_tr=y_response_tr_pred, y_pred=y_response_test_pred, threshold=self.threshold)
+                    show_clf_result(y_tr, y_test, y_tr_pred, y_pred)
 
             counter += 1
 
@@ -742,76 +746,118 @@ def show_reg_result(y_tr, y_test, y_pred_tr, y_pred, threshold=3):
     - threshold: The threshold for exceeding the boundary.
     '''
 
-    # Plot the predicted and truth.
-    # Training data set.
-    fig_1 = plt.figure(figsize = (16,6))
-    ax = fig_1.add_subplot(1,2,1) 
-    ax.set_xlabel('index of data point', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Prediction V.S. the truth on the training dataset', fontsize = 20)
-    ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
-    ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
-    ax.legend()
+    # # Plot the predicted and truth.
+    # # Training data set.
+    # fig_1 = plt.figure(figsize = (16,6))
+    # ax = fig_1.add_subplot(1,2,1) 
+    # ax.set_xlabel('index of data point', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Prediction V.S. the truth on the training dataset', fontsize = 20)
+    # ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
+    # ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
+    # ax.legend()
 
-    # Testing data set.
-    ax = fig_1.add_subplot(1,2,2) 
-    ax.set_xlabel('index of data points', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Prediction V.S. the truth on the testing dataset', fontsize = 20)
-    ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
-    ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
-    ax.legend()
+    # # Testing data set.
+    # ax = fig_1.add_subplot(1,2,2) 
+    # ax.set_xlabel('index of data points', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Prediction V.S. the truth on the testing dataset', fontsize = 20)
+    # ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
+    # ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
+    # ax.legend()
     
-    # Plot the residual errors.
-    # Training data set.
-    fig = plt.figure(figsize = (16,6))
-    ax = fig.add_subplot(1,2,1) 
-    ax.set_xlabel('Index of the data points', fontsize = 15)
-    ax.set_ylabel('Residual error', fontsize = 15)
-    ax.set_title('Residual errors on the training dataset', fontsize = 20)
-    ax.plot(y_pred_tr - y_tr, 'o')
-    ax.hlines([threshold, -1*threshold], 0, len(y_tr), linestyles='dashed', colors='r')
+    # # Plot the residual errors.
+    # # Training data set.
+    # fig = plt.figure(figsize = (16,6))
+    # ax = fig.add_subplot(1,2,1) 
+    # ax.set_xlabel('Index of the data points', fontsize = 15)
+    # ax.set_ylabel('Residual error', fontsize = 15)
+    # ax.set_title('Residual errors on the training dataset', fontsize = 20)
+    # ax.plot(y_pred_tr - y_tr, 'o')
+    # ax.hlines([threshold, -1*threshold], 0, len(y_tr), linestyles='dashed', colors='r')
 
-    # Testing data set.
-    ax = fig.add_subplot(1,2,2) 
-    ax.set_xlabel('Index of the data points', fontsize = 15)
-    ax.set_ylabel('Residual error', fontsize = 15)
-    ax.set_title('Residual errors on the testing dataset', fontsize = 20)
-    ax.plot(y_pred-y_test, 'o')
-    ax.hlines([threshold, -1*threshold], 0, len(y_test), linestyles='dashed', colors='r')
+    # # Testing data set.
+    # ax = fig.add_subplot(1,2,2) 
+    # ax.set_xlabel('Index of the data points', fontsize = 15)
+    # ax.set_ylabel('Residual error', fontsize = 15)
+    # ax.set_title('Residual errors on the testing dataset', fontsize = 20)
+    # ax.plot(y_pred-y_test, 'o')
+    # ax.hlines([threshold, -1*threshold], 0, len(y_test), linestyles='dashed', colors='r')
+
+    # # Plot the distribution of residual errors.
+    # # Training data set.
+    # fig = plt.figure(figsize = (16,6))
+    # ax = fig.add_subplot(1,2,1) 
+    # ax.set_xlabel('Residual error', fontsize = 15)
+    # ax.set_ylabel('Counts', fontsize = 15)
+    # ax.set_title('Distribution of residual errors (training)', fontsize = 20)
+    # ax.hist(y_pred_tr - y_tr)
+    # ax.axvline(x=threshold, linestyle='--', color='r')
+    # ax.axvline(x=-1*threshold, linestyle='--', color='r')
+
+    # # Testing data set.
+    # ax = fig.add_subplot(1,2,2) 
+    # ax.set_xlabel('Residual error', fontsize = 15)
+    # ax.set_ylabel('Counts', fontsize = 15)
+    # ax.set_title('Distribution of residual errors (testing)', fontsize = 20)
+    # ax.hist(y_pred-y_test)
+    # ax.axvline(x=threshold, linestyle='--', color='r')
+    # ax.axvline(x=-1*threshold, linestyle='--', color='r')
+
+    # # Performance indicators
+    # # Show the model fitting performance.
+    # print('\n New cv run:\n')
+    # print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
+    # print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
+    # print(f'Training performance, residual error > {threshold}: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
+    # print('\n')
+    # print('Prediction performance, max error is: ' + str(max_error(y_test, y_pred)))
+    # print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_test, y_pred, squared=False)))
+    # print(f'Prediction performance, percentage of residual error > {threshold}：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
+
+    # plt.show()
+
+    fig_1 = plt.figure(figsize = (16,18))
+    axes_tr = [fig_1.add_subplot(3, 2, 1), fig_1.add_subplot(3, 2, 3), fig_1.add_subplot(3, 2, 5)]
+    axes_test = [fig_1.add_subplot(3, 2, 2), fig_1.add_subplot(3, 2, 4), fig_1.add_subplot(3, 2, 6)]
+
+    show_reg_result_single_run(y_tr, y_pred_tr, axes_tr, 'training', threshold)
+    show_reg_result_single_run(y_test, y_pred, axes_test, 'testing', threshold)
+
+    plt.show()
+    
+
+
+def show_reg_result_single_run(y_true, y_pred, axes, suffix='training', threshold=3):
+    # Plot the regression results.
+    axes[0].set_xlabel('index of data point', fontsize = 15)
+    axes[0].set_ylabel('y', fontsize = 15)
+    axes[0].set_title(f'Regression results on the {suffix} dataset', fontsize = 20)
+    axes[0].plot(range(len(y_true)), y_true, 'xb', label='Truth')
+    axes[0].plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
+    axes[0].legend()
+
+    # Residual errors.
+    axes[1].set_xlabel('Index of the data points', fontsize = 15)
+    axes[1].set_ylabel('Residual error', fontsize = 15)
+    axes[1].set_title(f'Residual errors on the {suffix} dataset', fontsize = 20)
+    axes[1].plot(y_pred - y_true, 'o')
+    axes[1].hlines([threshold, -1*threshold], 0, len(y_true), linestyles='dashed', colors='r')
 
     # Plot the distribution of residual errors.
-    # Training data set.
-    fig = plt.figure(figsize = (16,6))
-    ax = fig.add_subplot(1,2,1) 
-    ax.set_xlabel('Residual error', fontsize = 15)
-    ax.set_ylabel('Counts', fontsize = 15)
-    ax.set_title('Distribution of residual errors (training)', fontsize = 20)
-    ax.hist(y_pred_tr - y_tr)
-    ax.axvline(x=threshold, linestyle='--', color='r')
-    ax.axvline(x=-1*threshold, linestyle='--', color='r')
-
-    # Testing data set.
-    ax = fig.add_subplot(1,2,2) 
-    ax.set_xlabel('Residual error', fontsize = 15)
-    ax.set_ylabel('Counts', fontsize = 15)
-    ax.set_title('Distribution of residual errors (testing)', fontsize = 20)
-    ax.hist(y_pred-y_test)
-    ax.axvline(x=threshold, linestyle='--', color='r')
-    ax.axvline(x=-1*threshold, linestyle='--', color='r')
+    axes[2].set_xlabel('Residual errors', fontsize = 15)
+    axes[2].set_ylabel('Counts', fontsize = 15)
+    axes[2].set_title(f'Distribution of residual errors ({suffix})', fontsize = 20)
+    axes[2].hist(y_pred - y_true)
+    axes[2].axvline(x=threshold, linestyle='--', color='r')
+    axes[2].axvline(x=-1*threshold, linestyle='--', color='r')
 
     # Performance indicators
     # Show the model fitting performance.
-    print('\n New cv run:\n')
-    print('Training performance, max error is: ' + str(max_error(y_tr, y_pred_tr ) ))
-    print('Training performance, mean root square error is: ' + str(mean_squared_error(y_tr, y_pred_tr ,  squared=False)))
-    print(f'Training performance, residual error > {threshold}: ' + str(sum(abs(y_tr - y_pred_tr)>3)/y_tr.shape[0]*100) + '%')
-    print('\n')
-    print('Prediction performance, max error is: ' + str(max_error(y_test, y_pred)))
-    print('Prediction performance, mean root square error is: ' + str(mean_squared_error(y_test, y_pred, squared=False)))
-    print(f'Prediction performance, percentage of residual error > {threshold}：' + str(sum(abs(y_pred - y_test)>3)/y_test.shape[0]*100) + '%')
-
-    plt.show()
+    print('\n New run:\n')
+    print(f'{suffix} performance, max error is: ' + str(max_error(y_true, y_pred) ))
+    print(f'{suffix} performance, mean root square error is: ' + str(mean_squared_error(y_true, y_pred ,  squared=False)))
+    print(f'{suffix} performance, residual error > {threshold}: ' + str(sum(abs(y_true - y_pred)>threshold)/y_true.shape[0]*100) + '%')
 
 
 def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
@@ -825,54 +871,93 @@ def show_clf_result(y_tr, y_test, y_pred_tr, y_pred):
     - y_pred: The predicted labels on the testing dataset. 
     '''
 
-    # Plot the predicted and truth.
-    # Training data set.
-    fig_1 = plt.figure(figsize = (16,12))
-    ax = fig_1.add_subplot(2,2,1) 
-    ax.set_xlabel('index of data point', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Training: Truth', fontsize = 20)
-    ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
-    ax.legend()
+    # # Plot the predicted and truth.
+    # # Training data set.
+    # fig_1 = plt.figure(figsize = (16,12))
+    # ax = fig_1.add_subplot(2,2,1) 
+    # ax.set_xlabel('index of data point', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Training: Truth', fontsize = 20)
+    # ax.plot(range(len(y_tr)), y_tr, 'xb', label='Truth')
+    # ax.legend()
 
-    ax = fig_1.add_subplot(2,2,3) 
-    ax.set_xlabel('index of data point', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Training: Prediction', fontsize = 20)
-    ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
-    ax.legend()
+    # ax = fig_1.add_subplot(2,2,3) 
+    # ax.set_xlabel('index of data point', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Training: Prediction', fontsize = 20)
+    # ax.plot(range(len(y_pred_tr)), y_pred_tr, 'or', label='Prediction')
+    # ax.legend()
 
-    # Testing data set.
-    ax = fig_1.add_subplot(2,2,2) 
-    ax.set_xlabel('index of data points', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Testing: Truth', fontsize = 20)
-    ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
-    ax.legend()
+    # # Testing data set.
+    # ax = fig_1.add_subplot(2,2,2) 
+    # ax.set_xlabel('index of data points', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Testing: Truth', fontsize = 20)
+    # ax.plot(range(len(y_test)), y_test, 'xb', label='Truth')
+    # ax.legend()
 
-    ax = fig_1.add_subplot(2,2,4) 
-    ax.set_xlabel('index of data points', fontsize = 15)
-    ax.set_ylabel('y', fontsize = 15)
-    ax.set_title('Testing: Prediction', fontsize = 20)
-    ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
-    ax.legend()
+    # ax = fig_1.add_subplot(2,2,4) 
+    # ax.set_xlabel('index of data points', fontsize = 15)
+    # ax.set_ylabel('y', fontsize = 15)
+    # ax.set_title('Testing: Prediction', fontsize = 20)
+    # ax.plot(range(len(y_pred)), y_pred, 'or', label='Prediction')
+    # ax.legend()
     
-    # Performance indicators
-    # Show the model fitting performance.
-    accuracy_tr, precision_tr, recall_tr, f1_tr = cal_classification_perf(y_tr, y_pred_tr)
-    print('\n New cv run:\n')
-    print('Training performance, accuracy is: ' + str(accuracy_tr))
-    print('Training performance, precision is: ' + str(precision_tr))
-    print('Training performance, recall: ' + str(recall_tr))
-    print('Training performance, F1: ' + str(f1_tr))
-    print('\n')
-    accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
-    print('Prediction performance, accuracy is: ' + str(accuracy))
-    print('Prediction performance, precision is: ' + str(precision))
-    print('Prediction performance, recall is：' + str(recall))
-    print('Prediction performance, F1 is：' + str(f1))
+    # # Performance indicators
+    # # Show the model fitting performance.
+    # accuracy_tr, precision_tr, recall_tr, f1_tr = cal_classification_perf(y_tr, y_pred_tr)
+    # print('\n New cv run:\n')
+    # print('Training performance, accuracy is: ' + str(accuracy_tr))
+    # print('Training performance, precision is: ' + str(precision_tr))
+    # print('Training performance, recall: ' + str(recall_tr))
+    # print('Training performance, F1: ' + str(f1_tr))
+    # print('\n')
+    # accuracy, precision, recall, f1 = cal_classification_perf(y_test, y_pred)
+    # print('Prediction performance, accuracy is: ' + str(accuracy))
+    # print('Prediction performance, precision is: ' + str(precision))
+    # print('Prediction performance, recall is：' + str(recall))
+    # print('Prediction performance, F1 is：' + str(f1))
+
+    # plt.show()
+
+    fig_1 = plt.figure(figsize = (16,12))
+    ax_tr_true = fig_1.add_subplot(2,2,1)
+    ax_tr_pred = fig_1.add_subplot(2,2,3)
+    ax_test_true = fig_1.add_subplot(2,2,2)
+    ax_test_pred = fig_1.add_subplot(2,2,4)
+
+    show_clf_result_single_run(y_true=y_tr, y_pred=y_pred_tr, ax_tr=ax_tr_true, ax_pred=ax_tr_pred, suffix='training')
+    show_clf_result_single_run(y_true=y_test, y_pred=y_pred, ax_tr=ax_test_true, ax_pred=ax_test_pred, suffix='testing')
 
     plt.show()
+
+
+def show_clf_result_single_run(y_true, y_pred, ax_tr, ax_pred, suffix='training'):
+    ''' ### Description
+    This function plot the predictin results for a classifier, and print the performance metrics.    
+    '''
+    # Plots
+    ax_tr.set_xlabel('index of data point', fontsize = 15)
+    ax_tr.set_ylabel('y', fontsize = 15)
+    ax_tr.set_title(f'{suffix}: Truth', fontsize = 20)
+    ax_tr.plot(range(len(y_true)), y_true, 'xb', label='Truth')
+    ax_tr.legend()
+
+    ax_pred.set_xlabel('index of data points', fontsize = 15)
+    ax_pred.set_ylabel('y', fontsize = 15)
+    ax_pred.set_title(f'{suffix}: Prediction', fontsize = 20)
+    ax_pred.plot(range(len(y_pred)), y_pred, 'xb', label='Truth')
+    ax_pred.legend()
+
+    # Performance indicators
+    # Show the model fitting performance.
+    acc, pre, recall, f1 = cal_classification_perf(y_true, y_pred)
+    print('\n New run:\n')
+    print(f'{suffix} performance, accuracy is: ' + str(acc))
+    print(f'{suffix} performance, precision is: ' + str(pre))
+    print(f'{suffix} performance, recall: ' + str(recall))
+    print(f'{suffix} performance, F1: ' + str(f1))
+    print('\n')
 
 
 if __name__ == '__main__':
@@ -942,9 +1027,11 @@ if __name__ == '__main__':
     x_tr_org, y_temp_tr_org = extract_selected_feature(df_data=df_tr, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
 
     # Enrich the features based on the sliding window.
-    window_size = 100
-    sample_step = 10
-    prediction_lead_time = 10
+    window_size = 10
+    sample_step = 1
+    prediction_lead_time = 1
+    threshold = .8
+    abnormal_limit = 3
 
     x_tr, y_temp_tr = prepare_sliding_window(df_x=x_tr_org, y=y_temp_tr_org, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
 
@@ -963,48 +1050,50 @@ if __name__ == '__main__':
     test_id = [
         '20240325_155003',
         '20240425_093699',
-        '20240425_094425',
-        '20240426_140055',
-        '20240503_163963',
-        '20240503_164675',
-        '20240503_165189'
+        # '20240425_094425',
+        # '20240426_140055',
+        # '20240503_163963',
+        # '20240503_164675',
+        # '20240503_165189'
     ]
     df_test = df_data[df_data['test_condition'].isin(test_id)]
 
     # Define the fault detector.
-    detector_reg = FaultDetectReg(reg_mdl=mdl, window_size=window_size, sample_step=sample_step, pred_lead_time=prediction_lead_time)
+    detector_reg = FaultDetectReg(reg_mdl=mdl, threshold=threshold, abnormal_limit=abnormal_limit, window_size=window_size, sample_step=sample_step, pred_lead_time=prediction_lead_time)
 
-    # # Test
-    # _, y_label_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='clf')
-    # x_test_org, y_temp_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
-
-    # # Predict the temperature
-    # detector_reg.threshold = 1
-    # y_label_pred_tr, y_temp_pred_tr = detector_reg.predict(df_x_test=x_tr_org, y_response_test=y_temp_tr_org)
-    # y_label_pred_tmp, y_temp_pred_tmp = detector_reg.predict(df_x_test=x_test_org, y_response_test=y_temp_test_org)
-
-    # # Get the true values.
-    # _, y_label_test = prepare_sliding_window(df_x=x_test_org, y=y_label_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='clf')
-    # _, y_temp_test_seq = prepare_sliding_window(df_x=x_test_org, y=y_temp_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
-
-
-    # show_reg_result(y_tr=y_temp_tr, y_test=y_temp_test_seq, y_pred_tr=y_temp_pred_tr, y_pred=y_temp_pred_tmp, threshold=detector_reg.threshold)
-    # show_clf_result(y_tr=np.zeros(len(y_label_pred_tr)), y_test=y_label_test, y_pred_tr=y_label_pred_tr, y_pred=y_label_pred_tmp)
-
-    # # Run cross validation
-    n_fold = 7
+    # Test
     _, y_label_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='clf')
     x_test_org, y_temp_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
 
-    motor_idx = 6
-    print(f'Model for motor {motor_idx}:')
-    # Run cross validation.
-    df_perf = detector_reg.run_cross_val(df_x=x_test_org, y_label=y_label_test_org, y_response=y_temp_test_org, 
-                                         n_fold=n_fold)
-    print(df_perf)
-    print('\n')
-    # Print the mean performance and standard error.
-    print('Mean performance metric and standard error:')
-    for name, metric, error in zip(df_perf.columns, df_perf.mean(), df_perf.std()):
-        print(f'{name}: {metric:.4f} +- {error:.4f}') 
-    print('\n')
+    # Predict the temperature
+    # y_label_pred_tr, y_temp_pred_tr = detector_reg.predict(df_x_test=x_tr_org, y_response_test=y_temp_tr_org)
+    y_label_pred_tmp, y_temp_pred_tmp = detector_reg.predict(df_x_test=x_test_org, y_response_test=y_temp_test_org)
+
+    # Get the true values.
+    _, y_label_test = prepare_sliding_window(df_x=x_test_org, y=y_label_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='clf')
+    _, y_temp_test_seq = prepare_sliding_window(df_x=x_test_org, y=y_temp_test_org, sequence_name_list=test_id, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type='reg')
+
+    # show_reg_result(y_tr=y_temp_tr, y_test=y_temp_test_seq, y_pred_tr=y_temp_pred_tr, y_pred=y_temp_pred_tmp, threshold=detector_reg.threshold)
+    # show_clf_result(y_tr=np.zeros(len(y_label_pred_tr)), y_test=y_label_test, y_pred_tr=y_label_pred_tr, y_pred=y_label_pred_tmp)
+    show_reg_result(y_tr=y_temp_test_seq, y_test=y_temp_test_seq, y_pred_tr=y_temp_pred_tmp, y_pred=y_temp_pred_tmp, threshold=detector_reg.threshold)
+    show_clf_result(y_tr=y_label_test, y_test=y_label_test, y_pred_tr=y_label_pred_tmp, y_pred=y_label_pred_tmp)
+
+
+
+    # # # Run cross validation
+    # n_fold = 7
+    # _, y_label_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='clf')
+    # x_test_org, y_temp_test_org = extract_selected_feature(df_data=df_test, feature_list=feature_list_all, motor_idx=6, mdl_type='reg')
+
+    # motor_idx = 6
+    # print(f'Model for motor {motor_idx}:')
+    # # Run cross validation.
+    # df_perf = detector_reg.run_cross_val(df_x=x_test_org, y_label=y_label_test_org, y_response=y_temp_test_org, 
+    #                                      n_fold=n_fold)
+    # print(df_perf)
+    # print('\n')
+    # # Print the mean performance and standard error.
+    # print('Mean performance metric and standard error:')
+    # for name, metric, error in zip(df_perf.columns, df_perf.mean(), df_perf.std()):
+    #     print(f'{name}: {metric:.4f} +- {error:.4f}') 
+    # print('\n')
