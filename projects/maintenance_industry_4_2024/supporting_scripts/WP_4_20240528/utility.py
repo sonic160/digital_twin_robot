@@ -304,6 +304,44 @@ class FaultDetectReg():
         return pd.DataFrame(data=perf, columns=['Accuracy', 'Precision', 'Recall', 'F1 score'])
         
 
+def extract_selected_feature_testing(df_data: pd.DataFrame, feature_list: list, motor_idx: int, mdl_type: str):
+    ''' ### Description
+    Extract the selected features from the dataframe. Used for testing data.
+
+    ### Parameters
+    df_data: The dataframe containing the data.
+    feature_list: The list of features to be used.
+    motor_idx: The index of the motor.
+    mdl_type: The type of the model. 'clf' for classification, 'reg' for regression.
+
+    ### Return
+    df_x: The dataframe containing the features.
+    '''
+    
+    # Create a copy of feature_list
+    feature_list_local = copy.deepcopy(feature_list)
+    # Get the name of the response variable.
+    if mdl_type == 'clf':
+        y_name = f'data_motor_{motor_idx}_label'
+    elif mdl_type == 'reg':
+        y_name = f'data_motor_{motor_idx}_temperature'
+    else:
+        raise ValueError('mdl_type must be \'clf\' or \'reg\'.')
+    
+    # Remove the y from the feature
+    if y_name in feature_list_local:
+        feature_list_local.remove(y_name)
+    
+    # Seperate features and the response variable.
+    # Remove the irrelavent features.
+    feature_list_local.append('test_condition')
+    df_x = df_data[feature_list_local]
+    # Get y.
+    y = df_data.loc[:, y_name]
+
+    return df_x, y
+
+
 
 def extract_selected_feature(df_data: pd.DataFrame, feature_list: list, motor_idx: int, mdl_type: str):
     ''' ### Description
@@ -403,8 +441,11 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
     # Get all the folders in the base_dictionary
     path_list = os.listdir(base_dictionary)
     # Only keep the folders, not the excel file.
-    path_list_sorted = sorted(path_list)
-    path_list = path_list_sorted[:-1]
+    # Filter out only directories, excluding .xlsx files
+    path_list = [item for item in path_list if os.path.isdir(os.path.join(base_dictionary, item))]
+
+    # path_list_sorted = sorted(path_list)
+    # path_list = path_list_sorted[:-1]
 
     # Read the data.
     df_data = pd.DataFrame()
@@ -430,10 +471,15 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
                 'data_motor_1_voltage', 'data_motor_2_voltage', 'data_motor_3_voltage']):
                 
                 label_name = col[:13] + 'label'
-                tmp = filtered_df[filtered_df[label_name]==0]
-                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-                tmp = filtered_df[filtered_df[label_name]==1]
-                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+
+                # If we have labels
+                if sum(filtered_df[label_name]==0)>0 or sum(filtered_df[label_name]==1)>0:
+                    tmp = filtered_df[filtered_df[label_name]==0]
+                    ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+                    tmp = filtered_df[filtered_df[label_name]==1]
+                    ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+                else:
+                    ax.plot(filtered_df['time'], filtered_df[col], marker='o', linestyle='None', label=col)
                 ax.set_ylabel(col)
 
             fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(15, 10))
@@ -442,10 +488,15 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
                 'data_motor_4_voltage', 'data_motor_5_voltage', 'data_motor_6_voltage']):
                 
                 label_name = col[:13] + 'label'
-                tmp = filtered_df[filtered_df[label_name]==0]
-                ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
-                tmp = filtered_df[filtered_df[label_name]==1]
-                ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+                
+                # If we have labels
+                if sum(filtered_df[label_name]==0)>0 or sum(filtered_df[label_name]==1)>0:
+                    tmp = filtered_df[filtered_df[label_name]==0]
+                    ax.plot(tmp['time'], tmp[col], marker='o', linestyle='None', label=col)
+                    tmp = filtered_df[filtered_df[label_name]==1]
+                    ax.plot(tmp['time'], tmp[col], marker='x', color='red', linestyle='None', label=col)
+                else:
+                    ax.plot(filtered_df['time'], filtered_df[col], marker='o', linestyle='None', label=col)
                 ax.set_ylabel(col)
 
             plt.show()
@@ -500,20 +551,36 @@ def read_all_csvs_one_test(folder_path: str, test_id: str = 'unknown', pre_proce
     combined_df = pd.concat([df['time'], combined_df], axis=1)
 
     # Calculate the time difference since the first row
-    time_since_first_row = combined_df['time'] - combined_df['time'].iloc[0]
-    # Replace the 'time' column with the time difference
-    combined_df['time'] = time_since_first_row
+    try:
+        time_since_first_row = combined_df['time'] - combined_df['time'].iloc[0]
+        # Replace the 'time' column with the time difference
+        combined_df['time'] = time_since_first_row
+    except:
+        # Determine the number of rows in the dataframe
+        num_rows = combined_df.shape[0]
+        # Generate the sequence of values starting from 0, increasing by 0.1
+        time_values = [i * 0.1 for i in range(num_rows)]
+        # Assign the generated sequence to the 'time' column
+        combined_df['time'] = time_values
 
     combined_df.loc[:, 'test_condition'] = test_id
 
     # Drop the NaN values, which represents the first n data points in the original dataframe.
-    combined_df.dropna(inplace=True)
+    # combined_df.dropna(inplace=True)
+    # Identify columns that end with '_label'
+    label_columns = combined_df.columns[combined_df.columns.str.endswith('_label')]
+    # Identify columns that do not end with '_label'
+    non_label_columns = combined_df.columns.difference(label_columns)
+    # Create a mask to keep rows without NaN in non-label columns
+    mask = combined_df[non_label_columns].notna().all(axis=1)
+    # Filter the dataframe using the mask
+    combined_df = combined_df[mask]
 
     return combined_df
 
 
 # Subfunction for create the sliding window.
-def concatenate_features(df_input, y_input, X_window, y_window, window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
+def concatenate_features(df_input, y_input=None, X_window=[], y_window=[], window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
     ''' ### Description
     This function takes every sample_step point from a interval window_size, and concatenate the extracted 
     features into a new feature list X_window. It extracts the corresponding y in y_window.
@@ -546,17 +613,20 @@ def concatenate_features(df_input, y_input, X_window, y_window, window_size=1, s
             prediction_lead_time = 1 
         if prediction_lead_time<window_size and window_size>1: # Otherwise no need to add y_prev as they are beyond the window_size.
             tmp_idx_pred = [x for x in idx_samples if x <= idx_last_element-prediction_lead_time]
-            new_features.extend(y_input.iloc[tmp_idx_pred].values.flatten().tolist())
+            if y_input is not None:
+                new_features.extend(y_input.iloc[tmp_idx_pred].values.flatten().tolist())
     
     # Add the added features and the corresponding ys into X_window and y_window.
     X_window.append(new_features) # New features
-    y_window.append(y_input.iloc[idx_last_element]) # Corresponding y
-
-    return X_window, y_window
+    if y_input is not None:
+        y_window.append(y_input.iloc[idx_last_element]) # Corresponding y
+        return X_window, y_window
+    else:
+        return X_window
 
 
 # Sliding the window to create features and response variables.
-def prepare_sliding_window(df_x, y, sequence_name_list=None, window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
+def prepare_sliding_window(df_x, y=None, sequence_name_list=None, window_size=1, sample_step=1, prediction_lead_time=1, mdl_type='clf'):
     ''' ## Description
     Create a new feature matrix X and corresponding y, by sliding a window of size window_size.
 
@@ -584,18 +654,37 @@ def prepare_sliding_window(df_x, y, sequence_name_list=None, window_size=1, samp
     for name in sequence_name_list:
         # Extract one sequence.
         df_tmp = df_x[df_x['test_condition']==name]
-        y_tmp = y[df_x['test_condition']==name]
 
-        # Do a loop to concatenate features by sliding the window.
-        for i in range(window_size, len(df_tmp)+1):
-            X_window, y_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], y_input=y_tmp.iloc[i-window_size:i], 
-                X_window=X_window, y_window=y_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
+        # Check if we need to slide y:
+        if y is not None: # If y is given: We are in the training mode.
+            y_tmp = y[df_x['test_condition']==name]
+            # Do a loop to concatenate features by sliding the window.
+            for i in range(window_size, len(df_tmp)+1):
+                X_window, y_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], y_input=y_tmp.iloc[i-window_size:i], 
+                    X_window=X_window, y_window=y_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
+        else: # If y is not given: We are in the testing mode.
+            for i in range(1, window_size): # If not enough data in the window
+                df_input = df_tmp.iloc[0:i, :]
+                n_size = len(df_input)
+                first_row = df_input.iloc[0]
+                new_rows = pd.DataFrame([first_row] * (window_size-n_size), columns=df_input.columns)
+                df_input = pd.concat([new_rows, df_input], ignore_index=True)
+
+                X_window = concatenate_features(df_input=df_input, 
+                    X_window=X_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
+
+            for i in range(window_size, len(df_tmp)+1):
+                X_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], 
+                    X_window=X_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
         
     # Transform into dataframe.
     X_window = pd.DataFrame(X_window)
-    y_window = pd.Series(y_window)
 
-    return X_window, y_window
+    if y is not None:
+        y_window = pd.Series(y_window)
+        return X_window, y_window
+    else:
+        return X_window
 
 
 def run_cross_val(mdl, df_x, y, n_fold=5, threshold=3, window_size=1, sample_step=1, prediction_lead_time=1, single_run_result=True, mdl_type='reg'):
