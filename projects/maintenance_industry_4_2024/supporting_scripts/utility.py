@@ -459,8 +459,8 @@ def read_all_test_data_from_path(base_dictionary: str, pre_processing: callable=
     # Only keep the folders, not the excel file.
     # Filter out only directories, excluding .xlsx files
     path_list = [item for item in path_list if os.path.isdir(os.path.join(base_dictionary, item))]
-
-    # path_list_sorted = sorted(path_list)
+    # Make sure in ascending order.
+    path_list = sorted(path_list)
     # path_list = path_list_sorted[:-1]
 
     # Read the data.
