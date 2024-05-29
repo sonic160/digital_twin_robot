@@ -115,7 +115,7 @@ class FaultDetectReg():
         return y_label_pred, y_response_pred
 
 
-    def predict(self, df_x_test, y_response_test):
+    def predict(self, df_x_test, y_response_test, complement_truncation=False):
         ''' ### Description
         Predict the labels using the trained regression model and the measured response variable.
         Note that if a fault is predicted, the predicted, not measured response variable will be used to concatenate features
@@ -124,6 +124,7 @@ class FaultDetectReg():
         ### Parameters
         - df_x_test: The testing features.
         - y_response_test: The measured response variable.
+        - complement_truncation: If True, the truncated points in each sequence before the first sliding window will be complemented. Default is Faulse.
 
         ### Return
         - y_label_pred: The predicted labels.
@@ -133,6 +134,11 @@ class FaultDetectReg():
         window_size = self.window_size
         sample_step = self.sample_step
         prediction_lead_time = self.pred_lead_time
+
+        # Handle exception.
+        if 'test_condition' not in df_x_test.columns:
+            # Add the 'test_condition' column with all values set to 'unspecified'
+            df_x_test['test_condition'] = 'unspecified'
 
         # Get the sequence names.
         sequence_name_list = df_x_test['test_condition'].unique().tolist()
@@ -180,8 +186,18 @@ class FaultDetectReg():
                     y_temp_local.iloc[i-1] = tmp_y_temp_pred[-1]
 
             # Save the results and proceed to the next sequence.
-            y_label_pred.extend(y_label_pred_tmp)
-            y_response_pred.extend(y_temp_pred_tmp)
+            if complement_truncation: # If we need to complement, complement with 0.
+                len_diff = len(df_x_test_seq) - len(y_label_pred_tmp)
+                # If df_x_test_seq is smaller, adjust the length of y_label_pred_tmp
+                if len_diff > 0:                    
+                    # Create a list of the first element repeated len_diff times
+                    y_label_pred_tmp = np.concatenate((np.full(len_diff, y_label_pred_tmp[0]), y_label_pred_tmp))               
+                    y_temp_pred_tmp = np.concatenate((np.full(len_diff, y_temp_pred_tmp[0]), y_temp_pred_tmp))
+                y_label_pred.extend(y_label_pred_tmp)
+                y_response_pred.extend(y_temp_pred_tmp)
+            else:
+                y_label_pred.extend(y_label_pred_tmp)
+                y_response_pred.extend(y_temp_pred_tmp)
 
         return y_label_pred, y_response_pred
 
