@@ -729,30 +729,7 @@ def prepare_sliding_window(df_x, y=None, sequence_name_list=None, window_size=1,
             for i in range(window_size, len(df_tmp)+1):
                 X_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], 
                     X_window=X_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
-    
 
-        # # Check if we need to slide y:
-        # if y is not None: # If y is given: We are in the training mode.
-        #     y_tmp = y[df_x['test_condition']==name]
-        #     # Do a loop to concatenate features by sliding the window.
-        #     for i in range(window_size, len(df_tmp)+1):
-        #         X_window, y_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], y_input=y_tmp.iloc[i-window_size:i], 
-        #             X_window=X_window, y_window=y_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
-        # else: # If y is not given: We are in the testing mode.
-        #     for i in range(1, window_size): # If not enough data in the window
-        #         df_input = df_tmp.iloc[0:i, :]
-        #         n_size = len(df_input)
-        #         first_row = df_input.iloc[0]
-        #         new_rows = pd.DataFrame([first_row] * (window_size-n_size), columns=df_input.columns)
-        #         df_input = pd.concat([new_rows, df_input], ignore_index=True)
-
-        #         X_window = concatenate_features(df_input=df_input, 
-        #             X_window=X_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
-
-        #     for i in range(window_size, len(df_tmp)+1):
-        #         X_window = concatenate_features(df_input=df_tmp.iloc[i-window_size:i, :], 
-        #             X_window=X_window, window_size=window_size, sample_step=sample_step, prediction_lead_time=prediction_lead_time, mdl_type=mdl_type)
-        
     # Transform into dataframe.
     X_window = pd.DataFrame(X_window)
 
