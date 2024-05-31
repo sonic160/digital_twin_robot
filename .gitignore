@@ -17,6 +17,8 @@
 
 ## The collected data in matlab
 **/matlab_application/collected_data/
+**/matlab_application/collected_data_group_1/
 
 ## Solution files.
 **/solution.csv
+**/ws_prepare_data_challenge/

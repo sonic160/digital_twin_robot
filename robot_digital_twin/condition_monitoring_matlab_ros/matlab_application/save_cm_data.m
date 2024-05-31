@@ -1,14 +1,15 @@
 function save_cm_data(app)
     % Check if "collected_data" folder exists, if not, create it
-    if ~exist('collected_data', 'dir')
-        mkdir('collected_data');
+    folder_name = 'collected_data_students'
+    if ~exist(folder_name, 'dir')
+        mkdir(folder_name);
     end
 
     % Create a subfolder with the current time as the folder name
     currentTime = datetime('now');
     currentTime.Format = 'yyyyMMdd_HHmmSS';
     currentTime = string(currentTime);
-    subfolderPath = fullfile('collected_data', currentTime);
+    subfolderPath = fullfile(folder_name, currentTime);
     if ~exist(subfolderPath, 'dir')
         mkdir(subfolderPath);
     end
