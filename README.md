@@ -30,7 +30,7 @@ Below are a few tutorials that help you get started with this repository.
   - Trajectory planning model in MoveIt (to be updated)
 - Reliability and predictive maintenance based on digital twin:
   - Training a deep learning model based on digital twin for fault diagnosis (to be updated)
-  - Using digital twin to detect the temperature drift of the robot motors (to be updated)
+  - Using digital twin to detect the temperature drift of the robot motors ([see this data challenge](https://www.kaggle.com/competitions/robot-predictive-maintenance))
 
 ## Development status
 
