@@ -22,3 +22,4 @@
 ## Solution files.
 **/solution.csv
 **/ws_prepare_data_challenge/
+*.csv
